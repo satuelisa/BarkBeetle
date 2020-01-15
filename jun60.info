@@ -1,0 +1,48 @@
+Driver: GTiff/GeoTIFF
+Files: jun50.tiff
+Size is 9348, 7778
+Coordinate System is:
+PROJCS["WGS 84 / UTM zone 14N",
+    GEOGCS["WGS 84",
+        DATUM["WGS_1984",
+            SPHEROID["WGS 84",6378137,298.257223563,
+                AUTHORITY["EPSG","7030"]],
+            AUTHORITY["EPSG","6326"]],
+        PRIMEM["Greenwich",0,
+            AUTHORITY["EPSG","8901"]],
+        UNIT["degree",0.0174532925199433,
+            AUTHORITY["EPSG","9122"]],
+        AUTHORITY["EPSG","4326"]],
+    PROJECTION["Transverse_Mercator"],
+    PARAMETER["latitude_of_origin",0],
+    PARAMETER["central_meridian",-99],
+    PARAMETER["scale_factor",0.9996],
+    PARAMETER["false_easting",500000],
+    PARAMETER["false_northing",0],
+    UNIT["metre",1,
+        AUTHORITY["EPSG","9001"]],
+    AXIS["Easting",EAST],
+    AXIS["Northing",NORTH],
+    AUTHORITY["EPSG","32614"]]
+Origin = (408631.440630000026431,2677763.212210000026971)
+Pixel Size = (0.017630000000000,-0.017630000000000)
+Metadata:
+  AREA_OR_POINT=Area
+  TIFFTAG_SOFTWARE=pix4dmapper
+Image Structure Metadata:
+  COMPRESSION=LZW
+  INTERLEAVE=PIXEL
+Corner Coordinates:
+Upper Left  (  408631.441, 2677763.212) ( 99d53'59.12"W, 24d12'35.75"N)
+Lower Left  (  408631.441, 2677626.086) ( 99d53'59.09"W, 24d12'31.29"N)
+Upper Right (  408796.246, 2677763.212) ( 99d53'53.28"W, 24d12'35.78"N)
+Lower Right (  408796.246, 2677626.086) ( 99d53'53.25"W, 24d12'31.32"N)
+Center      (  408713.843, 2677694.649) ( 99d53'56.18"W, 24d12'33.54"N)
+Band 1 Block=9348x1 Type=Byte, ColorInterp=Red
+  NoData Value=-10000
+Band 2 Block=9348x1 Type=Byte, ColorInterp=Green
+  NoData Value=-10000
+Band 3 Block=9348x1 Type=Byte, ColorInterp=Blue
+  NoData Value=-10000
+Band 4 Block=9348x1 Type=Byte, ColorInterp=Alpha
+  NoData Value=-10000
