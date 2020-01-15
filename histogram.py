@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+plt.rcParams.update({'font.size': 15})
 import matplotlib.ticker
 from PIL import Image, ImageDraw
 from math import ceil, log
@@ -30,7 +31,7 @@ def histo(image, ax, ylim, bw = 5, dark = 40, bright = 250, seglen = 256):
     if count == 0: # nothing to plot
         for a in ax:
             a.axis('off')
-        return None
+        return False
     normalizer = 100 / sum(histogram)
     histogram = [h * normalizer for h in histogram] # percentages
     for a in ax:
@@ -56,7 +57,7 @@ def histo(image, ax, ylim, bw = 5, dark = 40, bright = 250, seglen = 256):
     for i in range(dark, bright):
         if g[i] > 0: # average over the three channels
             ax[3].bar(i, g[i] / 3, width = bw, color = getGray(i), edgecolor = getGray(i), alpha = 0.9)
-    return 
+    return True
 
 filename = argv[1]
 circles = not 'rect' in argv # circles are default, include rect on the command line to obtain rectangles
@@ -74,17 +75,22 @@ for a, c in zip(ax[0], channels): # column titles
     a.set_title(c)
 for a, c in zip(ax[:, 0], ['enhanced'] + classes): # row titles
     a.set_ylabel(c, rotation = 90, size = 'large')
-    
-templates = dict()
-counts = dict()
+
+templates = dict() # store the cut-out versions of the enhanced images
+originals = dict() # for comparison, also cut out the same regions of the original orthomosaics
+ofn = filename.replace('_enhanced', '')
+orig = Image.open(ofn)
+
+counts = dict() 
 for kind in classes:
     templates[kind] = Image.new('RGB', (w, h))
+    originals[kind] = Image.new('RGB', (w, h))
     counts[kind] = 0
 
 dataset = (filename.split('.')[0]).split('_')[0]
 print('Characterizing', dataset)
 alt = int(dataset[3:]) # omit the first three letters corresponding to jun / jul / aug to get the flight altitude
-sample = 5 # m (adjustable parameter referring to a typical tree dimension)
+sample = 5 # m (adjustable parameter referring to a typical tree dimension, in approximate meters)
 factor = None
 d = None
 with open('{:s}.map'.format(dataset)) as data:
@@ -92,9 +98,9 @@ with open('{:s}.map'.format(dataset)) as data:
         fields = line.split()        
         if '#' in line and factor is None:
             ow = int(fields[4])
-            factor = ow // w
+            factor = ow / w
             scale = GSD[alt]
-            d = int(ceil(((sample * 100) / scale) / 2)) // factor # in pixels
+            d = int((ceil(((sample * 100) / scale) / 2)) / factor) # in pixels
             if circles:
                 mask = Image.new("L", (2 * d, 2 * d), 0)
                 draw = ImageDraw.Draw(mask)
@@ -105,13 +111,15 @@ with open('{:s}.map'.format(dataset)) as data:
             treeID = int(fields.pop(0))
             if treeID >= 30: # from-image annotations only as the ground-based ones are flight-specific
                 kind = fields.pop(0)
-                x = int(fields.pop(0)) // factor # center x after resizing
-                y = int(fields.pop(0)) // factor # center y after resizing
+                x = round(int(fields.pop(0)) / factor) # center x after resizing
+                y = round(int(fields.pop(0)) / factor) # center y after resizing
                 counts[kind] += 1
                 if circles:
                     templates[kind].paste(image.crop((x - d, y - d, x + d, y + d)), (x - d, y - d), mask)
+                    originals[kind].paste(orig.crop((x - d, y - d, x + d, y + d)), (x - d, y - d), mask)
                 else: # rectangle
                     templates[kind].paste(image.crop((x - d, y - d, x + d, y + d)), (x - d, y - d))
+                    originals[kind].paste(orig.crop((x - d, y - d, x + d, y + d)), (x - d, y - d))
 
 high = {'aug100': 3, 'aug90': 2, 'jul100': 6, 'jul90':  6, 'jun60': 5}
 histo(image, ax[0, :], high[dataset])
@@ -120,8 +128,10 @@ which = 'circ' if circles else 'rect'
 for kind in classes:
     if counts[kind] > 0:
         im = templates[kind]
-        if histo(im, ax[row, :], high[dataset]) is not None:
+        if histo(im, ax[row, :], high[dataset]):
+            print(kind)
             im.save(f'{dataset}_{kind}_{which}.png')
+            originals[kind].save(f'{dataset}_orig_{kind}_{which}.png')
     row += 1
 
 #fig.tight_layout()
