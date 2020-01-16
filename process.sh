@@ -18,5 +18,9 @@ for file in `ls -1 *.tiff`; do
     if [ ! -f ${dataset}_circ_histo.png ]; then        
 	python3 histogram.py ${dataset}_smaller_enhanced.png # analyze isolated class samples	
     fi
-    python3 chandiff.py ${dataset} # analyze isolated sample color differences
+    if [ ! -f ${dataset}_diff.png ]; then            
+	python3 chandiff.py ${dataset} # analyze isolated sample color differences
+    fi
+    python3 threshold.py ${dataset}    
 done
+

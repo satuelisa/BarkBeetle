@@ -29,7 +29,7 @@ assert ch == 3
 a = np.full((h, w), 255, dtype = 'uint8')
 (hue, s, v) = cv2.split(cv2.cvtColor(cvImg, cv2.COLOR_BGR2HSV)) 
 brightness = int(np.mean(v)) - med # brightness adjustment
-contrast = low - high + 160 # contrast adjustment
+contrast = low - high + 128 # contrast adjustment
 saturation = 128 - int(np.mean(s)) # increase saturation to better distinguish tones
 print(low, med, high, '\tb', brightness, '\tc', contrast, '\ts', saturation)
 hsv = cv2.merge([hue, np.clip(s + saturation, 0, 255), v]) # incorporate adjusted saturation

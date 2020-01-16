@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 plt.rcParams.update({'font.size': 15})
-import matplotlib.ticker
 from PIL import Image, ImageDraw
 from math import ceil, log
 from sys import argv
