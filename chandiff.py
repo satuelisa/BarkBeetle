@@ -63,7 +63,7 @@ filename = argv[1]
 circles = not 'rect' in argv # circles are default, include rect on the command line to obtain rectangles
 image = Image.open(filename)
 w, h = image.size
-classes = ['green', 'yellow', 'red', 'leafless']
+classes = ['leafless', 'red', 'yellow', 'green']
 channels = ['red channel', 'green channel', 'blue channel', 'grayscale']
 GSD = {60: 1.76, 90: 1.96, 100: 2.17} # cm
 
