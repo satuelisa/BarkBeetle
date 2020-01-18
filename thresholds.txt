@@ -1,0 +1,7 @@
+td 50 # dark
+tl 180 # light
+tg 120 # green
+tb 10 # blue
+tr 50 # red
+ty 10 # yellow
+tn 20 # neutral

@@ -1,9 +1,12 @@
 import matplotlib.pyplot as plt
-plt.rcParams.update({'font.size': 15})
+plt.rcParams.update({'font.size': 14})
 from PIL import Image, ImageDraw
 from math import ceil, log
 from sys import argv
 import numpy as np
+
+from threshold import values
+thresholds = values()
 
 # histogram extraction based on the code at https://pythontic.com/image-processing/pillow/histogram
 
@@ -19,7 +22,7 @@ def getBlue(v):
 def getGray(v):
     return '#%02x%02x%02x' % (v, v, v)
 
-def histo(image, ax, ylim, bw = 5, dark = 40, bright = 250, seglen = 256): 
+def histo(image, ax, ylim, bw = 5, tw = 2, dark = 1, bright = 254, seglen = 256): 
     histogram = image.histogram()
     for start in range(0, len(histogram), seglen):
         for pos in range(dark): # zero out the dark ones until the desired threshold
@@ -42,28 +45,40 @@ def histo(image, ax, ylim, bw = 5, dark = 40, bright = 250, seglen = 256):
     for i in range(dark, bright):
         if l[i] > 0:
             g[i] += l[i]
-            ax[0].bar(i, l[i], width = bw, color = getRed(i), edgecolor = getRed(i), alpha = 0.9)
+            ax[0].bar(i, l[i], width = bw, color = getRed(i), edgecolor = getRed(i))
     l = histogram[seglen:(2 * seglen)] # green channel
     for i in range(dark, bright):
         if l[i] > 0:
             g[i] += l[i]        
-            ax[1].bar(i, l[i], width = bw, color = getGreen(i), edgecolor = getGreen(i), alpha = 0.9)
+            ax[1].bar(i, l[i], width = bw, color = getGreen(i), edgecolor = getGreen(i))
+    ax[1].axvline(thresholds['tg'], lw = tw) # illustrate the green threshold used in threshold.py            
     l = histogram[(2 * seglen):] # blue channel
     for i in range(dark, bright):
         if l[i] > 0:
             g[i] += l[i]        
-            ax[2].bar(i, l[i], width = bw, color = getBlue(i), edgecolor = getBlue(i), alpha = 0.9)
+            ax[2].bar(i, l[i], width = bw, color = getBlue(i), edgecolor = getBlue(i))            
     for i in range(dark, bright):
         if g[i] > 0: # average over the three channels
-            ax[3].bar(i, g[i] / 3, width = bw, color = getGray(i), edgecolor = getGray(i), alpha = 0.9)
+            ax[3].bar(i, g[i] / 3, width = bw, color = getGray(i), edgecolor = getGray(i))
+    for i in range(dark, bright):
+        v = min(histogram[i], histogram[i + seglen], histogram[i + 2 * seglen])
+        if v > 0: # minimum over the three channels
+            ax[4].bar(i, v, width = bw, color = '#996633', edgecolor = '#996633')
+    ax[4].axvline(thresholds['tl'], lw = tw) # illustrate the lightness threshold used in threshold.py
+    for i in range(dark, bright):
+        v = max(histogram[i], histogram[i + seglen], histogram[i + 2 * seglen])
+        if v > 0: # maximum over the three channels
+            ax[5].bar(i, v, width = bw, color = '#663399', edgecolor = '#663399')
+    ax[5].axvline(thresholds['td'], lw = tw) # illustrate the darkness threshold used in threshold.py
+
     return True
 
-filename = argv[1]
+dataset = argv[1]
 circles = not 'rect' in argv # circles are default, include rect on the command line to obtain rectangles
-image = Image.open(filename)
+image = Image.open(f'{dataset}_smaller_enhanced.png')
 w, h = image.size
 classes = ['green', 'yellow', 'red', 'leafless']
-channels = ['red channel', 'green channel', 'blue channel', 'grayscale']
+channels = ['red channel', 'green channel', 'blue channel', 'grayscale', 'minimum', 'maximum']
 GSD = {60: 1.76, 90: 1.96, 100: 2.17} # cm
 
 fig, ax = plt.subplots(nrows = len(classes) + 1, ncols = len(channels),
@@ -77,7 +92,7 @@ for a, c in zip(ax[:, 0], ['enhanced'] + classes): # row titles
 
 templates = dict() # store the cut-out versions of the enhanced images
 originals = dict() # for comparison, also cut out the same regions of the original orthomosaics
-ofn = filename.replace('_enhanced', '')
+ofn =  f'{dataset}_smaller.png'
 orig = Image.open(ofn)
 
 counts = dict() 
@@ -86,8 +101,7 @@ for kind in classes:
     originals[kind] = Image.new('RGB', (w, h))
     counts[kind] = 0
 
-dataset = (filename.split('.')[0]).split('_')[0]
-print('Characterizing', dataset)
+print('Extracting and analyzing', dataset)
 alt = int(dataset[3:]) # omit the first three letters corresponding to jun / jul / aug to get the flight altitude
 sample = 5 # m (adjustable parameter referring to a typical tree dimension, in approximate meters)
 factor = None
