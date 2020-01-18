@@ -9,8 +9,9 @@ import numpy as np
 from threshold import values
 th = values()
 
-colors = ['#999900', '#990099', '#009999']
+colors = ['#999900', '#990099', '#009999', '#0000ff', '#666666']
 tics = [x for x in range(-200, 201, 100)]
+matchText = True # peaks on matching values
 
 def diffHisto(first, second, alpha):
     freq = defaultdict(int)
@@ -42,17 +43,20 @@ def diff(image, ax, h, tw = 2, bw = 5):
     G = RGBA[:,:,1].flatten()
     B = RGBA[:,:,2].flatten()
     A = RGBA[:,:,3].flatten()
-    norm = 100 / len(R)
     vs = [diffHisto(R, G, A), diffHisto(R, B, A), diffHisto(G, B, A), diffHisto(B, ((R + G) / 2), A), threeWayHisto(R, G, B, A)]
-    line = [[th['tr'], th['ty']], [], [], [th['tb']]]
-    for j in range(3):
-        if sum(vs[j].values()) == 0: # nothing to plot
+    line = [[th['tr'], th['ty']], [], [], [th['tb']], [th['tn']]]
+    assert len(line) == len(vs) and len(ax) == len(line)
+    for j in range(len(vs)):
+        n = sum(vs[j].values()) # total frequency
+        if n == 0: # nothing to plot
             ax[j].axis('off')
         else:
-            ax[j].text(-240, 0.9 * h, '{:.3f}% exact matches'.format(norm * vs[j][0]))
+            norm = 100 / n # as percentages of the total
+            if matchText:
+                ax[j].text(-240, 0.9 * h, '{0:.2}% exact'.format(norm * vs[j][0]))
             ax[j].set_ylim(0, h)            
             for i in range(-255, 255):
-                if i == 0:
+                if matchText and i == 0: # put the exact matches on a label
                     continue
                 v = vs[j][i];
                 if v > 0:
@@ -60,19 +64,21 @@ def diff(image, ax, h, tw = 2, bw = 5):
             for l in line[j]:
                 ax[j].axvline(l, lw = tw) # indicate thresholds
 
-# based on histogram.py
-classes = ['green', 'yellow', 'red', 'leafless']
+classes = ['enhanced', 'green', 'yellow', 'red', 'leafless']
 differences = ['R - G', 'R - B', 'G - B', 'B - (R + G) / 2', 'max. diff.']
 dataset = argv[1]
-high = {'aug100': 0.008, 'aug90': 0.03, 'jul100': 0.011, 'jul90':  0.017, 'jun60': 0.035}
+high = 4.0
 fig, ax = plt.subplots(nrows = len(classes), ncols = len(differences),
                        figsize=(len(differences) * 3, len(classes) * 3))
-row = 0
+
+row = 0 
 for kind in classes:
     filename = f'{dataset}_{kind}_circ.png'
-    if exists(filename):
+    if kind == 'enhanced':
+        filename = f'{dataset}_smaller_enhanced.png'
+    if exists(filename): # skip empty classes, if any
         print(dataset, kind)        
-        diff(Image.open(filename), ax[row, :], high[dataset])
+        diff(Image.open(filename), ax[row, :], high)
     row += 1
 
 for a, c in zip(ax[0], differences): 

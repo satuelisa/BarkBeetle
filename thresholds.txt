@@ -1,7 +1,7 @@
-td 50 # dark
-tl 180 # light
-tg 120 # green
-tb 10 # blue
-tr 50 # red
-ty 10 # yellow
-tn 20 # neutral
+td 50 # dark SLIGHT ADJUSTMENT PENDING
+tl 180 # light SLIGHT ADJUSTMENT PENDING
+tg 120 # green SERIOUS ADJUSTMENT PENDING
+tb 10 # blue SLIGHT ADJUSTMENT PENDING
+tr 50 # red SERIOUS ADJUSTMENT PENDING
+ty -10 # yellow SLIGHT ADJUSTMENT PENDING
+tn 20 # neutral SLIGHT ADJUSTMENT PENDING

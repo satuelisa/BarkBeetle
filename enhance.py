@@ -10,8 +10,8 @@ def bars(h, t, ax, c = 'black', a = 0.6):
         if g[i] > 0: 
             ax.bar(i, g[i], width = 1, color = c, edgecolor = c, alpha = a)
 
-inputFile = argv[1]
-img = Image.open(inputFile) # filename as a command-line argument
+dataset = argv[1]
+img = Image.open(f'{dataset}_smaller.png') # filename as a command-line argument
 imgAr = np.array(img)
 (w, h, c) = imgAr.shape
 print(f'Enhancing a {w} by {h} image...')
@@ -54,9 +54,9 @@ bars((Image.fromarray(cvImg)).histogram(), t, ax, 'blue')
 plt.xlim(0, 255)
 plt.xlabel('Tone of gray', fontsize = 40)
 plt.ylabel('Percent of pixels', fontsize = 40)
-plt.savefig(inputFile.replace('.png', '_eh.png')) 
+plt.savefig(f'{dataset}_smaller_eh.png')
 RGBA = cv2.merge([b, g, r, a], 4) # add alpha channel
-cv2.imwrite(inputFile.replace('.png', '_enhanced.png'), RGBA) # save file
+cv2.imwrite(f'{dataset}_smaller_enhanced.png', RGBA) # save file
 
 
     

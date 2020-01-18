@@ -13,18 +13,24 @@ for file in `ls -1 *.tiff`; do
 	python3 enhance.py ${dataset} # enhance color spectrum
     fi
     if [ ! -f ${dataset}_circ_histo.png ]; then        
-	python3 histogram.py ${dataset} # extract and analyze isolated class samples	
+	python3 histogram.py ${dataset} # extract and analyze isolated class samples
+	# ensure that black is transparent in the extractions
+	for file in `ls -1 ${dataset}_*_circ.png`; do 
+	    convert -transparent black $file $file
+	done
     fi
 done
-for file in `ls -1 *_circ.png`; do # ensure that black is transparent in the extractions
-    convert -transparent black $file $file
-done
+# analyze isolated sample color differences
 for file in `ls -1 *.tiff`; do
     dataset=`basename $file .tiff`
-    echo Processing $dataset
-    if [ ! -f ${dataset}_diff.png ]; then            
-	python3 chandiff.py ${dataset} # analyze isolated sample color differences
+    if [ ! -f ${dataset}_diff.png ]; then
+	echo Additional characterization for $dataset	
+	python3 chandiff.py ${dataset} 
     fi
+done
+for file in `ls -1 *.tiff`; do
+    dataset=`basename $file .tiff`    
+    echo Processing $dataset
     python3 threshold.py ${dataset}    
 done
 
