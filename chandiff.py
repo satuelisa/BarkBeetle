@@ -73,7 +73,7 @@ fig, ax = plt.subplots(nrows = len(classes), ncols = len(differences),
 
 row = 0 
 for kind in classes:
-    filename = f'{dataset}_{kind}_circ.png'
+    filename = f'{dataset}_{kind}.png'
     if kind == 'enhanced':
         filename = f'{dataset}_smaller_enhanced.png'
     if exists(filename): # skip empty classes, if any

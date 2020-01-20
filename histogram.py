@@ -5,6 +5,7 @@ from math import ceil, log
 from sys import argv
 import numpy as np
 
+from gsd import radius
 from threshold import values
 thresholds = values()
 
@@ -74,12 +75,9 @@ def histo(image, ax, ylim, bw = 5, tw = 2, dark = 1, bright = 254, seglen = 256)
     return True
 
 dataset = argv[1]
-circles = not 'rect' in argv # circles are default, include rect on the command line to obtain rectangles
-image = Image.open(f'{dataset}_smaller_enhanced.png')
-w, h = image.size
+image = Image.open(f'{dataset}_enhanced.png')
 classes = ['green', 'yellow', 'red', 'leafless']
 channels = ['red channel', 'green channel', 'blue channel', 'grayscale', 'minimum', 'maximum']
-GSD = {60: 1.76, 90: 1.96, 100: 2.17} # cm
 
 fig, ax = plt.subplots(nrows = len(classes) + 1, ncols = len(channels),
                        figsize=(len(channels) * 3, (len(classes) + 1) * 2))
@@ -94,6 +92,7 @@ templates = dict() # store the cut-out versions of the enhanced images
 originals = dict() # for comparison, also cut out the same regions of the original orthomosaics
 ofn =  f'{dataset}_smaller.png'
 orig = Image.open(ofn)
+w, h = orig.size # possibly larger of the two
 
 counts = dict() 
 for kind in classes:
@@ -101,51 +100,53 @@ for kind in classes:
     originals[kind] = Image.new('RGB', (w, h))
     counts[kind] = 0
 
-print('Extracting and analyzing', dataset)
-alt = int(dataset[3:]) # omit the first three letters corresponding to jun / jul / aug to get the flight altitude
-sample = 5 # m (adjustable parameter referring to a typical tree dimension, in approximate meters)
+offsetX = None
+offsetY = None
 factor = None
-d = None
+with open('offsets.txt') as data:
+    for line in data:
+        fields = line.split()
+        if fields[0] == dataset: # do NOT break, use the LAST value (the file gets appended)
+            offsetX = int(fields[1])
+            offsetY = int(fields[2])
+            factor = float(fields[3])
+assert offsetX is not None
+
+r = radius(dataset, factor)
+mask = Image.new("L", (2 * r, 2 * r), 0)
+draw = ImageDraw.Draw(mask)
+draw.ellipse((0, 0, 2 * r, 2 * r), fill = 255)
+# mask.save(f'mask_{r}.png', quality=100)
+
+print('Extracting and analyzing', dataset)
 with open('{:s}.map'.format(dataset)) as data:
     for line in data:
         fields = line.split()        
-        if '#' in line and factor is None:
-            ow = int(fields[4])
-            factor = ow / w
-            scale = GSD[alt]
-            d = int((ceil(((sample * 100) / scale) / 2)) / factor) # in pixels
-            if circles:
-                mask = Image.new("L", (2 * d, 2 * d), 0)
-                draw = ImageDraw.Draw(mask)
-                draw.ellipse((0, 0, 2 * d, 2 * d), fill=255)
-                mask.save(f'mask_{d}.png', quality=100)
-        elif '#' not in line: # skip other comments
+        if '#' not in line: # skip other comments
             assert factor is not None
             treeID = int(fields.pop(0))
             if treeID >= 30: # from-image annotations only as the ground-based ones are flight-specific
                 kind = fields.pop(0)
                 x = round(int(fields.pop(0)) / factor) # center x after resizing
                 y = round(int(fields.pop(0)) / factor) # center y after resizing
+                xe = x - offsetX # the enhanced version was cropped
+                ye = y - offsetY # also vertically
                 counts[kind] += 1
-                if circles:
-                    templates[kind].paste(image.crop((x - d, y - d, x + d, y + d)), (x - d, y - d), mask)
-                    originals[kind].paste(orig.crop((x - d, y - d, x + d, y + d)), (x - d, y - d), mask)
-                else: # rectangle
-                    templates[kind].paste(image.crop((x - d, y - d, x + d, y + d)), (x - d, y - d))
-                    originals[kind].paste(orig.crop((x - d, y - d, x + d, y + d)), (x - d, y - d))
+                pos = (x, y)
+                templates[kind].paste(image.crop((xe - r, ye - r, xe + r, ye + r)), pos, mask)
+                originals[kind].paste(orig.crop((x - r, y - r, x + r, y + r)), pos, mask)
 
 high = {'aug100': 3, 'aug90': 2, 'jul100': 6, 'jul90':  6, 'jun60': 5}
 histo(image, ax[0, :], high[dataset])
 row = 1
-which = 'circ' if circles else 'rect'
 for kind in classes:
     if counts[kind] > 0:
         im = templates[kind]
         if histo(im, ax[row, :], high[dataset]):
             print(kind)
-            im.save(f'{dataset}_{kind}_{which}.png')
-            originals[kind].save(f'{dataset}_orig_{kind}_{which}.png')
+            im.save(f'{dataset}_{kind}.png')
+            originals[kind].save(f'{dataset}_orig_{kind}.png')
     row += 1
 
 #fig.tight_layout()
-plt.savefig(f'{dataset}_{which}_histo.png') 
+plt.savefig(f'{dataset}_histo.png') 
