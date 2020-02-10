@@ -37,10 +37,12 @@ for (tID, tree, label, source) in trees:
     c = color[label]
     (x, y) = tree
     # frames according to target
-    cv2.rectangle(ground, (x - r, y - r), (x + r, y + r), c, lw)
-    cv2.circle(air, tree, r, c, lw)
-    cv2.rectangle(both, (x - r, y - r), (x + r, y + r), c, lw)
-    cv2.circle(both, tree, r, c, lw)
+    if tID <= 30:
+        cv2.rectangle(ground, (x - r, y - r), (x + r, y + r), c, lw)
+        cv2.rectangle(both, (x - r, y - r), (x + r, y + r), c, lw)
+    else:
+        cv2.circle(air, tree, r, c, lw)
+        cv2.circle(both, tree, r, c, lw)
     # text labels in all three
     cv2.putText(air, str(tID), tree, cv2.FONT_HERSHEY_SIMPLEX, 4.0, (240, 0, 240, 255), 8)
     cv2.putText(ground, str(tID), tree, cv2.FONT_HERSHEY_SIMPLEX, 4.0, (240, 0, 240, 255), 8)
