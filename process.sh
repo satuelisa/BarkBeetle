@@ -3,7 +3,8 @@ width=2000
 for file in `ls -1 *.tiff`; do
     dataset=`basename $file .tiff`
     echo Characterizing $dataset
-    if [ ! -f ${dataset}_validation.png ]; then    
+    if [ ! -f ${dataset}_validation.png ]; then
+	echo Validating $dataset
 	python3 validate.py $dataset # check the annotation locations by class
     fi
     if [ ! -f ${dataset}_smaller.png ]; then # resize for efficiency
@@ -12,10 +13,12 @@ for file in `ls -1 *.tiff`; do
 	rm -f ${dataset}_enhanced.png # force the enhancement to be redone
     fi
     if [ ! -f ${dataset}_enhanced.png ]; then
+	echo Enhancing $dataset
 	python3 enhance.py ${dataset} >> offsets.txt # enhance color spectrum
 	rm -f ${dataset}_histo.png # force the extraction to be redone
     fi
-    if [ ! -f ${dataset}_histo.png ]; then        
+    if [ ! -f ${dataset}_histo.png ]; then
+	echo Analyzing $dataset
 	python3 histogram.py ${dataset}
 	for file in `ls -1 ${dataset}_orig_*.png`; do
 	    convert -transparent black $file $file

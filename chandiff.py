@@ -37,8 +37,15 @@ def threeWayHisto(first, second, third, alpha, func = max):
             freq[v] += 1 # frequencies
     return freq
 
-def diff(image, ax, h, tw = 2, bw = 5): 
+def diff(filename, ax, h, tw = 2, bw = 5):
+    image = Image.open(filename)
     RGBA = np.array(image)
+    dim = RGBA.shape
+    if len(dim) < 3 or dim[2] < 4:
+        print('Forcing RGBA on', filename)
+        image = image.convert('RGBA')
+        image.save(filename)
+        RGBA = np.array(image)    
     R = RGBA[:,:,0].flatten()
     G = RGBA[:,:,1].flatten()
     B = RGBA[:,:,2].flatten()
@@ -62,12 +69,12 @@ def diff(image, ax, h, tw = 2, bw = 5):
                 if v > 0:
                     ax[j].bar(i, norm * v, width = bw, color = colors[j], edgecolor = colors[j])
             for l in line[j]:
-                ax[j].axvline(l, lw = tw) # indicate thresholds
+                ax[j].axvline(l, lw = tw, color = 'r') # indicate thresholds
 
 classes = ['enhanced', 'green', 'yellow', 'red', 'leafless']
 differences = ['R - G', 'R - B', 'G - B', 'B - (R + G) / 2', 'max. diff.']
 dataset = argv[1]
-high = 4.0
+high = 5.0
 fig, ax = plt.subplots(nrows = len(classes), ncols = len(differences),
                        figsize=(len(differences) * 3, len(classes) * 3))
 
@@ -75,10 +82,10 @@ row = 0
 for kind in classes:
     filename = f'{dataset}_{kind}.png'
     if kind == 'enhanced':
-        filename = f'{dataset}_smaller_enhanced.png'
+        filename = f'{dataset}_enhanced.png'
     if exists(filename): # skip empty classes, if any
         print(dataset, kind)        
-        diff(Image.open(filename), ax[row, :], high)
+        diff(filename, ax[row, :], high)
     row += 1
 
 for a, c in zip(ax[0], differences): 

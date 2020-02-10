@@ -30,14 +30,22 @@ with open('{:s}.map'.format(dataset)) as data:
             y = int(fields.pop(0))
             trees.append((treeID, (x, y), label, treeID <= 30))
 lw = 20
-copy = img.copy()
-for (tID, tree, label, expert) in trees:
+air = img.copy()
+ground = img.copy()
+both = img.copy()
+for (tID, tree, label, source) in trees:
     c = color[label]
-    if expert: # group annotation
-        (x, y) = tree
-        cv2.rectangle(copy, (x - r, y - r), (x + r, y + r), c, lw)
-    else: # image-based annotation
-        cv2.circle(copy, tree, r, c, lw)
-    cv2.putText(copy, str(tID), tree, cv2.FONT_HERSHEY_SIMPLEX, 4.0, (240, 0, 240, 255), 8)                
-cv2.imwrite(f'{dataset}_validation.png', copy)
+    (x, y) = tree
+    # frames according to target
+    cv2.rectangle(ground, (x - r, y - r), (x + r, y + r), c, lw)
+    cv2.circle(air, tree, r, c, lw)
+    cv2.rectangle(both, (x - r, y - r), (x + r, y + r), c, lw)
+    cv2.circle(both, tree, r, c, lw)
+    # text labels in all three
+    cv2.putText(air, str(tID), tree, cv2.FONT_HERSHEY_SIMPLEX, 4.0, (240, 0, 240, 255), 8)
+    cv2.putText(ground, str(tID), tree, cv2.FONT_HERSHEY_SIMPLEX, 4.0, (240, 0, 240, 255), 8)
+    cv2.putText(both, str(tID), tree, cv2.FONT_HERSHEY_SIMPLEX, 4.0, (240, 0, 240, 255), 8)                
+cv2.imwrite(f'{dataset}_validation_air.png', air)
+cv2.imwrite(f'{dataset}_validation_ground.png', ground)
+cv2.imwrite(f'{dataset}_validation.png', both)
         

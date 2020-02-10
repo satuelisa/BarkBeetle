@@ -70,8 +70,6 @@ def histo(image, ax, ylim, bw = 5, tw = 2, dark = 1, bright = 254, seglen = 256)
         v = max(histogram[i], histogram[i + seglen], histogram[i + 2 * seglen])
         if v > 0: # maximum over the three channels
             ax[5].bar(i, v, width = bw, color = '#663399', edgecolor = '#663399')
-    ax[5].axvline(thresholds['td'], lw = tw) # illustrate the darkness threshold used in threshold.py
-
     return True
 
 dataset = argv[1]
@@ -136,7 +134,7 @@ with open('{:s}.map'.format(dataset)) as data:
                 templates[kind].paste(image.crop((xe - r, ye - r, xe + r, ye + r)), pos, mask)
                 originals[kind].paste(orig.crop((x - r, y - r, x + r, y + r)), pos, mask)
 
-high = {'aug100': 3, 'aug90': 2, 'jul100': 6, 'jul90':  6, 'jun60': 5}
+high = {'aug100': 3, 'aug90': 2, 'jul100': 5, 'jul90':  4, 'jun60': 4}
 histo(image, ax[0, :], high[dataset])
 row = 1
 for kind in classes:
@@ -147,6 +145,5 @@ for kind in classes:
             im.save(f'{dataset}_{kind}.png')
             originals[kind].save(f'{dataset}_orig_{kind}.png')
     row += 1
-
-#fig.tight_layout()
+fig.tight_layout()
 plt.savefig(f'{dataset}_histo.png') 

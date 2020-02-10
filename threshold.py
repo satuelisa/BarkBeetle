@@ -24,8 +24,8 @@ def threshold(filename, thresholds):
             light = min(r, g, b) # light if this is a high value
             dark = max(r, g, b) # dark if this is a low value
             gray = max(d) # gray-scale if this is a low value
-            if a < 255 or dark < thresholds['td']:
-                pix[x, y] = (0, 0, 0, 0) # transparent or dark -> transparent
+            if a < 255:
+                pix[x, y] = (0, 0, 0, 0) # transparent 
             elif b - (r + g) / 2 > thresholds['tb'] or light > thresholds['tl']: # cf. diff. & grayscale histogram
                 pix[x, y] = (0, 0, 255, 255) # blue (leafless); incl. very light pixels
             elif gray < thresholds['tn']: # cf. maximum histogram
