@@ -22,7 +22,7 @@ def threshold(filename, thresholds, outputfile):
             a = p[3] # alpha 
             rg = r - g # red minus green
             if a == 255: # completely opaque pixels only
-                if b > thresholds['tb'] or b - (r + g) / 2  >= thresholds['tb']:
+                if b > thresholds['tb']:
                     pix[x, y] = (0, 0, 255, 255) # blue (leafless)
                 elif rg >= thresholds['tr']: 
                     pix[x, y] = (255, 0, 0, 255) # red

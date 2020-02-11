@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-plt.rcParams.update({'font.size': 10})
+plt.rcParams.update({'font.size': 15})
 from collections import defaultdict
 from os.path import exists
 from PIL import Image
@@ -50,8 +50,8 @@ def diff(filename, ax, h, tw = 2, bw = 5):
     G = RGBA[:,:,1].flatten()
     B = RGBA[:,:,2].flatten()
     A = RGBA[:,:,3].flatten()
-    vs = [diffHisto(R, G, A), diffHisto(R, B, A), diffHisto(G, B, A), diffHisto(B, ((R + G) / 2), A), threeWayHisto(R, G, B, A)]
-    line = [[th['tr'], th['tg']], [], [], [th['td']], []]
+    vs = [diffHisto(R, G, A), diffHisto(R, B, A), diffHisto(G, B, A)] # , diffHisto(B, ((R + G) / 2), A), threeWayHisto(R, G, B, A)]
+    line = [[th['tr'], th['tg']], [], []] #  [], []]
     assert len(line) == len(vs) and len(ax) == len(line)
     for j in range(len(vs)):
         n = sum(vs[j].values()) # total frequency
@@ -72,17 +72,18 @@ def diff(filename, ax, h, tw = 2, bw = 5):
                 ax[j].axvline(l, lw = tw, color = 'r') # indicate thresholds
 
 classes = ['enhanced', 'green', 'yellow', 'red', 'leafless']
-differences = ['R - G', 'R - B', 'G - B', 'B - (R + G) / 2', 'max. diff.']
+differences = ['R - G', 'R - B', 'G - B'] # , 'B - (R + G) / 2', 'max. diff.']
 dataset = argv[1]
-high = 5.0
 fig, ax = plt.subplots(nrows = len(classes), ncols = len(differences),
-                       figsize=(len(differences) * 3, len(classes) * 3))
+                       figsize=(len(differences) * 3, (len(classes) + 1) * 2))
 
 row = 0 
 for kind in classes:
     filename = f'{dataset}_{kind}.png'
+    high = 0.7
     if kind == 'enhanced':
         filename = f'{dataset}_enhanced.png'
+        high += 1.8
     if exists(filename): # skip empty classes, if any
         print(dataset, kind)        
         diff(filename, ax[row, :], high)

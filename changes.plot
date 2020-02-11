@@ -4,7 +4,7 @@ set ylabel 'Number of changes'
 set xlabel 'Iteration'
 set logscale y
 set yrange [0.5:1000000]
-set xrange [-5:100]
+set xrange [-5:125]
 set xtics 0, 20
 set pointsize 1.2
 plot "<awk '{print FNR,$0}' jun60.log" u 1:2 lw 3 t 'Jun 60m', \

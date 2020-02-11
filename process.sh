@@ -48,6 +48,12 @@ for file in `ls -1 *.tiff`; do
     python3 threshold.py ${dataset}
     python3 majority.py ${dataset}_thresholded.png > ${dataset}.log
 done
+gnuplot changes.plot
 python3 projections.py # update the 2D projections
 python3 collages.py
+python3 test.py > results.txt
+python3 confusion.py results.txt > results.ascii
+python3 confusion.py results.txt tex > results.tex
+fgrep "\\\\" results.tex > conf.tex
+fgrep "$" results.tex | sed 's/$/ \\\\/' > perf.tex
 bash figures.sh # update the manuscript figure files

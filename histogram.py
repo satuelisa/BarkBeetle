@@ -29,7 +29,7 @@ def getPurple(v):
 def getBrown(v):
     return '#%02x%02x%02x' % (v, v // 2, v // 3)
 
-def histo(image, ax, ylim, bw = 5, tw = 2, dark = 1, bright = 254, seglen = 256): 
+def histo(image, ax, ylim, bw = 5, tw = 2, dark = 1, bright = 254, seglen = 256, full = False): 
     histogram = image.histogram()
     for start in range(0, len(histogram), seglen):
         for pos in range(dark): # zero out the dark ones until the desired threshold
@@ -63,27 +63,32 @@ def histo(image, ax, ylim, bw = 5, tw = 2, dark = 1, bright = 254, seglen = 256)
         if l[i] > 0:
             g[i] += l[i]        
             ax[2].bar(i, l[i], width = bw, color = getBlue(i), edgecolor = getBlue(i))
-    ax[2].axvline(thresholds['tb'], lw = tw, color = 'r') # illustrate the blue threshold used in threshold.py        
-    for i in range(dark, bright):
-        if g[i] > 0: # average over the three channels
-            ax[3].bar(i, g[i] / 3, width = bw, color = getGray(i), edgecolor = getGray(i))
-    for i in range(dark, bright):
-        v = min(histogram[i], histogram[i + seglen], histogram[i + 2 * seglen])
-        if v > 0: # minimum over the three channels
-            ax[4].bar(i, v, width = bw, color = getBrown(i), edgecolor = getBrown(i))
-    for i in range(dark, bright):
-        v = max(histogram[i], histogram[i + seglen], histogram[i + 2 * seglen])
-        if v > 0: # maximum over the three channels
-            ax[5].bar(i, v, width = bw, color = getPurple(i), edgecolor = getPurple(i))
+    ax[2].axvline(thresholds['tb'], lw = tw, color = 'r') # illustrate the blue threshold used in threshold.py
+    if full:
+        for i in range(dark, bright):
+            if g[i] > 0: # average over the three channels
+                ax[3].bar(i, g[i] / 3, width = bw, color = getGray(i), edgecolor = getGray(i))
+        for i in range(dark, bright):
+            v = min(histogram[i], histogram[i + seglen], histogram[i + 2 * seglen])
+            if v > 0: # minimum over the three channels
+                ax[4].bar(i, v, width = bw, color = getBrown(i), edgecolor = getBrown(i))
+        for i in range(dark, bright):
+            v = max(histogram[i], histogram[i + seglen], histogram[i + 2 * seglen])
+            if v > 0: # maximum over the three channels
+                ax[5].bar(i, v, width = bw, color = getPurple(i), edgecolor = getPurple(i))
     return True
 
 dataset = argv[1]
 image = Image.open(f'{dataset}_enhanced.png')
 classes = ['green', 'yellow', 'red', 'leafless']
-channels = ['red channel', 'green channel', 'blue channel', 'grayscale', 'minimum', 'maximum']
+channels = ['red channel', 'green channel', 'blue channel']
+
+full = 'full' in argv
+if full:
+    channel +=  ['grayscale', 'minimum', 'maximum']
 
 fig, ax = plt.subplots(nrows = len(classes) + 1, ncols = len(channels),
-                       figsize=(len(channels) * 3, (len(classes) + 1) * 2))
+                       figsize=(len(channels) * 3, (len(classes) + 1) * 3))
 
 # https://stackoverflow.com/questions/25812255/row-and-column-headers-in-matplotlibs-subplots
 for a, c in zip(ax[0], channels): # column titles
@@ -139,8 +144,8 @@ with open('{:s}.map'.format(dataset)) as data:
                 templates[kind].paste(image.crop((xe - r, ye - r, xe + r, ye + r)), pos, mask)
                 originals[kind].paste(orig.crop((x - r, y - r, x + r, y + r)), pos, mask)
 
-high = {'aug100': 1.2, 'aug90': 1.2, 'jul100': 1.2, 'jul90':  1.2, 'jun60': 1.2}
-histo(image, ax[0, :], high[dataset])
+high = {'aug100': 1.5, 'aug90': 1.5, 'jul100': 1.5, 'jul90':  1.5, 'jun60': 1.5}
+histo(image, ax[0, :], high[dataset], full)
 row = 1
 for kind in classes:
     if counts[kind] > 0:

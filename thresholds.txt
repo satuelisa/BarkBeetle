@@ -1,4 +1,3 @@
-tb 150 # pixels with B >= tb are made blue
-td -30 # pixels with B - (R + G) / 2 >= td are also made blue
-tg 0 # pixels with R - G <= tg are made green
-tr 40 # pixels with R - G >= tr are made red
+tb 120 # pixels with B >= tb are made blue
+tg -10 # pixels with R - G <= tg are made green
+tr 80 # pixels with R - G >= tr are made red
