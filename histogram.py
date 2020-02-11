@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-plt.rcParams.update({'font.size': 14})
+plt.rcParams.update({'font.size': 15})
 from PIL import Image, ImageDraw
 from math import ceil, log
 from sys import argv
@@ -22,6 +22,12 @@ def getBlue(v):
 
 def getGray(v):
     return '#%02x%02x%02x' % (v, v, v)
+
+def getPurple(v):
+    return '#%02x%02x%02x' % (v, v // 3, v // 2)
+
+def getBrown(v):
+    return '#%02x%02x%02x' % (v, v // 2, v // 3)
 
 def histo(image, ax, ylim, bw = 5, tw = 2, dark = 1, bright = 254, seglen = 256): 
     histogram = image.histogram()
@@ -52,24 +58,23 @@ def histo(image, ax, ylim, bw = 5, tw = 2, dark = 1, bright = 254, seglen = 256)
         if l[i] > 0:
             g[i] += l[i]        
             ax[1].bar(i, l[i], width = bw, color = getGreen(i), edgecolor = getGreen(i))
-    ax[1].axvline(thresholds['tg'], lw = tw) # illustrate the green threshold used in threshold.py            
     l = histogram[(2 * seglen):] # blue channel
     for i in range(dark, bright):
         if l[i] > 0:
             g[i] += l[i]        
-            ax[2].bar(i, l[i], width = bw, color = getBlue(i), edgecolor = getBlue(i))            
+            ax[2].bar(i, l[i], width = bw, color = getBlue(i), edgecolor = getBlue(i))
+    ax[2].axvline(thresholds['tb'], lw = tw, color = 'r') # illustrate the blue threshold used in threshold.py        
     for i in range(dark, bright):
         if g[i] > 0: # average over the three channels
             ax[3].bar(i, g[i] / 3, width = bw, color = getGray(i), edgecolor = getGray(i))
     for i in range(dark, bright):
         v = min(histogram[i], histogram[i + seglen], histogram[i + 2 * seglen])
         if v > 0: # minimum over the three channels
-            ax[4].bar(i, v, width = bw, color = '#996633', edgecolor = '#996633')
-    ax[4].axvline(thresholds['tl'], lw = tw) # illustrate the lightness threshold used in threshold.py
+            ax[4].bar(i, v, width = bw, color = getBrown(i), edgecolor = getBrown(i))
     for i in range(dark, bright):
         v = max(histogram[i], histogram[i + seglen], histogram[i + 2 * seglen])
         if v > 0: # maximum over the three channels
-            ax[5].bar(i, v, width = bw, color = '#663399', edgecolor = '#663399')
+            ax[5].bar(i, v, width = bw, color = getPurple(i), edgecolor = getPurple(i))
     return True
 
 dataset = argv[1]
@@ -134,7 +139,7 @@ with open('{:s}.map'.format(dataset)) as data:
                 templates[kind].paste(image.crop((xe - r, ye - r, xe + r, ye + r)), pos, mask)
                 originals[kind].paste(orig.crop((x - r, y - r, x + r, y + r)), pos, mask)
 
-high = {'aug100': 3, 'aug90': 2, 'jul100': 5, 'jul90':  4, 'jun60': 4}
+high = {'aug100': 1.2, 'aug90': 1.2, 'jul100': 1.2, 'jul90':  1.2, 'jun60': 1.2}
 histo(image, ax[0, :], high[dataset])
 row = 1
 for kind in classes:

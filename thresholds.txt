@@ -1,6 +1,4 @@
-tl 170 # light SLIGHT ADJUSTMENT PENDING
-tg 110 # green SERIOUS ADJUSTMENT PENDING
-tb 10 # blue SLIGHT ADJUSTMENT PENDING
-tr 30 # red SERIOUS ADJUSTMENT PENDING
-ty -5 # yellow SLIGHT ADJUSTMENT PENDING
-tn 10 # neutral SLIGHT ADJUSTMENT PENDING
+tb 150 # pixels with B >= tb are made blue
+td -30 # pixels with B - (R + G) / 2 >= td are also made blue
+tg 0 # pixels with R - G <= tg are made green
+tr 40 # pixels with R - G >= tr are made red

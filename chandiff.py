@@ -51,7 +51,7 @@ def diff(filename, ax, h, tw = 2, bw = 5):
     B = RGBA[:,:,2].flatten()
     A = RGBA[:,:,3].flatten()
     vs = [diffHisto(R, G, A), diffHisto(R, B, A), diffHisto(G, B, A), diffHisto(B, ((R + G) / 2), A), threeWayHisto(R, G, B, A)]
-    line = [[th['tr'], th['ty']], [], [], [th['tb']], [th['tn']]]
+    line = [[th['tr'], th['tg']], [], [], [th['td']], []]
     assert len(line) == len(vs) and len(ax) == len(line)
     for j in range(len(vs)):
         n = sum(vs[j].values()) # total frequency

@@ -16,6 +16,7 @@ for file in `ls -1 *.tiff`; do
 	echo Enhancing $dataset
 	python3 enhance.py ${dataset} >> offsets.txt # enhance color spectrum
 	rm -f ${dataset}_histo.png # force the extraction to be redone
+	rm -f ${dataset}_diff.png # force the analysis to be redone
     fi
     if [ ! -f ${dataset}_histo.png ]; then
 	echo Analyzing $dataset
@@ -44,7 +45,9 @@ done
 for file in `ls -1 *.tiff`; do
     dataset=`basename $file .tiff`    
     echo Processing $dataset
-    python3 threshold.py ${dataset}    
+    python3 threshold.py ${dataset}
+    python3 majority.py ${dataset}_thresholded.png > ${dataset}.log
 done
 python3 projections.py # update the 2D projections
+python3 collages.py
 bash figures.sh # update the manuscript figure files

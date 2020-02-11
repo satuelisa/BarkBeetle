@@ -9,7 +9,7 @@ def values():
             th[fields[0]] = int(fields[1])
     return th
 
-def threshold(filename, thresholds):
+def threshold(filename, thresholds, outputfile):
     img = Image.open(filename)
     (w, h) = img.size
     pix = img.load()
@@ -19,32 +19,29 @@ def threshold(filename, thresholds):
             r = p[0] # red
             g = p[1] # green
             b = p[2] # blue
-            a = p[3] # alpha (transparency)
-            d = [fabs(r - g), fabs(r - b), fabs(g - b)] # differences
-            light = min(r, g, b) # light if this is a high value
-            dark = max(r, g, b) # dark if this is a low value
-            gray = max(d) # gray-scale if this is a low value
-            if a < 255:
-                pix[x, y] = (0, 0, 0, 0) # transparent 
-            elif b - (r + g) / 2 > thresholds['tb'] or light > thresholds['tl']: # cf. diff. & grayscale histogram
-                pix[x, y] = (0, 0, 255, 255) # blue (leafless); incl. very light pixels
-            elif gray < thresholds['tn']: # cf. maximum histogram
-                pix[x, y] = (0, 0, 0, 0) # gray pixels -> transparent (neutral)
-            elif r - g > thresholds['tr']: # cf. diff. histograms
-                pix[x, y] = (255, 0, 0, 255) # red                
-            elif r - g > thresholds['ty']: # cf. diff. histograms
-                pix[x, y] = (255, 255, 0, 255) # yellow
-            elif g > thresholds['tg']: # cf. green-channel histograms
-                pix[x, y] = (0, 255, 0, 255) # green
+            a = p[3] # alpha 
+            rg = r - g # red minus green
+            if a == 255: # completely opaque pixels only
+                if b > thresholds['tb'] or b - (r + g) / 2  >= thresholds['tb']:
+                    pix[x, y] = (0, 0, 255, 255) # blue (leafless)
+                elif rg >= thresholds['tr']: 
+                    pix[x, y] = (255, 0, 0, 255) # red
+                elif rg <= thresholds['tg']: 
+                    pix[x, y] = (0, 255, 0, 255) # green
+                else:
+                    pix[x, y] = (255, 255, 0, 255) # yellow
             else:
-                pix[x, y] = (0, 0, 0, 0) # black transparent
-    img.save(filename.replace('smaller', 'thresholded'))
+                pix[x, y] = (0, 0, 0, 0) # transparent (black)
+    img.save(outputfile)
     return
 
 if __name__ == '__main__':
     from sys import argv
     dataset = argv[1]
-    threshold(f'{dataset}_smaller.png', values())
+    th = values()
+    threshold(f'{dataset}_enhanced.png', th, f'{dataset}_thresholded.png')
+    for kind in ['green', 'yellow', 'red', 'leafless']:
+        threshold(f'{dataset}_{kind}.png', th, f'{dataset}_thr_{kind}.png')
 
 
         

@@ -2,10 +2,12 @@ import matplotlib.pyplot as plt
 from PIL import Image
 import numpy as np
 
+plt.rcParams.update({'font.size': 18})
+
 def jitter(n, scale = 0.5):
     return scale * (-1 + 2 * np.random.randn(n))
     
-def scatter(title, groups, xl, yl, output):  # based on https://jakevdp.github.io/PythonDataScienceHandbook/04.08-multiple-subplots.html
+def scatter(title, groups, xl, yl, output, show = False):  # based on https://jakevdp.github.io/PythonDataScienceHandbook/04.08-multiple-subplots.html
     fig = plt.figure(figsize = (6, 6))
     ax = fig.add_axes([0, 0, 1, 1])
     grid = plt.GridSpec(4, 4, hspace = 0.1, wspace = 0.1)
@@ -14,11 +16,12 @@ def scatter(title, groups, xl, yl, output):  # based on https://jakevdp.github.i
     hori.invert_xaxis()        
     vert = fig.add_subplot(grid[-1, 1:], yticklabels = [], sharex = main)
     vert.invert_yaxis()
-    plt.text(0.5, 0.9, title, horizontalalignment='center', verticalalignment='center', transform=ax.transAxes)
+    if show:
+        plt.text(0.5, 0.9, title, horizontalalignment='center', verticalalignment='center', transform=ax.transAxes)
     for (x, y, c) in groups:
         assert len(x) == len(y)
         n = len(x)
-        main.plot(x + jitter(n), y + jitter(n), 'o', markersize = 0.5, alpha = 0.5, color = c)
+        main.plot(x + jitter(n), y + jitter(n), 'o', markersize = 0.1, alpha = 0.4, color = c)
         vert.hist(x, 40, histtype = 'stepfilled', orientation = 'vertical', color = c, alpha = 0.5)
         hori.hist(y, 40, histtype = 'stepfilled', orientation = 'horizontal', color = c, alpha = 0.5)
     plt.setp(main.get_xticklabels(), visible=False)
@@ -27,10 +30,11 @@ def scatter(title, groups, xl, yl, output):  # based on https://jakevdp.github.i
     plt.setp(vert.get_xticklabels(), visible=False)
     hori.set_ylabel(yl)
     vert.set_xlabel(xl)
-    plt.savefig(output)
+    ax.axis('off')
+    plt.savefig(output, bbox_inches='tight', pad_inches=0, width=8000)
     plt.close() 
 
-def analyze(pixels, dataset):
+def analyze(pixels):
     # classes
     leafless = pixels['leafless']
     red = pixels['red']
@@ -123,45 +127,73 @@ def analyze(pixels, dataset):
     scatter('Leafless versus others',
             [(minnl, maxnl, '#000000'),
              (minl, maxl, '#0000ff')],
-            'Minimum channel value', 'Maximum channel value', dataset + '_max_vs_min.png')
+            'Minimum channel value', 'Maximum channel value', 'max_vs_min.png')
 
     scatter('Yellow versus red',
             [(rn, rrg, '#ff0000'),
-             (yn, yrg, '#000000')],
-            'Grayscale tone', 'R - G channel difference', dataset + '_gray_vs_rgd.png')
+             (yn, yrg, '#999900')],
+            'Grayscale tone', 'R - G channel difference', 'gray_vs_rgd.png')
 
     scatter('Leafless versus others',
             [(nlb, maxnl, '#000000'),
              (lb, maxl, '#0000ff')],
-            'Blue channel', 'Maximum channel value', dataset + '_blue_vs_maximum.png')
+            'Blue channel', 'Maximum channel value', 'blue_vs_maximum.png')
     
     scatter('Leafless versus others',
             [(nln, nlbarg, '#000000'),
              (ln, lbarg, '#0000ff')],
-            'Grayscale tone', 'B - (R + G) / 2', dataset + '_blue_vs_arg.png')
+            'Grayscale tone', 'B - (R + G) / 2', 'blue_vs_arg.png')
 
     scatter('Green versus yellow',
             [(gg, grg, '#00ff00'),
             (yg, yrg, '#000000')], 
-            'Green channel', 'R - G channel difference', dataset + '_green_vs_rgd.png')
+            'Green channel', 'R - G channel difference', 'green_vs_rgd.png')
+    
+    scatter('Green versus yellow',
+            [(gg, gr, '#00ff00'),
+             (yg, yr, '#000000')], 
+            'Green channel', 'Red channel', 'green_vs_yellow.png')
+    
+    scatter('Green versus red',
+            [(gg, gr, '#00ff00'),
+             (rg, rr, '#aa0000')], 
+            'Green channel', 'Red channel',  'green_vs_red.png')
+    
+    scatter('Yellow versus red',
+            [(yg, yr, '#000000'),
+             (rg, rr, '#aa0000')], 
+            'Green channel', 'Red channel', 'yellow_vs_red.png')
+
+    scatter('Leafless versus green',
+            [(lg, lb, '#0000ff'),
+             (gg, gb, '#00ff00')], 
+            'Green channel', 'Blue channel', 'leafless_vs_green.png')
+    
+    scatter('Leafless versus red',
+            [(lr, lb, '#0000ff'),
+             (rr, rb, '#aa0000')], 
+            'Red channel', 'Blue channel', 'leafless_vs_red.png')
+    
+    scatter('Leafless versus yellow',
+            [(lg, lb, '#0000ff'),
+             (yg, yb, '#000000')], 
+            'Green channel', 'Blue channel', 'leafless_vs_yellow.png')
 
 classes = ['green', 'yellow', 'red', 'leafless']
 datasets = ['jun60', 'jul90', 'jul100', 'aug90', 'aug100']
-for dataset in datasets:
-    pixels = dict() # non-transparent pixels per class
-    for kind in classes:
+pixels = dict()
+for kind in classes:
+    for dataset in datasets:
         image = Image.open(f'{dataset}_{kind}.png')
         a = np.array(image)
         dim = a.shape
-        if len(dim) < 3 or dim[2] < 4:
-            print('Forcing RGBA on', dataset, kind)
-            image = image.convert('RGBA')
-            image.save('{dataset}_{kind}.png')
-            a = np.array(image)                
         a = a[a[:,:,3] > 0] # take the non-transparent ones
         a = a[:, :3] # drop the alpha channel        
-        pixels[kind] = a
-    analyze(pixels, dataset)
+        if kind not in pixels:
+            pixels[kind] = a
+        else:
+            pixels[kind] = np.concatenate((pixels[kind], a), axis = 0)            
+analyze(pixels)
 
 
     
