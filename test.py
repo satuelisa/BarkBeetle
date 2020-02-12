@@ -11,7 +11,7 @@ hl = {
 
 for f in os.listdir('.'):
     fn = os.fsdecode(f)
-    if fn.endswith('_majority.png'):
+    if fn.endswith('_automaton.png'):
         dataset = fn.split('_')[0].split('.')[0]
         offsetX = None
         offsetY = None
@@ -26,7 +26,7 @@ for f in os.listdir('.'):
         assert offsetX is not None
         result = cv2.imread(fn, cv2.IMREAD_UNCHANGED)
         h, w, channels = result.shape
-        orig = cv2.imread(fn.replace('majority', 'cropped')) # the original image with the same cropping
+        orig = cv2.imread(fn.replace('automaton', 'cropped')) # the original image with the same cropping
         trees = dict()
         kind = dict()
         with open('{:s}.map'.format(dataset)) as data:
@@ -73,6 +73,6 @@ for f in os.listdir('.'):
             lp = (x + offsetL, y + offsetL) # label position
             cv2.putText(rc, str(tID), lp, cv2.FONT_HERSHEY_SIMPLEX, 1.5, (240, 0, 240, 255), 2)
             cv2.putText(oc, str(tID), lp, cv2.FONT_HERSHEY_SIMPLEX, 1.5, (240, 0, 240, 255), 2)
-        cv2.imwrite(fn.replace('majority', 'output'), rc)
-        cv2.imwrite(fn.replace('majority', 'origout'), oc)
+        cv2.imwrite(fn.replace('automaton', 'output'), rc)
+        cv2.imwrite(fn.replace('automaton', 'origout'), oc)
 

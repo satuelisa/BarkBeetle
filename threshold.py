@@ -39,9 +39,9 @@ if __name__ == '__main__':
     from sys import argv
     dataset = argv[1]
     th = values()
-    threshold(f'{dataset}_enhanced.png', th, f'{dataset}_thresholded.png')
+    threshold(f'{dataset}_cropped_enhanced.png', th, f'{dataset}_thresholded.png')
     for kind in ['green', 'yellow', 'red', 'leafless']:
-        threshold(f'{dataset}_{kind}.png', th, f'{dataset}_thr_{kind}.png')
+        threshold(f'{dataset}_{kind}_panel.png', th, f'{dataset}_{kind}_thr.png')
 
 
         

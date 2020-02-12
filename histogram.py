@@ -4,12 +4,11 @@ from PIL import Image, ImageDraw
 from math import ceil, log
 from sys import argv
 import numpy as np
+import os.path
 
 from gsd import radius
 from threshold import values
 thresholds = values()
-
-debug = False # mask files are saved in debug mode (to see how round they are)
 
 # histogram extraction based on the code at https://pythontic.com/image-processing/pillow/histogram
 
@@ -81,7 +80,7 @@ def histo(image, ax, ylim, bw = 5, tw = 2, dark = 1, bright = 254, seglen = 256,
     return True
 
 dataset = argv[1]
-image = Image.open(f'{dataset}_enhanced.png')
+image = Image.open(f'{dataset}_cropped_enhanced.png')
 w, h = image.size 
 classes = ['green', 'yellow', 'red', 'leafless']
 channels = ['red channel', 'green channel', 'blue channel']
@@ -105,59 +104,39 @@ ofn =  f'{dataset}_cropped.png'
 orig = Image.open(ofn)
 assert w, h == orig.size # these should match
 
-counts = dict() 
-for kind in classes:
-    templates[kind] = Image.new('RGB', (w, h))
-    originals[kind] = Image.new('RGB', (w, h))
-    counts[kind] = 0
+from collections import defaultdict
+panels = defaultdict(list)
 
-offsetX = None
-offsetY = None
-factor = None
-with open('offsets.txt') as data:
-    for line in data:
-        fields = line.split()
-        if fields[0] == dataset: # do NOT break, use the LAST value (the file gets appended)
-            offsetX = int(fields[1])
-            offsetY = int(fields[2])
-            factor = float(fields[3])
-assert offsetX is not None
-
-r = radius(dataset, factor)
-mask = Image.new("L", (2 * r, 2 * r), 0)
-draw = ImageDraw.Draw(mask)
-draw.ellipse((0, 0, 2 * r, 2 * r), fill = 255)
-if debug:
-    mask.save(f'mask_{r}.png', quality=100)
-
-print('Extracting and analyzing', dataset)
 with open('{:s}.map'.format(dataset)) as data:
     for line in data:
         fields = line.split()        
         if '#' not in line: # skip other comments
-            assert factor is not None
             treeID = int(fields.pop(0))
             if treeID >= 30: # from-image annotations only as the ground-based ones are flight-specific
                 kind = fields.pop(0)
-                x = round(int(fields.pop(0)) / factor) # center x after resizing
-                y = round(int(fields.pop(0)) / factor) # center y after resizing
-                x -= offsetX # the enhanced version was cropped
-                y -= offsetY # also vertically
-                counts[kind] += 1
-                pos = (x, y)
-                templates[kind].paste(image.crop((x - r, y - r, x + r, y + r)), pos, mask)
-                originals[kind].paste(orig.crop((x - r, y - r, x + r, y + r)), pos, mask)
+                filename = f'{dataset}_{kind}_s{treeID}_enhanced.png'
+                if os.path.exists(filename):                
+                    panels[kind].append(filename)
 
 high = {'aug100': 1.5, 'aug90': 1.5, 'jul100': 1.5, 'jul90':  1.5, 'jun60': 1.5}
 histo(image, ax[0, :], high[dataset], full)
 row = 1
 for kind in classes:
-    if counts[kind] > 0:
-        im = templates[kind]
-        if histo(im, ax[row, :], high[dataset]):
+    k = len(panels[kind])
+    if k > 0:
+        h = radius(dataset)
+        w = k * h
+        samples = Image.new('RGBA', (w, h))
+        originals = Image.new('RGBA', (w, h)) # for comparison in the manuscript (collage.py needs this)
+        dx = 0
+        for p in panels[kind]:
+            samples.paste(Image.open(p), (dx, 0))
+            originals.paste(Image.open(p.replace('_enhanced', '')), (dx, 0))
+            dx += h
+        samples.save(f'{dataset}_{kind}_panel.png')
+        originals.save(f'{dataset}_{kind}_orig.png')            
+        if histo(samples, ax[row, :], high[dataset]):
             print(kind)
-            im.save(f'{dataset}_{kind}.png')
-            originals[kind].save(f'{dataset}_orig_{kind}.png')
     row += 1
 fig.tight_layout()
 plt.savefig(f'{dataset}_histo.png') 

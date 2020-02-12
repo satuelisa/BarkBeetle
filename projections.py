@@ -184,7 +184,7 @@ datasets = ['jun60', 'jul90', 'jul100', 'aug90', 'aug100']
 pixels = dict()
 for kind in classes:
     for dataset in datasets:
-        image = Image.open(f'{dataset}_{kind}.png')
+        image = Image.open(f'{dataset}_{kind}_panel.png')
         a = np.array(image)
         dim = a.shape
         a = a[a[:,:,3] > 0] # take the non-transparent ones

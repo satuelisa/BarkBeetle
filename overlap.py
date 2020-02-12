@@ -4,7 +4,7 @@ from sys import argv
 from gsd import radius
 
 dataset = argv[1]
-threshold = 1.5 * radius(dataset)
+threshold = 2 * radius(dataset) # no overlap allowed
 pos = set()
 nID = 31
 with open('{:s}.annot'.format(dataset)) as data:

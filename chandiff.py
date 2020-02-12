@@ -79,10 +79,10 @@ fig, ax = plt.subplots(nrows = len(classes), ncols = len(differences),
 
 row = 0 
 for kind in classes:
-    filename = f'{dataset}_{kind}.png'
+    filename = f'{dataset}_{kind}_panel.png'
     high = 2
     if kind == 'enhanced':
-        filename = f'{dataset}_enhanced.png'
+        filename = f'{dataset}_cropped_enhanced.png'
         high += 3
     if exists(filename): # skip empty classes, if any
         print(dataset, kind)        

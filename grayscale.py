@@ -12,12 +12,12 @@ def bars(h, t, ax, c = 'black', a = 0.6):
 
 # visualize the change in the grayscale tones
 dataset = argv[1]
-orig = Image.open(f'{dataset}_smaller.png')
+orig = Image.open(f'{dataset}_cropped.png')
 w, h = orig.size
 t = w * h
 fig, ax = plt.subplots(figsize = (14, 7)) 
-bars((Image.open(f'{dataset}_smaller.png')).histogram(), t, ax, 'green') # original
-bars((Image.open(f'{dataset}_enhanced.png')).histogram(), t, ax, 'blue') # modified
+bars((Image.open(f'{dataset}_cropped.png')).histogram(), t, ax, 'green') # original
+bars((Image.open(f'{dataset}_cropped_enhanced.png')).histogram(), t, ax, 'blue') # modified
 plt.xlim(0, 255)
 plt.xlabel('Tone of gray', fontsize = 40)
 plt.ylabel('Percent of pixels', fontsize = 40)

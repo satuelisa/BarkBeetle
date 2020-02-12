@@ -30,14 +30,14 @@ def save(a, filename, size = 800):
     
 classes = ['green', 'yellow', 'red', 'leafless']
 datasets = ['jun60', 'jul90', 'jul100', 'aug90', 'aug100']
-for case in ['orig_', '', 'thr_']:
+for case in ['orig', 'panel', 'thr']:
     pixels = dict()
     for kind in classes:
         for dataset in datasets:
-            a = np.array(Image.open(f'{dataset}_{case}{kind}.png'))
+            a = np.array(Image.open(f'{dataset}_{kind}_{case}.png'))
             assert a.shape[2]  == 4
             a = a[a[:,:,3] > 0] # non-transparent pixels only        
             pixels[kind] = np.concatenate((pixels[kind], a), axis = 0) if kind in pixels else a
-        save(pixels[kind], f'{case}{kind}.png')
+        save(pixels[kind], f'{case}_{kind}.png')
     
             

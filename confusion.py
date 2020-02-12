@@ -54,10 +54,9 @@ for (case, matrix) in [('global', overall)] + list(specific.items()):
     accuracy = correct / total
     error = 1 - accuracy
     sep = ' & ' if latex else '\t'
-    e = 'Error' if not latex else 'Overall & $\mathcal{E}$'
-    print(f'{case}{sep}{e}{sep}{error:.2f}')
-    a = 'Accuracy' if not latex else 'Overall & $\mathcal{A}$'    
-    print(f'{case}{sep}{a}{sep}{accuracy:.2f}')
+    e = 'Error' if not latex else ' & $\mathcal{E}$'
+    a = 'Accuracy' if not latex else ' & $\mathcal{A}$'        
+    print(f'{case}{sep}{e}{sep}{error:.2f}{sep}{a}{sep}{accuracy:.2f}')
     for c in classes:
         if c != 'black': 
             tp = matrix.get((c, c), 0) # predicted == expected
@@ -69,13 +68,12 @@ for (case, matrix) in [('global', overall)] + list(specific.items()):
             sensitivity = 0 # when it is the class
             if tp + fn > 0: # success rate in recognizing when the sample belongs in the class
                 sensitivity = tp / (tp + fn)
-                se = 'Sensitivity' if not latex else '$S_e$'
-                print(f'{case}{sep}{c:s}{sep}{se}{sep}{sensitivity:.2f}')
+            se = 'Sensitivity' if not latex else '$S_e$'
             specificity = 0 # when it is not in the class
             if tn + fp > 0: # success rate in recognizing when the sample does not belong in the class
                 specificity = tn / (tn + fp)
-                sp = 'Specificity' if not latex else '$S_p$'
-                print(f'{case}{sep}{c:s}{sep}{sp}{sep}{specificity:.2f}')
+            sp = 'Specificity' if not latex else '$S_p$'
+            print(f'{sep}{c:s}{sep}{se}{sep}{sensitivity:.2f}{sep}{c:s}{sep}{sp}{sep}{specificity:.2f}')
     display(case, matrix, order, latex)
 
 

@@ -1,6 +1,6 @@
 width=2000
 date > start_time.txt
-python3 radius.py
+python3 radius.py > radius.dat
 for file in `ls -1 *.tiff`; do
     dataset=`basename $file .tiff`
     if [ ! -f ${dataset}.map ]; then    
@@ -10,6 +10,16 @@ for file in `ls -1 *.tiff`; do
 	echo "Validating $dataset"
 	python3 validate.py $dataset # check the annotation locations by class
     fi
+    python3 closeup.py ${dataset} # individual samples
+    python3 extract.py ${dataset}        
+    echo GREEN
+    ls -lh *_green_t*.png | wc -l
+    echo YELLOW
+    ls -lh *_yellow_t*.png | wc -l
+    echo RED
+    ls -lh *_red_t*.png | wc -l
+    echo LEAFLESS
+    ls -lh *_leafless_t*.png | wc -l 
     if [ ! -f ${dataset}_smaller.png ]; then # resize for efficiency
 	echo "Resizing to a width of $width pixels"
 	convert -resize ${width}x -transparent black $file ${dataset}_smaller.png # ensure RGBA with black transparent
@@ -23,25 +33,13 @@ for file in `ls -1 *.tiff`; do
 	rm -f ${dataset}_thresholded.png # force the processing to be redone
 	python3 grayscale.py ${dataset} # a figure for the manuscript
     fi
+
     if [ ! -f ${dataset}_histo.png ]; then
 	echo "Analyzing $dataset"
 	python3 histogram.py ${dataset}
-	for file in `ls -1 ${dataset}_orig_*.png`; do
-	    convert -transparent black $file $file
-	    convert -trim $file $file
-	done
-	convert -transparent black ${dataset}_green.png ${dataset}_green.png
-	convert -transparent black ${dataset}_yellow.png ${dataset}_yellow.png
-	convert -transparent black ${dataset}_red.png ${dataset}_red.png
-	convert -transparent black ${dataset}_leafless.png ${dataset}_leafless.png
-	convert -trim ${dataset}_green.png ${dataset}_green.png
-	convert -trim ${dataset}_yellow.png ${dataset}_yellow.png
-	convert -trim ${dataset}_red.png ${dataset}_red.png
-	convert -trim ${dataset}_leafless.png ${dataset}_leafless.png
     fi
 done
-echo 'SAMPLE COUNTS'
-cat *.map | awk '{if ($1 > 30) {print $2}}' | sort | uniq -c
+python3 examples.py 
 for file in `ls -1 *.tiff`; do 
     dataset=`basename $file .tiff`
     if [ ! -f ${dataset}_diff.png ]; then
@@ -49,6 +47,7 @@ for file in `ls -1 *.tiff`; do
 	python3 chandiff.py ${dataset}
     fi
 done
+python3 projections.py # update the 2D projections
 echo 'Characterization concluded'
 for file in `ls -1 *.tiff`; do
     dataset=`basename $file .tiff`
@@ -61,17 +60,14 @@ for file in `ls -1 *.tiff`; do
 	python3 automaton.py ${dataset}_thresholded.png > ${dataset}.log
     fi
 done
+python3 collages.py # update the pixel collages
 echo "Evaluating the results"
 python3 test.py > results.txt
 python3 confusion.py results.txt # just to see
-echo "Updating figures for the manuscript"
-python3 projections.py # update the 2D projections
-python3 collages.py # update the pixel collages
 python3 confusion.py results.txt tex > results.tex # redo the reesults in LaTeX
 gnuplot changes.plot
 fgrep "\\\\" results.tex > conf.tex
 fgrep "$" results.tex | sed 's/$/ \\\\/' > perf.tex
 bash figures.sh # update the manuscript figure files
-wc -l *.map # how many non-overlapping annotations there were
 date > end_time.txt
 
