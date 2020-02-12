@@ -1,22 +1,14 @@
-import matplotlib.pyplot as plt
 from sys import argv, stderr
 from math import ceil, floor
-from PIL import Image
 import numpy as np
 import cv2
 
 from gsd import radius
 
-def bars(h, t, ax, c = 'black', a = 0.6):
-    g = [100 * (h[i] + h[i + 256] + h[i + 512]) / (3 *  t) for i in range(256)] # channel avg
-    for i in range(1, 255): # skip all black that corresponds to transparent background
-        if g[i] > 0: 
-            ax.bar(i, g[i], width = 1, color = c, edgecolor = c, alpha = a)
-
 dataset = argv[1]
-img = Image.open(f'{dataset}_smaller.png') # filename as a command-line argument
-imgAr = np.array(img)
-(h, w, c) = imgAr.shape
+print('enhancing', dataset, file = stderr)
+img = cv2.imread(f'{dataset}_smaller.png')
+(h, w, c) = img.shape
 xMin = w
 xMax = 0
 yMin = h
@@ -38,63 +30,51 @@ with open('{:s}.map'.format(dataset)) as data:
             yMin = min(y, yMin)
             yMax = max(y, yMax)
 print('trees located', file = stderr)            
-m = 2 * radius(dataset, factor) # a margin to ensure that the border annotations will be complete
-xMin = max(xMin - m, 0)
-yMin = max(yMin - m, 0)
-xMax = max(xMax + m, w)
-yMax = max(yMax + m, h)
-xMin = int(floor(xMin / factor))
-yMin = int(floor(yMin/ factor))
-xMax = int(ceil(xMax / factor))
-yMax = int(ceil(yMax / factor))
+m = 3 * radius(dataset, factor) # a margin to ensure that the border annotations will be complete
+xMin = max(int(floor(xMin / factor)) - m, 0)
+yMin = max(int(floor(yMin/ factor)) - m, 0)
+xMax = min(int(ceil(xMax / factor)) + m,  w)
+yMax = min(int(ceil(yMax / factor)) + m, h)
 print(dataset, xMin, yMin, factor) # output the offsets and the scaling factor
-imgAr = np.array(img.crop((xMin, yMin, xMax, yMax)))
-(h, w, c) = imgAr.shape
+img = img[yMin:yMax, xMin:xMax] # crop
+cv2.imwrite(f'{dataset}_cropped.png', img) # save cropped version for future use
+h, w, ch = img.shape
 assert w == xMax - xMin
 assert h == yMax - yMin
-if c == 4:
-    imgAr = np.delete(imgAr, 3, 2) # drop the original alpha channel if present
+if ch == 4:
+    img = np.delete(img, 3, 2) # drop the original alpha channel if present
     print('alpha channel dropped', file = stderr)
 print(f'creating a {h}x{w} template', file = stderr)    
 a = np.full((h, w), 255, dtype = 'uint8')
 threshold = 350 # a darkness threshold below which pixels are made transparent (background) (420 was too high)
 for x in range(w): 
     for y in range(h):
-        if sum(imgAr[y, x]) < threshold: # discard the shadows / ground
+        if sum(img[y, x]) < threshold: # discard the shadows / ground
             a[y, x] = 0 # transparent
-            imgAr[y, x] = [0, 0, 0] # black
+            img[y, x] = [0, 0, 0] # black
 print('ground removed', file = stderr)
-avg = np.mean(np.asarray(imgAr), axis = 2)
+avg = np.mean(np.asarray(img), axis = 2)
 q = np.quantile(avg[avg > 0], [0.05, 0.50, 0.95]) # ignore black/transparent
 low = int(q[0])
 med = int(q[1])
 high = int(q[2])
-cvImg = imgAr[:, :, ::-1].copy() # order as BGR for OpenCV
-h, w, ch = cvImg.shape
+h, w, ch = img.shape
 assert ch == 3
-(hue, s, v) = cv2.split(cv2.cvtColor(cvImg, cv2.COLOR_BGR2HSV)) 
+(hue, s, v) = cv2.split(cv2.cvtColor(img, cv2.COLOR_BGR2HSV)) 
 brightness = int(np.mean(v)) - med # brightness adjustment
 contrast = low - high + 100 # contrast adjustment
 saturation = 100 - int(np.mean(s)) # increase saturation to better distinguish tones
 hsv = cv2.merge([hue, np.clip(s + saturation, 0, 255), v]) # incorporate adjusted saturation
-cvImg = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR) # return to BGR
+img = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR) # return to BGR
+print('applying HSV adjustments', file =  stderr)
 for x in range(w): # apply brightness and contrast adjustments
     for y in range(h):
-        pixel = cvImg[y, x]
+        pixel = img[y, x]
         pixel = pixel * ((255 - brightness) / 255) + brightness
         f = (131 * (contrast + 127)) / (127 * (131 - contrast))
-        cvImg[y, x] = np.clip(pixel * f + (127 * (1 - f)), 0, 255)
-b, g, r = cv2.split(cvImg)
+        img[y, x] = np.clip(pixel * f + (127 * (1 - f)), 0, 255)
 print('adjustments done', file = stderr)
+b, g, r = cv2.split(img)
 assert b.shape == a.shape and b.dtype == a.dtype
-t = w * h
-fig, ax = plt.subplots(figsize = (14, 7)) # plot grayscale histograms of original and modified
-bars(img.histogram(), t, ax, 'green')
-bars((Image.fromarray(cvImg)).histogram(), t, ax, 'blue')
-plt.xlim(0, 255)
-plt.xlabel('Tone of gray', fontsize = 40)
-plt.ylabel('Percent of pixels', fontsize = 40)
-plt.savefig(f'{dataset}_eh.png')
-print('histogram saved', file = stderr)
 RGBA = cv2.merge([b, g, r, a], 4) # add alpha channel
 cv2.imwrite(f'{dataset}_enhanced.png', RGBA) # save file

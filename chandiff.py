@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-plt.rcParams.update({'font.size': 15})
+plt.rcParams.update({'font.size': 12})
 from collections import defaultdict
 from os.path import exists
 from PIL import Image
@@ -80,10 +80,10 @@ fig, ax = plt.subplots(nrows = len(classes), ncols = len(differences),
 row = 0 
 for kind in classes:
     filename = f'{dataset}_{kind}.png'
-    high = 0.7
+    high = 2
     if kind == 'enhanced':
         filename = f'{dataset}_enhanced.png'
-        high += 1.8
+        high += 3
     if exists(filename): # skip empty classes, if any
         print(dataset, kind)        
         diff(filename, ax[row, :], high)

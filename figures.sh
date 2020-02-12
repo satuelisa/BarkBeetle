@@ -1,7 +1,10 @@
+# this script assumes the figures to go into the parent folder
 cp diameter.png ../fig1a.png # tree spans
 cp difference.png ../fig1b.png # span difference
 
-cp aug100_validation.png ../fig2_raw.png # example validation
+cp aug100_validation.png fig2_raw.png # example validation
+convert -transparent black -resize 1000x fig2_raw.png fig2_small.png
+convert -transparent black -crop 400x400+200+205 fig2_small.png ../fig2.png
 
 cp jun60_smaller.png ../fig3a.png # scaled down, no processing
 cp jul90_smaller.png ../fig3b.png # scaled down, no processing

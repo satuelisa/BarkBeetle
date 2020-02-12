@@ -9,6 +9,8 @@ from gsd import radius
 from threshold import values
 thresholds = values()
 
+debug = False # mask files are saved in debug mode (to see how round they are)
+
 # histogram extraction based on the code at https://pythontic.com/image-processing/pillow/histogram
 
 def getRed(v):
@@ -63,7 +65,7 @@ def histo(image, ax, ylim, bw = 5, tw = 2, dark = 1, bright = 254, seglen = 256,
         if l[i] > 0:
             g[i] += l[i]        
             ax[2].bar(i, l[i], width = bw, color = getBlue(i), edgecolor = getBlue(i))
-    ax[2].axvline(thresholds['tb'], lw = tw, color = 'r') # illustrate the blue threshold used in threshold.py
+    ax[2].axvline(thresholds['tb'], lw = tw, color = 'r') # the blue threshold used in threshold.py
     if full:
         for i in range(dark, bright):
             if g[i] > 0: # average over the three channels
@@ -80,6 +82,7 @@ def histo(image, ax, ylim, bw = 5, tw = 2, dark = 1, bright = 254, seglen = 256,
 
 dataset = argv[1]
 image = Image.open(f'{dataset}_enhanced.png')
+w, h = image.size 
 classes = ['green', 'yellow', 'red', 'leafless']
 channels = ['red channel', 'green channel', 'blue channel']
 
@@ -98,9 +101,9 @@ for a, c in zip(ax[:, 0], ['enhanced'] + classes): # row titles
 
 templates = dict() # store the cut-out versions of the enhanced images
 originals = dict() # for comparison, also cut out the same regions of the original orthomosaics
-ofn =  f'{dataset}_smaller.png'
+ofn =  f'{dataset}_cropped.png'
 orig = Image.open(ofn)
-w, h = orig.size # possibly larger of the two
+assert w, h == orig.size # these should match
 
 counts = dict() 
 for kind in classes:
@@ -124,7 +127,8 @@ r = radius(dataset, factor)
 mask = Image.new("L", (2 * r, 2 * r), 0)
 draw = ImageDraw.Draw(mask)
 draw.ellipse((0, 0, 2 * r, 2 * r), fill = 255)
-# mask.save(f'mask_{r}.png', quality=100)
+if debug:
+    mask.save(f'mask_{r}.png', quality=100)
 
 print('Extracting and analyzing', dataset)
 with open('{:s}.map'.format(dataset)) as data:
@@ -137,11 +141,11 @@ with open('{:s}.map'.format(dataset)) as data:
                 kind = fields.pop(0)
                 x = round(int(fields.pop(0)) / factor) # center x after resizing
                 y = round(int(fields.pop(0)) / factor) # center y after resizing
-                xe = x - offsetX # the enhanced version was cropped
-                ye = y - offsetY # also vertically
+                x -= offsetX # the enhanced version was cropped
+                y -= offsetY # also vertically
                 counts[kind] += 1
                 pos = (x, y)
-                templates[kind].paste(image.crop((xe - r, ye - r, xe + r, ye + r)), pos, mask)
+                templates[kind].paste(image.crop((x - r, y - r, x + r, y + r)), pos, mask)
                 originals[kind].paste(orig.crop((x - r, y - r, x + r, y + r)), pos, mask)
 
 high = {'aug100': 1.5, 'aug90': 1.5, 'jul100': 1.5, 'jul90':  1.5, 'jun60': 1.5}

@@ -33,6 +33,7 @@ lw = 20
 air = img.copy()
 ground = img.copy()
 both = img.copy()
+offset = int(1.2 * r)
 for (tID, tree, label, source) in trees:
     c = color[label]
     (x, y) = tree
@@ -44,9 +45,10 @@ for (tID, tree, label, source) in trees:
         cv2.circle(air, tree, r, c, lw)
         cv2.circle(both, tree, r, c, lw)
     # text labels in all three
-    cv2.putText(air, str(tID), tree, cv2.FONT_HERSHEY_SIMPLEX, 4.0, (240, 0, 240, 255), 8)
-    cv2.putText(ground, str(tID), tree, cv2.FONT_HERSHEY_SIMPLEX, 4.0, (240, 0, 240, 255), 8)
-    cv2.putText(both, str(tID), tree, cv2.FONT_HERSHEY_SIMPLEX, 4.0, (240, 0, 240, 255), 8)                
+    lp = (x + offset, y + offset)
+    cv2.putText(air, str(tID), lp, cv2.FONT_HERSHEY_SIMPLEX, 5.0, (240, 0, 240, 255), 12)
+    cv2.putText(ground, str(tID), lp, cv2.FONT_HERSHEY_SIMPLEX, 5.0, (240, 0, 240, 255), 12)
+    cv2.putText(both, str(tID), lp, cv2.FONT_HERSHEY_SIMPLEX, 5.0, (240, 0, 240, 255), 12)                
 cv2.imwrite(f'{dataset}_validation_air.png', air)
 cv2.imwrite(f'{dataset}_validation_ground.png', ground)
 cv2.imwrite(f'{dataset}_validation.png', both)
