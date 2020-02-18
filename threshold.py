@@ -1,5 +1,9 @@
 from math import fabs
 from PIL import Image
+import warnings
+
+# metadata causes this
+warnings.simplefilter('ignore', Image.DecompressionBombWarning)
 
 def values():
     th = dict()
@@ -20,13 +24,19 @@ def threshold(filename, thresholds, outputfile):
             g = p[1] # green
             b = p[2] # blue
             a = p[3] # alpha 
-            rg = r - g # red minus green
+            rg = r - g 
+            rb = r - b 
+            gb = g - b
             if a == 255: # completely opaque pixels only
-                if b > thresholds['tb']:
+                if max(r, g, b) < thresholds['td']: # dark
+                    pix[x, y] = (0, 0, 0, 0) # shadows
+                elif max(fabs(rg), fabs(rb), fabs(gb)) < thresholds['tm']: # gray
+                    pix[x, y] = (0, 0, 0, 0) # ground
+                elif b > thresholds['tb']:
                     pix[x, y] = (0, 0, 255, 255) # blue (leafless)
-                elif rg >= thresholds['tr']: 
+                elif rg > thresholds['tr']: 
                     pix[x, y] = (255, 0, 0, 255) # red
-                elif rg <= thresholds['tg']: 
+                elif rg < thresholds['tg']: 
                     pix[x, y] = (0, 255, 0, 255) # green
                 else:
                     pix[x, y] = (255, 255, 0, 255) # yellow
@@ -39,11 +49,4 @@ if __name__ == '__main__':
     from sys import argv
     dataset = argv[1]
     th = values()
-    threshold(f'{dataset}_cropped_enhanced.png', th, f'{dataset}_thresholded.png')
-    for kind in ['green', 'yellow', 'red', 'leafless']:
-        threshold(f'{dataset}_{kind}_panel.png', th, f'{dataset}_{kind}_thr.png')
-
-
-        
-
-
+    threshold(f'scaled/enhanced/{dataset}.png', th, f'thresholded/{dataset}.png')

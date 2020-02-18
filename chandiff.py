@@ -60,7 +60,7 @@ def diff(filename, ax, h, tw = 2, bw = 5):
         else:
             norm = 100 / n # as percentages of the total
             if matchText:
-                ax[j].text(-240, 0.9 * h, '{0:.2}% exact'.format(norm * vs[j][0]))
+                ax[j].text(-240, 0.9 * h, '{0:.2}%'.format(norm * vs[j][0]))
             ax[j].set_ylim(0, h)            
             for i in range(-255, 255):
                 if matchText and i == 0: # put the exact matches on a label
@@ -79,14 +79,11 @@ fig, ax = plt.subplots(nrows = len(classes), ncols = len(differences),
 
 row = 0 
 for kind in classes:
-    filename = f'{dataset}_{kind}_panel.png'
-    high = 2
-    if kind == 'enhanced':
-        filename = f'{dataset}_cropped_enhanced.png'
-        high += 3
+    filename = f'composite/enhanced/{dataset}.png'
+    if kind != 'enhanced': # not the whole image
+        filename = filename.replace('.png', f'_{kind}.png')
     if exists(filename): # skip empty classes, if any
-        print(dataset, kind)        
-        diff(filename, ax[row, :], high)
+        diff(filename, ax[row, :], 3 if '_' in filename else 5)
     row += 1
 
 for a, c in zip(ax[0], differences): 
@@ -96,7 +93,7 @@ for a, c in zip(ax[:, 0], classes):
 for r in range(len(classes)):
     for c in range(len(differences)):
         a = ax[r, c]
-        a.set_xlim(-270, 270)
+        a.set_xlim(-100, 100)
         a.set_xticks(tics)
 plt.tight_layout()
-plt.savefig(f'{dataset}_diff.png') 
+plt.savefig(f'histograms/{dataset}_diff.png') 

@@ -1,4 +1,3 @@
-from math import ceil
 from sys import argv
 import cv2
 
@@ -19,8 +18,8 @@ color = {'red': (0, 0, 255, 255), 'green': (0, 255, 0, 255),
 dataset = argv[1]
 r = radius(dataset)
 trees = []
-img = cv2.imread('{:s}.tiff'.format(dataset))
-with open('{:s}.map'.format(dataset)) as data:
+img = cv2.imread('orthomosaics/{:s}.png'.format(dataset))
+with open('annotations/{:s}.map'.format(dataset)) as data:
     for line in data:
         if '#' not in line:
             fields = line.split()
@@ -49,7 +48,7 @@ for (tID, tree, label, source) in trees:
     cv2.putText(air, str(tID), lp, cv2.FONT_HERSHEY_SIMPLEX, 5.0, (240, 0, 240, 255), 12)
     cv2.putText(ground, str(tID), lp, cv2.FONT_HERSHEY_SIMPLEX, 5.0, (240, 0, 240, 255), 12)
     cv2.putText(both, str(tID), lp, cv2.FONT_HERSHEY_SIMPLEX, 5.0, (240, 0, 240, 255), 12)                
-cv2.imwrite(f'{dataset}_validation_air.png', air)
-cv2.imwrite(f'{dataset}_validation_ground.png', ground)
-cv2.imwrite(f'{dataset}_validation.png', both)
+cv2.imwrite(f'validation/{dataset}_air.png', air)
+cv2.imwrite(f'validation/{dataset}_ground.png', ground)
+cv2.imwrite(f'validation/{dataset}.png', both)
         

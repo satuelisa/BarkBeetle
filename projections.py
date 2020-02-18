@@ -6,8 +6,9 @@ plt.rcParams.update({'font.size': 18})
 
 def jitter(n, scale = 0.5):
     return scale * (-1 + 2 * np.random.randn(n))
-    
-def scatter(title, groups, xl, yl, output, show = False):  # based on https://jakevdp.github.io/PythonDataScienceHandbook/04.08-multiple-subplots.html
+
+# scatter plots based on https://jakevdp.github.io/PythonDataScienceHandbook/04.08-multiple-subplots.html
+def scatter(title, groups, xl, yl, output, show = False):  
     fig = plt.figure(figsize = (6, 6))
     ax = fig.add_axes([0, 0, 1, 1])
     grid = plt.GridSpec(4, 4, hspace = 0.1, wspace = 0.1)
@@ -21,9 +22,9 @@ def scatter(title, groups, xl, yl, output, show = False):  # based on https://ja
     for (x, y, c) in groups:
         assert len(x) == len(y)
         n = len(x)
-        main.plot(x + jitter(n), y + jitter(n), 'o', markersize = 0.1, alpha = 0.4, color = c)
-        vert.hist(x, 40, histtype = 'stepfilled', orientation = 'vertical', color = c, alpha = 0.5)
-        hori.hist(y, 40, histtype = 'stepfilled', orientation = 'horizontal', color = c, alpha = 0.5)
+        main.plot(x + jitter(n), y + jitter(n), 'o', markersize = 0.05, alpha = 0.3, color = c)
+        vert.hist(x, 40, histtype = 'stepfilled', orientation = 'vertical', color = c, alpha = 0.3)
+        hori.hist(y, 40, histtype = 'stepfilled', orientation = 'horizontal', color = c, alpha = 0.3)
     plt.setp(main.get_xticklabels(), visible=False)
     plt.setp(main.get_yticklabels(), visible=False)
     plt.setp(hori.get_yticklabels(), visible=False)
@@ -31,7 +32,7 @@ def scatter(title, groups, xl, yl, output, show = False):  # based on https://ja
     hori.set_ylabel(yl)
     vert.set_xlabel(xl)
     ax.axis('off')
-    plt.savefig(output, bbox_inches='tight', pad_inches=0, width=8000)
+    plt.savefig('projections/' + output, bbox_inches='tight', pad_inches=0, width=8000)
     plt.close() 
 
 def analyze(pixels):
@@ -179,21 +180,9 @@ def analyze(pixels):
              (yg, yb, '#000000')], 
             'Green channel', 'Blue channel', 'leafless_vs_yellow.png')
 
-classes = ['green', 'yellow', 'red', 'leafless']
-datasets = ['jun60', 'jul90', 'jul100', 'aug90', 'aug100']
 pixels = dict()
-for kind in classes:
-    for dataset in datasets:
-        image = Image.open(f'{dataset}_{kind}_panel.png')
-        a = np.array(image)
-        dim = a.shape
-        a = a[a[:,:,3] > 0] # take the non-transparent ones
-        a = a[:, :3] # drop the alpha channel        
-        if kind not in pixels:
-            pixels[kind] = a
-        else:
-            pixels[kind] = np.concatenate((pixels[kind], a), axis = 0)            
+for kind in ['green', 'yellow', 'red', 'leafless']:
+    a = np.array(Image.open(f'composite/enhanced/{kind}.png'))
+    a = a[a[:,:,3] > 0] # take the non-transparent ones
+    pixels[kind] = a[:, :3] # drop the alpha channel        
 analyze(pixels)
-
-
-    

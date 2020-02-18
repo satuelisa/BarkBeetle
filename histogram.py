@@ -1,10 +1,8 @@
 import matplotlib.pyplot as plt
 plt.rcParams.update({'font.size': 15})
-from PIL import Image, ImageDraw
-from math import ceil, log
+from PIL import Image
 from sys import argv
 import numpy as np
-import os.path
 
 from gsd import radius
 from threshold import values
@@ -30,8 +28,8 @@ def getPurple(v):
 def getBrown(v):
     return '#%02x%02x%02x' % (v, v // 2, v // 3)
 
-def histo(image, ax, ylim, bw = 5, tw = 2, dark = 1, bright = 254, seglen = 256, full = False): 
-    histogram = image.histogram()
+def histo(filename, ax, ylim, bw = 5, tw = 2, dark = 1, bright = 254, seglen = 256, minmax = False): 
+    histogram = Image.open(filename).histogram()
     for start in range(0, len(histogram), seglen):
         for pos in range(dark): # zero out the dark ones until the desired threshold
             histogram[start + pos] = 0
@@ -65,10 +63,10 @@ def histo(image, ax, ylim, bw = 5, tw = 2, dark = 1, bright = 254, seglen = 256,
             g[i] += l[i]        
             ax[2].bar(i, l[i], width = bw, color = getBlue(i), edgecolor = getBlue(i))
     ax[2].axvline(thresholds['tb'], lw = tw, color = 'r') # the blue threshold used in threshold.py
-    if full:
-        for i in range(dark, bright):
-            if g[i] > 0: # average over the three channels
-                ax[3].bar(i, g[i] / 3, width = bw, color = getGray(i), edgecolor = getGray(i))
+    for i in range(dark, bright):
+        if g[i] > 0: # average over the three channels
+            ax[3].bar(i, g[i] / 3, width = bw, color = getGray(i), edgecolor = getGray(i))
+    if minmax:
         for i in range(dark, bright):
             v = min(histogram[i], histogram[i + seglen], histogram[i + 2 * seglen])
             if v > 0: # minimum over the three channels
@@ -80,14 +78,11 @@ def histo(image, ax, ylim, bw = 5, tw = 2, dark = 1, bright = 254, seglen = 256,
     return True
 
 dataset = argv[1]
-image = Image.open(f'{dataset}_cropped_enhanced.png')
-w, h = image.size 
 classes = ['green', 'yellow', 'red', 'leafless']
-channels = ['red channel', 'green channel', 'blue channel']
-
-full = 'full' in argv
-if full:
-    channel +=  ['grayscale', 'minimum', 'maximum']
+channels = ['red channel', 'green channel', 'blue channel', 'grayscale']
+minmax = 'minmax' in argv
+if minmax:
+    channel +=  ['minimum', 'maximum']
 
 fig, ax = plt.subplots(nrows = len(classes) + 1, ncols = len(channels),
                        figsize=(len(channels) * 3, (len(classes) + 1) * 3))
@@ -98,45 +93,13 @@ for a, c in zip(ax[0], channels): # column titles
 for a, c in zip(ax[:, 0], ['enhanced'] + classes): # row titles
     a.set_ylabel(c, rotation = 90, size = 'large')
 
-templates = dict() # store the cut-out versions of the enhanced images
-originals = dict() # for comparison, also cut out the same regions of the original orthomosaics
-ofn =  f'{dataset}_cropped.png'
-orig = Image.open(ofn)
-assert w, h == orig.size # these should match
+high = dict() # no exceptions
 
-from collections import defaultdict
-panels = defaultdict(list)
-
-with open('{:s}.map'.format(dataset)) as data:
-    for line in data:
-        fields = line.split()        
-        if '#' not in line: # skip other comments
-            treeID = int(fields.pop(0))
-            if treeID >= 30: # from-image annotations only as the ground-based ones are flight-specific
-                kind = fields.pop(0)
-                filename = f'{dataset}_{kind}_s{treeID}_enhanced.png'
-                if os.path.exists(filename):                
-                    panels[kind].append(filename)
-
-high = {'aug100': 1.5, 'aug90': 1.5, 'jul100': 1.5, 'jul90':  1.5, 'jun60': 1.5}
-histo(image, ax[0, :], high[dataset], full)
+histo(f'composite/enhanced/{dataset}.png', ax[0, :], high.get(dataset, 1.5), minmax)
 row = 1
 for kind in classes:
-    k = len(panels[kind])
-    if k > 0:
-        h = radius(dataset)
-        w = k * h
-        samples = Image.new('RGBA', (w, h))
-        originals = Image.new('RGBA', (w, h)) # for comparison in the manuscript (collage.py needs this)
-        dx = 0
-        for p in panels[kind]:
-            samples.paste(Image.open(p), (dx, 0))
-            originals.paste(Image.open(p.replace('_enhanced', '')), (dx, 0))
-            dx += h
-        samples.save(f'{dataset}_{kind}_panel.png')
-        originals.save(f'{dataset}_{kind}_orig.png')            
-        if histo(samples, ax[row, :], high[dataset]):
-            print(kind)
+    if histo(f'composite/enhanced/{dataset}_{kind}.png', ax[row, :], high.get(dataset, 1.5), minmax):
+        print(kind, 'present in', dataset)
     row += 1
 fig.tight_layout()
-plt.savefig(f'{dataset}_histo.png') 
+plt.savefig(f'histograms/{dataset}.png') 

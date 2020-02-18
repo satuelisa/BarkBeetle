@@ -1,8 +1,12 @@
 import matplotlib.pyplot as plt
 from PIL import Image
 from sys import argv
+import warnings
 
-plt.rcParams.update({'font.size': 25})
+# metadata causes this
+warnings.simplefilter('ignore', Image.DecompressionBombWarning)
+
+plt.rcParams.update({'font.size': 14})
 
 def bars(h, t, ax, c = 'black', a = 0.6):
     g = [100 * (h[i] + h[i + 256] + h[i + 512]) / (3 *  t) for i in range(256)] # channel avg
@@ -12,14 +16,15 @@ def bars(h, t, ax, c = 'black', a = 0.6):
 
 # visualize the change in the grayscale tones
 dataset = argv[1]
-orig = Image.open(f'{dataset}_cropped.png')
+orig = Image.open(f'orthomosaics/{dataset}.png')
 w, h = orig.size
 t = w * h
 fig, ax = plt.subplots(figsize = (14, 7)) 
-bars((Image.open(f'{dataset}_cropped.png')).histogram(), t, ax, 'green') # original
-bars((Image.open(f'{dataset}_cropped_enhanced.png')).histogram(), t, ax, 'blue') # modified
+bars(orig.histogram(), t, ax, 'green') # original
+bars((Image.open(f'enhanced/{dataset}.png')).histogram(), t, ax, 'blue') # modified
 plt.xlim(0, 255)
 plt.xlabel('Tone of gray', fontsize = 40)
 plt.ylabel('Percent of pixels', fontsize = 40)
-plt.savefig(f'{dataset}_eh.png')
+fig.tight_layout()
+plt.savefig(f'histograms/{dataset}_uniform.png')
 

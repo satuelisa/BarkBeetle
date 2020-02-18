@@ -1,6 +1,10 @@
 from os import popen # for the GIF
 from PIL import Image
 from collections import defaultdict
+import warnings
+
+# metadata causes this
+warnings.simplefilter('ignore', Image.DecompressionBombWarning)
 
 red = (255, 0, 0, 255)
 green = (0, 255, 0, 255)
@@ -18,8 +22,8 @@ def pick(colors, k):
             return o
     return None # keep the old one
 
-def colfreq(filename, rad = 2, k = 4):
-    dataset = filename.split('_')[0]
+def colfreq(dataset, rad = 2, k = 4):
+    filename = 'thresholded/' + dataset + '.png'    
     img = Image.open(filename)
     (w, h) = img.size
     threshold = int((w * h) / 10000)
@@ -56,9 +60,9 @@ def colfreq(filename, rad = 2, k = 4):
                         stable.add((x, y)) # no change
                         update[x, y] = p
         if changes < threshold:
-            img.save(filename.replace('thresholded', 'automaton'))
-            if gif:
-                popen(f'convert -delay 50 {dataset}_frame_*.png -loop 0 {dataset}.gif') # requiere ImageMagick
+            img.save(f'automaton/{dataset}.png') # final stage
+            if gif: # build an animated GIF with ImageMagick
+                popen(f'convert -delay 50 automaton/frames/{dataset}_*.png -loop 0 automaton/{dataset}.gif') 
             return
         pix, update = update, pix # swap
         img, tmp = tmp, img
@@ -68,7 +72,7 @@ def colfreq(filename, rad = 2, k = 4):
             input('Press enter to continue')
         if gif:
             iteration += 1
-            frame = f'{dataset}_frame_{iteration:04}.png'
+            frame = f'automaton/frames/{dataset}_{iteration:04}.png'
             print(frame)
             img.resize((300, 300)).save(frame)
 

@@ -1,3 +1,5 @@
-tb 140 # pixels with B >= tb are made blue
-tg 0 # pixels with R - G <= tg are made green
+tb 120 # pixels with B >= tb are made blue
+tg 10 # pixels with R - G <= tg are made green
 tr 95 # pixels with R - G >= tr are made red
+td 40 # darkness threshold 
+tm 10 # monotone threshold
