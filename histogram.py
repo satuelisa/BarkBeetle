@@ -28,7 +28,7 @@ def getPurple(v):
 def getBrown(v):
     return '#%02x%02x%02x' % (v, v // 2, v // 3)
 
-def histo(filename, ax, ylim, bw = 5, tw = 2, dark = 1, bright = 254, seglen = 256, minmax = False): 
+def histo(filename, ax, ylim, bw = 5, tw = 2, dark = 1, bright = 254, seglen = 256): 
     histogram = Image.open(filename).histogram()
     for start in range(0, len(histogram), seglen):
         for pos in range(dark): # zero out the dark ones until the desired threshold
@@ -66,23 +66,19 @@ def histo(filename, ax, ylim, bw = 5, tw = 2, dark = 1, bright = 254, seglen = 2
     for i in range(dark, bright):
         if g[i] > 0: # average over the three channels
             ax[3].bar(i, g[i] / 3, width = bw, color = getGray(i), edgecolor = getGray(i))
-    if minmax:
-        for i in range(dark, bright):
-            v = min(histogram[i], histogram[i + seglen], histogram[i + 2 * seglen])
-            if v > 0: # minimum over the three channels
-                ax[4].bar(i, v, width = bw, color = getBrown(i), edgecolor = getBrown(i))
-        for i in range(dark, bright):
-            v = max(histogram[i], histogram[i + seglen], histogram[i + 2 * seglen])
-            if v > 0: # maximum over the three channels
-                ax[5].bar(i, v, width = bw, color = getPurple(i), edgecolor = getPurple(i))
+    for i in range(dark, bright):
+        v = min(histogram[i], histogram[i + seglen], histogram[i + 2 * seglen])
+        if v > 0: # minimum over the three channels
+            ax[4].bar(i, v, width = bw, color = getBrown(i), edgecolor = getBrown(i))
+    for i in range(dark, bright):
+        v = max(histogram[i], histogram[i + seglen], histogram[i + 2 * seglen])
+        if v > 0: # maximum over the three channels
+            ax[5].bar(i, v, width = bw, color = getPurple(i), edgecolor = getPurple(i))
     return True
 
 dataset = argv[1]
 classes = ['green', 'yellow', 'red', 'leafless']
-channels = ['red channel', 'green channel', 'blue channel', 'grayscale']
-minmax = 'minmax' in argv
-if minmax:
-    channel +=  ['minimum', 'maximum']
+channels = ['red channel', 'green channel', 'blue channel', 'grayscale', 'minimum', 'maximum']
 
 fig, ax = plt.subplots(nrows = len(classes) + 1, ncols = len(channels),
                        figsize=(len(channels) * 3, (len(classes) + 1) * 3))

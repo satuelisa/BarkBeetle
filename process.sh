@@ -119,6 +119,7 @@ do
     then
 	mkdir -p output/air/original
 	mkdir -p output/air/automaton
+	mkdir -p output/air/enhanced
 	mkdir -p output/air/thresholded
 	rm results.txt # redo the result file
 	touch results.txt
@@ -140,6 +141,7 @@ do
     then
 	mkdir -p output/ground/original
 	mkdir -p output/ground/automaton
+	mkdir -p output/ground/enhanced
 	mkdir -p output/ground/thresholded
 	rm ground.txt # redo the forecast result file
 	touch ground.txt

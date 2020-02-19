@@ -33,8 +33,8 @@ def match(colstr): # openCV pixels output at strings
         return 'leafless' # blue
     if int(fields.pop(0)) == 255: #  G
         green = True
-    elif int(fields.pop(0)) == 255: # R
-        if green:
+    if int(fields.pop(0)) == 255: # R
+        if green: # R and G
             return 'yellow'
         else:
             return 'red'
@@ -60,3 +60,12 @@ def majority(x, y, r, w, h, img):
         elif freq[c] == most:
             chosen.add(match(c))
     return chosen
+
+if __name__ == '__main__':
+    for c in BGR:
+        b, g, r, a = BGR[c]
+        print(c, match(f'[{b} {g} {r} {a}] '))
+    
+    
+    
+    

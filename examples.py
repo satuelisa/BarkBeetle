@@ -22,27 +22,28 @@ for kind in ['green', 'yellow', 'red', 'leafless']:
         tID = randint(30, 100) 
         d = choice(datasets)
         suffix = f'{d}_{kind}_{tID}.png'
-        success = False
+        add = False
         for v in variants:
             filename = f'individual/{v}/{suffix}'
             if not os.path.exists(filename): 
-                assert not success
+                assert not add
                 break # cannot use a non-existant sample
             if suffix not in chosen:
                 chosen.add(suffix) # mark as used
-                success = True
-                print(suffix)                
-            else:
-                break
+                add = True
+                print(suffix)
             sample = Image.open(filename).resize((size, size)).convert('RGBA')
             images[v].paste(sample, (x, y), sample)
-        if success:
+        if add:
             x += size + margin
             col += 1
             if col == cols:
                 y += size + margin
                 x = margin
                 col = 0
+            add = False
     for v in variants:
-        images[v].save(f'examples/{v}/{kind}.png')
+        target = f'examples/{v}/{kind}.png'
+        images[v].save(target)
+        
 

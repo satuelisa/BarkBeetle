@@ -93,7 +93,7 @@ for a, c in zip(ax[:, 0], classes):
 for r in range(len(classes)):
     for c in range(len(differences)):
         a = ax[r, c]
-        a.set_xlim(-100, 100)
+        a.set_xlim(-255, 255)
         a.set_xticks(tics)
 plt.tight_layout()
 plt.savefig(f'histograms/{dataset}_diff.png') 
