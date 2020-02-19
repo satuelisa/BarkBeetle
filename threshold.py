@@ -30,14 +30,14 @@ def threshold(filename, thresholds, outputfile):
             if a == 255: # completely opaque pixels only
                 if max(r, g, b) < thresholds['td']: # dark
                     pix[x, y] = (0, 0, 0, 0) # shadows
-                elif max(fabs(rg), fabs(rb), fabs(gb)) < thresholds['tm']: # gray
-                    pix[x, y] = (0, 0, 0, 0) # ground
                 elif b > thresholds['tb']:
                     pix[x, y] = (0, 0, 255, 255) # blue (leafless)
                 elif rg > thresholds['tr']: 
                     pix[x, y] = (255, 0, 0, 255) # red
                 elif rg < thresholds['tg']: 
                     pix[x, y] = (0, 255, 0, 255) # green
+                elif max(fabs(rg), fabs(rb), fabs(gb)) < thresholds['tm']: # gray
+                    pix[x, y] = (0, 0, 0, 0) # ground                    
                 else:
                     pix[x, y] = (255, 255, 0, 255) # yellow
             else:

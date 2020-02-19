@@ -34,8 +34,14 @@ for case in ['original', 'enhanced', 'thresholded']:
     pixels = dict()
     for kind in classes:
         for dataset in datasets:
-            a = np.array(Image.open(f'composite/{case}/{dataset}_{kind}.png'))
-            assert a.shape[2]  == 4
+            filename = f'composite/{case}/{dataset}_{kind}.png'
+            image = Image.open(filename)
+            a = np.array(image)
+            if len(a.shape) < 3 or a.shape[2]  != 4:
+                print('Forcing RGBA on', dataset, case, kind)
+                image = image.convert('RGBA')
+                image.save(filename)
+                a = np.array(image)    
             a = a[a[:,:,3] > 0] # non-transparent pixels only        
             pixels[kind] = np.concatenate((pixels[kind], a), axis = 0) if kind in pixels else a
         save(pixels[kind], f'collages/{case}/{kind}.png')

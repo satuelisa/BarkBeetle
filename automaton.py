@@ -22,7 +22,7 @@ def pick(colors, k):
             return o
     return None # keep the old one
 
-def colfreq(dataset, rad = 2, k = 4):
+def colfreq(dataset, rad = 1, k = 4):
     filename = 'thresholded/' + dataset + '.png'    
     img = Image.open(filename)
     (w, h) = img.size
@@ -73,8 +73,7 @@ def colfreq(dataset, rad = 2, k = 4):
         if gif:
             iteration += 1
             frame = f'automaton/frames/{dataset}_{iteration:04}.png'
-            print(frame)
             img.resize((300, 300)).save(frame)
 
 from sys import argv
-colfreq(argv[1])
+colfreq(argv[1], 3)

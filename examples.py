@@ -1,20 +1,19 @@
 import os.path
 from sys import argv
-from math import ceil, sqrt
 from random import randint, choice
 from PIL import Image, ImageDraw
 
-margin = 12
-size = 600
+margin = 10
+size = 500
 rows = 4
 cols = 2
 w = rows * size + (rows + 1) * margin
 h = cols * size + (cols + 1) * margin
-squares = Image.new('RGBA', (h, w))
-circles = Image.new('RGBA', (h, w)) # original circles
-enhanced = Image.new('RGBA', (h, w)) # enhanced circles
 datasets = ['jun60', 'jul90', 'jul100', 'aug90', 'aug100']
+variants = ['squares', 'original', 'enhanced', 'thresholded', 'automaton']
+
 for kind in ['green', 'yellow', 'red', 'leafless']:
+    images = { v : Image.new('RGBA', (h, w)) for v in variants } 
     chosen = set()
     x = margin
     y = margin
@@ -22,21 +21,28 @@ for kind in ['green', 'yellow', 'red', 'leafless']:
     while len(chosen) < rows * cols:
         tID = randint(30, 100) 
         d = choice(datasets)
-        filename = f'individual/squares/{d}_{kind}_{tID}.png'
-        if os.path.exists(filename):
-            chosen.add(filename)
+        suffix = f'{d}_{kind}_{tID}.png'
+        success = False
+        for v in variants:
+            filename = f'individual/{v}/{suffix}'
+            if not os.path.exists(filename): 
+                assert not success
+                break # cannot use a non-existant sample
+            if suffix not in chosen:
+                chosen.add(suffix) # mark as used
+                success = True
+                print(suffix)                
+            else:
+                break
             sample = Image.open(filename).resize((size, size)).convert('RGBA')
-            squares.paste(sample, (x, y), sample)
-            sample = Image.open(f'individual/original/{d}_{kind}_{tID}.png').resize((size, size)).convert('RGBA')            
-            circles.paste(sample, (x, y), sample)
-            sample = Image.open(f'individual/circles/{d}_{kind}_{tID}.png').resize((size, size)).convert('RGBA')            
-            enhanced.paste(sample, (x, y), sample)
+            images[v].paste(sample, (x, y), sample)
+        if success:
             x += size + margin
             col += 1
             if col == cols:
                 y += size + margin
                 x = margin
                 col = 0
-    squares.save(f'examples/squares/{kind}.png')
-    circles.save(f'examples/original/{kind}.png')
-    enhanced.save(f'examples/enhanced/{kind}.png')
+    for v in variants:
+        images[v].save(f'examples/{v}/{kind}.png')
+

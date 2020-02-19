@@ -83,23 +83,26 @@ cp thr_yellow.png ${location}/fig10j.png
 cp thr_red.png ${location}/fig10k.png 
 cp thr_leafless.png ${location}/fig10l.png   
 
-convert -crop 600x600+400+400 jun60_smaller.png ${location}/fig11a.png # processing example: original
-convert -crop 600x600+400+400 jun60_cropped_enhanced.png ${location}/fig11b.png # processing example: enhanced
-convert -crop 600x600+400+400 jun60_thresholded.png ${location}/fig11c.png # processing example: thresholded
-convert -crop 600x600+400+400 jun60_automaton.png ${location}/fig11d.png # processing example: automaton
+convert -crop 600x600+400+400 scaled/jun60.png ${location}/fig11a.png # processing example: original
+convert -crop 600x600+400+400 enhanced/jun60.png ${location}/fig11b.png # processing example: enhanced
+convert -crop 600x600+400+400 thresholded/jun60.png ${location}/fig11c.png # processing example: thresholded
+convert -crop 600x600+400+400 automaton/jun60.png ${location}/fig11d.png # processing example: automaton
 
-convert -crop 600x600+400+400 jul90_smaller.png ${location}/fig11e.png # processing example: original
-convert -crop 600x600+400+400 jul90_cropped_enhanced.png ${location}/fig11f.png # processing example: enhanced
-convert -crop 600x600+400+400 jul90_thresholded.png ${location}/fig11g.png # processing example: thresholded
-convert -crop 600x600+400+400 jul90_automaton.png ${location}/fig11h.png # processing example: automaton
+convert -crop 600x600+400+400 scaled/jul90.png ${location}/fig11e.png # processing example: original
+convert -crop 600x600+400+400 enhanced/jul90.png ${location}/fig11f.png # processing example: enhanced
+convert -crop 600x600+400+400 thresholded/jul90.png ${location}/fig11g.png # processing example: thresholded
+convert -crop 600x600+400+400 automaton/jul90.png ${location}/fig11h.png # processing example: automaton
 
-convert -crop 600x600+400+400 aug100_smaller.png ${location}/fig11i.png # processing example: original
-convert -crop 600x600+400+400 aug100_cropped_enhanced.png ${location}/fig11j.png # processing example: enhanced
-convert -crop 600x600+400+400 aug100_thresholded.png ${location}/fig11k.png # processing example: thresholded
-convert -crop 600x600+400+400 aug100_automaton.png ${location}/fig11l.png # processing example: automaton
+convert -crop 600x600+400+400 scaled/aug100.png ${location}/fig11i.png # processing example: original
+convert -crop 600x600+400+400 enhanced/aug100.png ${location}/fig11j.png # processing example: enhanced
+convert -crop 600x600+400+400 thresholded/aug100.png ${location}/fig11k.png # processing example: thresholded
+convert -crop 600x600+400+400 automaton/aug100.png ${location}/fig11l.png # processing example: automaton
 
-convert -crop 800x800+300+300 aug100_origout.png ${location}/fig12a.png 
-convert -crop 800x800+300+300 aug100_output.png ${location}/fig12b.png 
+convert -crop 800x800+300+300 output/air/original/aug100.png ${location}/fig12a.png 
+convert -crop 800x800+300+300 output/air/enhanced/aug100.png ${location}/fig12b.png
+convert -crop 800x800+300+300 output/air/thresholded/aug100.png ${location}/fig12c.png
+convert -crop 800x800+300+300 output/air/automaton/aug100.png ${location}/fig12d.png 
 
 sed 's/black/bg/g' conf.tex > ${location}/table3.tex
 sed 's/black/bg/g' perf.tex > ${location}/table4.tex
+python3 forecast.py ground.txt > ${location}/table5.tex
