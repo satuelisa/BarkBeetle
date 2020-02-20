@@ -11,30 +11,15 @@ th = values()
 
 colors = ['#999900', '#990099', '#009999', '#0000ff', '#666666']
 tics = [x for x in range(-200, 201, 100)]
-matchText = True # peaks on matching values
 
-def diffHisto(first, second, alpha):
+def diffHisto(first, second):
     freq = defaultdict(int)
     n = len(first)
     assert n == len(second) # ensure matching lengths
     for i in range(n):
         f = int(first[i]) # integers instead of unsigned bytes
         s = int(second[i])
-        if alpha[i] == 255: # not transparent
-            freq[f - s] += 1 # frequencies
-    return freq
-
-def threeWayHisto(first, second, third, alpha, func = max):
-    freq = defaultdict(int)
-    n = len(first)
-    assert n == len(second) and n == len(third)
-    for i in range(n):
-        f = int(first[i]) # integers instead of unsigned bytes
-        s = int(second[i])
-        t = int(third[i])
-        if alpha[i] == 255: # not transparent
-            v = max(fabs(f - s), fabs(f - t), fabs(s - t))
-            freq[v] += 1 # frequencies
+        freq[f - s] += 1 # frequencies
     return freq
 
 def diff(filename, ax, h, tw = 2, bw = 5):
@@ -45,13 +30,18 @@ def diff(filename, ax, h, tw = 2, bw = 5):
         print('Forcing RGBA on', filename)
         image = image.convert('RGBA')
         image.save(filename)
-        RGBA = np.array(image)    
-    R = RGBA[:,:,0].flatten()
-    G = RGBA[:,:,1].flatten()
-    B = RGBA[:,:,2].flatten()
-    A = RGBA[:,:,3].flatten()
-    vs = [diffHisto(R, G, A), diffHisto(R, B, A), diffHisto(G, B, A)] # , diffHisto(B, ((R + G) / 2), A), threeWayHisto(R, G, B, A)]
-    line = [[th['tr'], th['tg']], [], []] #  [], []]
+        RGBA = np.array(image)
+    A = RGBA[:,:,3].flatten() / 255
+    A[A < 1] = 0 # either opaque or transparent
+    count = int(np.sum(A))
+    assert np.count_nonzero(A) ==  count
+    keep = A.nonzero()
+    # ignore all transparent pixels
+    R = np.take(RGBA[:,:,0].flatten().astype(int), keep)[0]
+    G = np.take(RGBA[:,:,1].flatten().astype(int), keep)[0]
+    B = np.take(RGBA[:,:,2].flatten().astype(int), keep)[0]
+    vs = [diffHisto(R, G), diffHisto(R, B), diffHisto(G, B)]
+    line = [[(th['tr'], 'r'), (th['tg'], 'b')], [(th['tm'], 'b')], [(th['tm'], 'b')]] 
     assert len(line) == len(vs) and len(ax) == len(line)
     for j in range(len(vs)):
         n = sum(vs[j].values()) # total frequency
@@ -59,20 +49,19 @@ def diff(filename, ax, h, tw = 2, bw = 5):
             ax[j].axis('off')
         else:
             norm = 100 / n # as percentages of the total
-            if matchText:
-                ax[j].text(-240, 0.9 * h, '{0:.2}%'.format(norm * vs[j][0]))
-            ax[j].set_ylim(0, h)            
+            ax[j].text(-240, 0.9 * h, '{0:.2}%'.format(norm * vs[j][0]))
+            ax[j].set_ylim(0, h)
             for i in range(-255, 255):
-                if matchText and i == 0: # put the exact matches on a label
-                    continue
+                if i == 0:
+                    continue # skip these peaks
                 v = vs[j][i];
                 if v > 0:
                     ax[j].bar(i, norm * v, width = bw, color = colors[j], edgecolor = colors[j])
-            for l in line[j]:
-                ax[j].axvline(l, lw = tw, color = 'r') # indicate thresholds
+            for (l, c) in line[j]:
+                ax[j].axvline(l, lw = tw, color = c) # illustrate thresholds
 
 classes = ['enhanced', 'green', 'yellow', 'red', 'leafless']
-differences = ['R - G', 'R - B', 'G - B'] # , 'B - (R + G) / 2', 'max. diff.']
+differences = ['R - G', 'B - R', 'B - G'] 
 dataset = argv[1]
 fig, ax = plt.subplots(nrows = len(classes), ncols = len(differences),
                        figsize=(len(differences) * 3, (len(classes) + 1) * 2))

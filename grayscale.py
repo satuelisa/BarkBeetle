@@ -6,7 +6,7 @@ import warnings
 # metadata causes this
 warnings.simplefilter('ignore', Image.DecompressionBombWarning)
 
-plt.rcParams.update({'font.size': 14})
+plt.rcParams.update({'font.size': 12})
 
 def bars(h, t, ax, c = 'black', a = 0.6):
     g = [100 * (h[i] + h[i + 256] + h[i + 512]) / (3 *  t) for i in range(256)] # channel avg

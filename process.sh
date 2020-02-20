@@ -9,7 +9,7 @@ for arg in "$@"
 do
     if [ "$arg" == "enhance" ] 
     then
-	echo Enhancing
+	echo Enhancing	
 	bash enhance.sh
 	for file in `ls -1 orthomosaics/*.tiff`
 	do
@@ -20,6 +20,23 @@ do
     fi
 done
 # these are separate loops to ensure correct order if multiple are chosen
+width=2000 # to which width to scale down the processing 
+for arg in "$@" 
+do
+    if [ "$arg" == "scale" ] 
+    then
+	echo Scaling
+	mkdir -p scaled/enhanced
+	mkdir -p scaled/original
+	for file in `ls -1 orthomosaics/*.tiff`
+	do
+	    dataset=`basename $file .tiff`	
+	    convert -resize ${width}x orthomosaics/$dataset.png scaled/original/$dataset.png	
+	    convert -resize ${width}x enhanced/$dataset.png scaled/enhanced/$dataset.png
+	done
+	break
+    fi
+done
 for arg in "$@" 
 do
     if [ "$arg" == "valid" ] # if locations change
@@ -38,19 +55,17 @@ do
 done
 for arg in "$@" 
 do
-    if [ "$arg" == "char" ] 
+    if [ "$arg" == "ext" ] 
     then
-	echo Characterizing
+	echo Extracting
 	mkdir -p individual/squares
 	mkdir -p individual/original
 	mkdir -p individual/enhanced
-	mkdir -p histograms
 	mkdir -p composite/enhanced
 	mkdir -p composite/original
-	mkdir -p projections
-	date > timestamps/characterization_start_time.py
+	date > timestamps/extraction_start_time.txt
 	for file in `ls -1 orthomosaics/*.tiff`; do
-	    echo "Characterizing $dataset"
+	    echo "Extracting samples from $dataset"
 	    dataset=`basename $file .tiff`
 	    python3 extract.py ${dataset} # individual samples in individual files
 	    convert -background none individual/enhanced/${dataset}_*.png +append composite/enhanced/${dataset}.png
@@ -62,33 +77,33 @@ do
 		convert -background none individual/original/${dataset}_${kind}_*.png +append composite/original/${dataset}_${kind}.png
 		convert -background none individual/enhanced/${dataset}_${kind}_*.png +append composite/enhanced/${dataset}_${kind}.png
 	    done
-	    python3 histogram.py ${dataset} # the channel histograms for the manuscript
-	    python3 chandiff.py ${dataset} # the channel-difference histograms for the manuscript
 	done
-	date > timestamps/characterization_end_time.py
+	python3 rules.py > thresholds.txt
+	date > timestamps/extraction_end_time.txt
 	for kind in "${classes[@]}"
 	do
 	    echo $kind
 	    ls -lh individual/enhanced/*_${kind}_*.png | wc -l
 	done
-	python3 projections.py # illustrations for the manuscript
 	break
     fi
 done
-width=2000 # to which width to scale down the processing 
 for arg in "$@" 
 do
-    if [ "$arg" == "scale" ] 
+    if [ "$arg" == "char" ] 
     then
-	echo Scaling
-	mkdir -p scaled/enhanced
-	mkdir -p scaled/original
-	for file in `ls -1 orthomosaics/*.tiff`
-	do
-	    dataset=`basename $file .tiff`	
-	    convert -resize ${width}x orthomosaics/$dataset.png scaled/original/$dataset.png	
-	    convert -resize ${width}x enhanced/$dataset.png scaled/enhanced/$dataset.png
+	echo Characterizing
+	mkdir -p histograms
+	mkdir -p projections
+	date > timestamps/characterization_start_time.txt
+	for file in `ls -1 orthomosaics/*.tiff`; do
+	    dataset=`basename $file .tiff`
+	    echo "Characterizing $dataset"
+	    python3 histogram.py ${dataset} # the channel histograms for the manuscript
+	    python3 chandiff.py ${dataset} # the channel-difference histograms for the manuscript
 	done
+	date > timestamps/characterization_end_time.txt
+	python3 projections.py # illustrations for the manuscript
 	break
     fi
 done
@@ -98,7 +113,7 @@ do
     if [ "$arg" == "proc" ] 
     then
 	echo Processing
-	date > timestamps/processing_start_time.py
+	date > timestamps/processing_start_time.txt
 	rm -rf automaton/frames # force clear so as not to affect the GIF
 	mkdir -p automaton/frames
 	for file in `ls -1 orthomosaics/*.tiff`
@@ -109,7 +124,7 @@ do
 	    python3 automaton.py $dataset > automaton/${dataset}.log
 	    wc -l automaton/${dataset}.log
 	done
-	date > timestamps/processing_end_time.py	
+	date > timestamps/processing_end_time.txt	
 	break
     fi
 done
@@ -123,14 +138,14 @@ do
 	mkdir -p output/air/thresholded
 	rm results.txt # redo the result file
 	touch results.txt
-	date > timestamps/eval_start_time.py
+	date > timestamps/evaluation_start_time.txt
 	for file in `ls -1 orthomosaics/*.tiff`
 	do
 	    dataset=`basename $file .tiff`
 	    echo "Evaluating $dataset"
 	    python3 test.py $dataset >> results.txt 
 	done
-	date > timestamps/eval_end_time.py	
+	date > timestamps/evaluation_end_time.txt	
 	python3 confusion.py results.txt 
 	break
     fi
@@ -145,14 +160,14 @@ do
 	mkdir -p output/ground/thresholded
 	rm ground.txt # redo the forecast result file
 	touch ground.txt
-	date > timestamps/forecast_start_time.py
+	date > timestamps/forecast_start_time.txt
 	for file in `ls -1 orthomosaics/*.tiff`
 	do
 	    dataset=`basename $file .tiff`
 	    echo "Forecasting $dataset"
 	    python3 test.py $dataset ground >> ground.txt 
 	done
-	date > timestamps/forecast_end_time.py	
+	date > timestamps/forecast_end_time.txt	
 	break
     fi
 done

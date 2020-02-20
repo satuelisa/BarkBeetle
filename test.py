@@ -10,11 +10,13 @@ hl = {
 
 ground = 'ground' in argv
 dataset = argv[1]
-orig = cv2.imread(f'scaled/original/{dataset}.png', cv2.IMREAD_UNCHANGED)
-enh = cv2.imread(f'scaled/enhanced/{dataset}.png', cv2.IMREAD_UNCHANGED)
-thr = cv2.imread(f'thresholded/{dataset}.png', cv2.IMREAD_UNCHANGED)
-result = cv2.imread(f'automaton/{dataset}.png', cv2.IMREAD_UNCHANGED)
-h, w, channels = result.shape
+targets = {
+    'original': cv2.imread(f'scaled/original/{dataset}.png', cv2.IMREAD_UNCHANGED),
+    'enhanced': cv2.imread(f'scaled/enhanced/{dataset}.png', cv2.IMREAD_UNCHANGED),
+    'thresholded': cv2.imread(f'thresholded/{dataset}.png', cv2.IMREAD_UNCHANGED),
+    'automaton': cv2.imread(f'automaton/{dataset}.png', cv2.IMREAD_UNCHANGED)}
+    
+h, w, channels = targets['automaton'].shape
 trees = dict()
 kind = dict()
 relabel = {'red': 'red', 'dry': 'red',
@@ -39,8 +41,6 @@ with open('annotations/{:s}.map'.format(dataset)) as data:
              factor = int(line.split()[4]) / w # scaling factor
 lw = 3
 step = lw + 1
-names = ['automaton', 'original', 'thresholded', 'enhanced']
-targets = [result, orig, thr, enh]
 r = radius(dataset, factor)
 offsetL = r + 4 * step        
 margin = r + offsetL + 50
@@ -51,24 +51,23 @@ for tID in trees:
     y =  int(round(y / factor))
     label = kind[tID]
     intended = color.BGR[label]
-    present = color.majority(x, y, r, w, h, result)
+    present = color.majority(x, y, r, w, h, targets['automaton'])
     match = label in present
     print(dataset, tID, label in present, label, ' '.join(present))
-    for t in targets:
+    for t in targets.values():
         cv2.circle(t, (x, y), r, hl[match], lw)
         cv2.circle(t, (x, y), r + step, intended, lw)
     i = 2
     for c in present:
-        for t in targets:
+        for t in targets.values():
             cv2.circle(t, (x, y), r + i * step, color.BGR[c], lw)
         i += 1
-    for t in targets:
+    for t in targets.values():
         cv2.circle(t, (x, y), r + i * step, hl[match], lw)
     lp = (x + offsetL, y + offsetL) # label position
-    for t in targets:
+    for t in targets.values():
         cv2.putText(t, str(tID), lp, cv2.FONT_HERSHEY_SIMPLEX, 1.5, (240, 0, 240, 255), 2)
-for t in targets:
-    name = names.pop(0)
-    cv2.imwrite(f'output/{target}/{name}/{dataset}.png', t)
+for (name, image) in targets.items():
+    cv2.imwrite(f'output/{target}/{name}/{dataset}.png', image)
 
 

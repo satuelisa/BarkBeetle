@@ -1,5 +1,0 @@
-tb 90 # pixels with B > tb are made blue
-tg 0 # pixels with R - G < tg are made green
-tr 100 # pixels with R - G > tr are made red
-td 45 # pixels with max RGB < td are made transparent
-tm 25 # pixels with max diff in RGB < tm are made transparent

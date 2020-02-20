@@ -35,74 +35,87 @@ cp histograms/jul100_uniform.png ${location}/fig4m.png
 cp histograms/aug90_uniform.png ${location}/fig4n.png 
 cp histograms/aug100_uniform.png ${location}/fig4o.png 
 
-# examples as circles in original color
-cp examples/original/green.png ${location}/fig5a.png 
-cp examples/original/yellow.png ${location}/fig5b.png 
-cp examples/original/red.png ${location}/fig5c.png 
-cp examples/original/leafless.png ${location}/fig5d.png 
-
-# examples as circles in enhanced color
-cp examples/enhanced/green.png ${location}/fig5e.png 
-cp examples/enhanced/yellow.png ${location}/fig5f.png 
-cp examples/enhanced/red.png ${location}/fig5g.png
-cp examples/enhanced/leafless.png ${location}/fig5h.png 
-
 # projections
-cp projections/green_vs_yellow.png ${location}/fig6b.png
-cp projections/green_vs_red.png ${location}/fig6a.png
-cp projections/yellow_vs_red.png ${location}/fig6c.png
-cp projections/leafless_vs_green.png ${location}/fig6d.png
-cp projections/leafless_vs_yellow.png ${location}/fig6e.png
-cp projections/leafless_vs_red.png ${location}/fig6f.png
+cp projections/green_vs_yellow.png ${location}/fig5b.png
+cp projections/green_vs_red.png ${location}/fig5a.png
+cp projections/yellow_vs_red.png ${location}/fig5c.png
+cp projections/leafless_vs_green.png ${location}/fig5d.png
+cp projections/leafless_vs_yellow.png ${location}/fig5e.png
+cp projections/leafless_vs_red.png ${location}/fig5f.png
 
-cp histograms/jun60.png ${location}/fig7a.png # example channel histogram 60m
-cp histograms/jul90.png ${location}/fig7b.png # example channel histogram 90m
-cp histograms/aug100.png ${location}/fig7c.png # example channel histogram 100m
+cp histograms/jun60.png ${location}/fig6a.png # example channel histogram 60m
+cp histograms/jul90.png ${location}/fig6b.png # example channel histogram 90m
+cp histograms/aug100.png ${location}/fig6c.png # example channel histogram 100m
 
-cp histograms/jun60_diff.png ${location}/fig8a.png # example difference histogram 60m
-cp histograms/jul90_diff.png ${location}/fig8b.png # example difference histogram 90m
-cp histograms/aug100_diff.png ${location}/fig8c.png # example difference histogram 100m
+cp histograms/jun60_diff.png ${location}/fig7a.png # example difference histogram 60m
+cp histograms/jul90_diff.png ${location}/fig7b.png # example difference histogram 90m
+cp histograms/aug100_diff.png ${location}/fig7c.png # example difference histogram 100m
 
-exit
-
-convert -density 300 changes.eps ${location}/fig9.png
+convert -density 300 changes.eps ${location}/fig8.png
 
 # collage panels
-cp orig_green.png ${location}/fig10a.png 
-cp orig_yellow.png ${location}/fig10b.png
-cp orig_red.png ${location}/fig10c.png 
-cp orig_leafless.png ${location}/fig10d.png
+cp collages/original/green.png ${location}/fig9a.png 
+cp collages/original/yellow.png ${location}/fig9b.png
+cp collages/original/red.png ${location}/fig9c.png 
+cp collages/original/leafless.png ${location}/fig9d.png
 
-cp panel_green.png ${location}/fig10e.png 
-cp panel_yellow.png ${location}/fig10f.png
-cp panel_red.png ${location}/fig10g.png
-cp panel_leafless.png ${location}/fig10h.png
+cp collages/enhanced/green.png ${location}/fig9e.png 
+cp collages/enhanced/yellow.png ${location}/fig9f.png
+cp collages/enhanced/red.png ${location}/fig9g.png
+cp collages/enhanced/leafless.png ${location}/fig9h.png
 
-cp thr_green.png ${location}/fig10i.png 
-cp thr_yellow.png ${location}/fig10j.png
-cp thr_red.png ${location}/fig10k.png 
-cp thr_leafless.png ${location}/fig10l.png   
+cp collages/thresholded/green.png ${location}/fig9i.png 
+cp collages/thresholded/yellow.png ${location}/fig9j.png
+cp collages/thresholded/red.png ${location}/fig9k.png 
+cp collages/thresholded/leafless.png ${location}/fig9l.png   
 
-convert -crop 600x600+400+400 scaled/jun60.png ${location}/fig11a.png # processing example: original
-convert -crop 600x600+400+400 enhanced/jun60.png ${location}/fig11b.png # processing example: enhanced
-convert -crop 600x600+400+400 thresholded/jun60.png ${location}/fig11c.png # processing example: thresholded
-convert -crop 600x600+400+400 automaton/jun60.png ${location}/fig11d.png # processing example: automaton
+convert -crop 600x600+400+400 scaled/original/jun60.png ${location}/fig10a.png # processing example: original
+convert -crop 600x600+400+400 scaled/enhanced/jun60.png ${location}/fig10b.png # processing example: enhanced
+convert -crop 600x600+400+400 thresholded/jun60.png ${location}/fig10c.png # processing example: thresholded
+convert -crop 600x600+400+400 automaton/jun60.png ${location}/fig10d.png # processing example: automaton
 
-convert -crop 600x600+400+400 scaled/jul90.png ${location}/fig11e.png # processing example: original
-convert -crop 600x600+400+400 enhanced/jul90.png ${location}/fig11f.png # processing example: enhanced
-convert -crop 600x600+400+400 thresholded/jul90.png ${location}/fig11g.png # processing example: thresholded
-convert -crop 600x600+400+400 automaton/jul90.png ${location}/fig11h.png # processing example: automaton
+convert -crop 600x600+400+400 scaled/original/jul90.png ${location}/fig10e.png # processing example: original
+convert -crop 600x600+400+400 scaled/enhanced/jul90.png ${location}/fig10f.png # processing example: enhanced
+convert -crop 600x600+400+400 thresholded/jul90.png ${location}/fig10g.png # processing example: thresholded
+convert -crop 600x600+400+400 automaton/jul90.png ${location}/fig10h.png # processing example: automaton
 
-convert -crop 600x600+400+400 scaled/aug100.png ${location}/fig11i.png # processing example: original
-convert -crop 600x600+400+400 enhanced/aug100.png ${location}/fig11j.png # processing example: enhanced
-convert -crop 600x600+400+400 thresholded/aug100.png ${location}/fig11k.png # processing example: thresholded
-convert -crop 600x600+400+400 automaton/aug100.png ${location}/fig11l.png # processing example: automaton
+convert -crop 600x600+400+400 scaled/original/aug100.png ${location}/fig10i.png # processing example: original
+convert -crop 600x600+400+400 scaled/enhanced/aug100.png ${location}/fig10j.png # processing example: enhanced
+convert -crop 600x600+400+400 thresholded/aug100.png ${location}/fig10k.png # processing example: thresholded
+convert -crop 600x600+400+400 automaton/aug100.png ${location}/fig10l.png # processing example: automaton
+
+# examples as circles in original color
+cp examples/original/green.png ${location}/fig11a.png 
+cp examples/original/yellow.png ${location}/fig11b.png 
+cp examples/original/red.png ${location}/fig11c.png 
+cp examples/original/leafless.png ${location}/fig11d.png 
+
+# examples as circles in enhanced color
+cp examples/enhanced/green.png ${location}/fig11e.png 
+cp examples/enhanced/yellow.png ${location}/fig11f.png 
+cp examples/enhanced/red.png ${location}/fig11g.png
+cp examples/enhanced/leafless.png ${location}/fig11h.png 
+
+# examples as circles threholded
+cp examples/thresholded/green.png ${location}/fig11i.png 
+cp examples/thresholded/yellow.png ${location}/fig11j.png 
+cp examples/thresholded/red.png ${location}/fig11k.png
+cp examples/thresholded/leafless.png ${location}/fig11l.png 
+
+# examples as circles after automaton
+cp examples/automaton/green.png ${location}/fig11m.png 
+cp examples/automaton/yellow.png ${location}/fig11n.png 
+cp examples/automaton/red.png ${location}/fig11o.png
+cp examples/automaton/leafless.png ${location}/fig11p.png 
 
 convert -crop 800x800+300+300 output/air/original/aug100.png ${location}/fig12a.png 
 convert -crop 800x800+300+300 output/air/enhanced/aug100.png ${location}/fig12b.png
 convert -crop 800x800+300+300 output/air/thresholded/aug100.png ${location}/fig12c.png
 convert -crop 800x800+300+300 output/air/automaton/aug100.png ${location}/fig12d.png 
 
-sed 's/black/bg/g' conf.tex > ${location}/table3.tex
-sed 's/black/bg/g' perf.tex > ${location}/table4.tex
-python3 forecast.py ground.txt > ${location}/table5.tex
+python3 times.py > ${location}/table3.tex
+sed 's/black/bg/g' conf.tex > ${location}/table4.tex
+sed 's/black/bg/g' perf.tex > ${location}/table5.tex
+python3 forecast.py ground.txt > ${location}/table6.tex
+
+

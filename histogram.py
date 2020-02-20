@@ -4,7 +4,6 @@ from PIL import Image
 from sys import argv
 import numpy as np
 
-from gsd import radius
 from threshold import values
 thresholds = values()
 
@@ -74,6 +73,8 @@ def histo(filename, ax, ylim, bw = 5, tw = 2, dark = 1, bright = 254, seglen = 2
         v = max(histogram[i], histogram[i + seglen], histogram[i + 2 * seglen])
         if v > 0: # maximum over the three channels
             ax[5].bar(i, v, width = bw, color = getPurple(i), edgecolor = getPurple(i))
+        ax[5].axvline(thresholds['td'], lw = tw, color = 'b') # the darkness threshold used in threshold.py
+        ax[5].axvline(thresholds['tl'], lw = tw, color = 'b') # the lightness threshold used in threshold.py            
     return True
 
 dataset = argv[1]
@@ -91,10 +92,10 @@ for a, c in zip(ax[:, 0], ['enhanced'] + classes): # row titles
 
 high = dict() # no exceptions
 
-histo(f'composite/enhanced/{dataset}.png', ax[0, :], high.get(dataset, 1.5), minmax)
+histo(f'composite/enhanced/{dataset}.png', ax[0, :], high.get(dataset, 2.0))
 row = 1
 for kind in classes:
-    if histo(f'composite/enhanced/{dataset}_{kind}.png', ax[row, :], high.get(dataset, 1.5), minmax):
+    if histo(f'composite/enhanced/{dataset}_{kind}.png', ax[row, :], high.get(dataset, 1.5)):
         print(kind, 'present in', dataset)
     row += 1
 fig.tight_layout()
