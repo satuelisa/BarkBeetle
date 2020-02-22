@@ -56,25 +56,25 @@ cp ruleperf.png ${location}/fig8.png
 convert -density 300 changes.eps ${location}/fig9.png
 
 # collage panels
-cp collages/original/green.png ${location}/fig10a.png 
-cp collages/original/yellow.png ${location}/fig10b.png
-cp collages/original/red.png ${location}/fig10c.png 
-cp collages/original/leafless.png ${location}/fig10d.png
+convert -rotate 90 collages/original/green.png ${location}/fig10a.png 
+convert -rotate 90 collages/original/yellow.png ${location}/fig10b.png
+convert -rotate 90 collages/original/red.png ${location}/fig10c.png 
+convert -rotate 90 collages/original/leafless.png ${location}/fig10d.png
 
-cp collages/enhanced/green.png ${location}/fig10e.png 
-cp collages/enhanced/yellow.png ${location}/fig10f.png
-cp collages/enhanced/red.png ${location}/fig10g.png
-cp collages/enhanced/leafless.png ${location}/fig10h.png
+convert -rotate 90 collages/enhanced/green.png ${location}/fig10e.png 
+convert -rotate 90 collages/enhanced/yellow.png ${location}/fig10f.png
+convert -rotate 90 collages/enhanced/red.png ${location}/fig10g.png
+convert -rotate 90 collages/enhanced/leafless.png ${location}/fig10h.png
 
-cp collages/thresholded/green.png ${location}/fig10i.png 
-cp collages/thresholded/yellow.png ${location}/fig10j.png
-cp collages/thresholded/red.png ${location}/fig10k.png 
-cp collages/thresholded/leafless.png ${location}/fig10l.png   
+convert -rotate 90 collages/thresholded/green.png ${location}/fig10i.png 
+convert -rotate 90 collages/thresholded/yellow.png ${location}/fig10j.png
+convert -rotate 90 collages/thresholded/red.png ${location}/fig10k.png 
+convert -rotate 90 collages/thresholded/leafless.png ${location}/fig10l.png   
 
-x=200
-y=200
-w=400
-h=400
+x=100
+y=100
+w=300
+h=300
 
 convert -crop ${w}x${h}+${x}+${y} scaled/original/jun60.png ${location}/fig11a.png # processing example: original
 convert -crop ${w}x${h}+${x}+${y} scaled/enhanced/jun60.png ${location}/fig11b.png # processing example: enhanced
@@ -120,7 +120,7 @@ convert -crop 800x800+300+300 output/air/enhanced/aug100.png ${location}/fig13b.
 convert -crop 800x800+300+300 output/air/thresholded/aug100.png ${location}/fig13c.png
 convert -crop 800x800+300+300 output/air/automaton/aug100.png ${location}/fig13d.png 
 
-cp coverage.png ${location}/fig14.png
+convert -density 300 coverage.eps ${location}/fig14.png
 
 ls -1 timestamps/*start* | awk -F '_' '{print $1}' | cut -c 12-40 > measured.txt
 python3 times.py measured.txt > ${location}/table3.tex

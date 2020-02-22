@@ -20,19 +20,14 @@ def save(a, filename, size = 800):
     a = np.array(sorted(a, key = lambda pixel: step(pixel)))
     n = a.shape[0]
     k = int(ceil(sqrt(n)))
-    g = 2.168
-    # n = k x k == w * h
-    # w = g * h
-    # n = gh * h = gh^2
-    # n/g = h^2
+    g = 1.168
     h = int(ceil(sqrt(n / g)))
     w = int(ceil(n / h))
     d = w * h - n
     assert not d < 0
     if d > 0: # pad
         a = np.concatenate((a, np.repeat(0, 4 * d).reshape(d, 4)), axis = 0)
-    img = Image.fromarray(np.uint8(a).reshape(h, w, 4), 'RGBA')
-    img = img.rotate(90)
+    img = Image.fromarray(np.uint8(a).reshape(w, h, 4), 'RGBA')
     print(f'{w}x{h} {filename}')
     img.save(filename)
     return

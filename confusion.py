@@ -55,8 +55,10 @@ for (case, matrix) in [('global', overall)] + list(specific.items()):
     error = 1 - accuracy
     sep = ' & ' if latex else '\t'
     e = 'Error' if not latex else ' & $\mathcal{E}$'
-    a = 'Accuracy' if not latex else ' & $\mathcal{A}$'        
-    print(f'{case}{sep}{e}{sep}{error:.2f}{sep}{a}{sep}{accuracy:.2f}')
+    a = 'Accuracy' if not latex else ' & $\mathcal{A}$'
+    fe = '{\\bf' + f'{error:.2f}' + '}' if latex else f'{error:.2f}'
+    fa = '{\\bf' + f'{accuracy:.2f}' + '}' if latex else f'{accuracy:.2f}'
+    print(f'{case}{sep}{e}{sep}{fe}{sep}{a}{sep}{fa}')
     for c in classes:
         if c != 'black': 
             tp = matrix.get((c, c), 0) # predicted == expected

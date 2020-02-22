@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-plt.rcParams.update({'font.size': 15})
+plt.rcParams.update({'font.size': 17})
 from PIL import Image
 from sys import argv
 import numpy as np

@@ -7,12 +7,12 @@ import numpy as np
 datasets = ['jun60', 'jul90', 'jul100', 'aug90', 'aug100']
 classes = ['green', 'yellow', 'red', 'leafless']
 defq = 0.95 # default quantile
-cutoff = None
+q = None
 try:
-     cutoff = float(argv[1])
+     q = float(argv[1])
 except:
-    cutoff = defq
-assert cutoff > 0 and cutoff < 1
+    q = defq
+assert q > 0 and q < 1
 
 tb = [] # others/leafless threshold
 tg = [] # green/yellow threshold
@@ -47,21 +47,22 @@ for c in classes:
         dBR = B - R
         grayscale = (R + B + G) / 3
         comb = np.concatenate([np.abs(dRG), np.abs(dBR), np.abs(dRG)])
-        monotone = 255 - np.max(comb.reshape(3, n), axis = 0)
+        monotone = np.max(comb.reshape(3, n), axis = 0) 
         assert len(monotone) == n
-        tl.append(np.quantile(grayscale, cutoff))
-        td.append(np.quantile(255 - grayscale, cutoff))
-        tm.append(np.quantile(monotone, cutoff))
+        tl.append(np.quantile(grayscale, q)) # lightness, those below are ok
+        td.append(np.quantile(grayscale, 1 - q)) # darkness, those _above_ are ok
+        tm.append(np.quantile(monotone, 1 - q)) # grayness, those _above_ are ok
         if c != 'leafless':
-            tb.append(np.quantile(B, cutoff))
+            tb.append(np.quantile(B, q)) # those below are NOT leafless
         if c == 'green':
-            tg.append(np.quantile(dRG, cutoff)            )
+            tg.append(np.quantile(dRG, q)) # those below are green
         elif c == 'yellow':
-            tr.append(np.quantile(dRG, cutoff)            ) 
-print('tb', int(ceil(sum(tb) / len(tb))), '# pixels with B > tb are made blue')
-print('tg', int(ceil(sum(tg) / len(tg))), '# pixels with R - G < tg are made green')
-print('tr', int(ceil(sum(tr) / len(tr))), '# pixels with R - G > tr are made red')
-print('tm', 255 - int(ceil(sum(tm) / len(tm))), '# pixels with max diff in RGB < tm are made transparent')
-print('td', 255 - int(ceil(sum(td) / len(td))), '# pixels with tone < td are made transparent')
-print('tl', int(ceil(sum(tl) / len(tl))), '# pixels with tone > tl are made transparent')
+            tr.append(np.quantile(dRG, q)) # those below are yellow
+margin = int(ceil(150 * (1 - q)))
+print('tb', ceil(max(tb)) + margin, '0 #  B < tb are not leafless') # special case: noisy histograms
+print('tg', int(ceil(sum(tg) / len(tg))), '0 #  R - G < tg green')
+print('ty', int(ceil(sum(tr) / len(tr))), '0 #  R - G < ty yellow')
+print('tm', int(ceil(sum(tm) / len(tm))) - margin, '1 #  diff > tm non-transparent')
+print('td', int(ceil(sum(td) / len(td))) - margin, '1 #  tone > td non-transparent')
+print('tl', int(ceil(sum(tl) / len(tl))) + margin, '0 #  tone < tl non-transparent')
 

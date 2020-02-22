@@ -5,8 +5,8 @@ from PIL import Image, ImageDraw
 
 margin = 15
 size = 200
-rows = 4
-cols = 3
+rows = 5
+cols = 4
 w = rows * size + (rows + 1) * margin
 h = cols * size + (cols + 1) * margin
 datasets = ['jun60', 'jul90', 'jul100', 'aug90', 'aug100']
