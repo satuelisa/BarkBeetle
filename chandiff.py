@@ -41,7 +41,7 @@ def diff(filename, ax, h, tw = 2, bw = 5):
     G = np.take(RGBA[:,:,1].flatten().astype(int), keep)[0]
     B = np.take(RGBA[:,:,2].flatten().astype(int), keep)[0]
     vs = [diffHisto(R, G), diffHisto(R, B), diffHisto(G, B)]
-    line = [[(th['tr'], 'r'), (th['tg'], 'b')], [(th['tm'], 'b')], [(th['tm'], 'b')]] 
+    line = [[(th['ty'], 'b'), (th['tg'], 'b')], [(th['tm'], 'b')], [(th['tm'], 'b')]] 
     assert len(line) == len(vs) and len(ax) == len(line)
     for j in range(len(vs)):
         n = sum(vs[j].values()) # total frequency

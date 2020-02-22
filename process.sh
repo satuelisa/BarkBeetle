@@ -1,5 +1,7 @@
+all=`grep "\$arg" process.sh | grep '==' | grep -v 'process' | cut -c 21-30 | awk -F '"' '{print $1}' | tr '\n' ' '`
 declare -a classes=("green" "yellow" "red" "leafless")
-echo Stages requested
+echo Available: $all
+echo Requested:
 for arg in "$@"
 do
     echo "* " $arg
@@ -87,11 +89,15 @@ do
 	break
     fi
 done
-quantiles="93 94 95 96 97"
 for arg in "$@"
 do
     if [ "$arg" == "rules" ]
     then
+	start=75
+	end=95
+	step=5
+	quantiles=`python -c "print(' '.join([str(x) for x in range($start, $end + 1, $step)]))"`
+	echo $quantiles
 	rm -f ruleperf.txt
 	touch ruleperf.txt
 	for q in ${quantiles[@]}
@@ -102,13 +108,13 @@ do
 	    do
 		python3 threshold.py $kind $q >> ruleperf.txt
 	    done
-	done
-	python3 ruleperf.py # produces the illustration for the selection made below
-	cp thresholds_95.txt thresholds.txt # see reasoning for the quantile selection in the manuscript
+	done 
+	python3 ruleperf.py $start $end $step # produces the illustration for the selection made below
+	cp thresholds_90.txt thresholds.txt # see reasoning for the quantile selection in the manuscript
 	break
     fi
 done
-for arg in "$@" 
+for arg in "$@"
 do
     if [ "$arg" == "char" ] 
     then
@@ -151,7 +157,7 @@ do
 	echo Processing
 	rm -rf automaton/frames # force clear so as not to affect the GIF
 	mkdir -p automaton/frames	
-	date > timestamps/automaton_start_time.txt
+	date > timestamps/automata_start_time.txt
 	for file in `ls -1 orthomosaics/*.tiff`
 	do
 	    dataset=`basename $file .tiff`
@@ -159,7 +165,7 @@ do
 	    python3 automaton.py $dataset > automaton/${dataset}.log
 	    wc -l automaton/${dataset}.log
 	done
-	date > timestamps/automaton_end_time.txt	
+	date > timestamps/automata_end_time.txt	
 	break
     fi
 done
@@ -191,6 +197,15 @@ do
     then
 	python3 counts.py > coverage.txt
 	python3 coverage.py
+	for kind in "${classes[@]}"
+	do	
+	    grep $kind coverage.txt | awk -v k=$kind '{print $1" "$3" "k}' | sed 's/jun60/0/g;s/jul90/1/g;s/jul100/2/g;s/aug90/3/g;s/aug100/4/g' > coverage/$kind.txt
+	done
+	cat coverage/green.txt | awk '{print $1" "$2" "0}' | sort -g > coverage/g.txt	
+	cat coverage/g.txt coverage/yellow.txt | awk '{a[$1] += $2; if ($3 != "yellow"){b[$1] = $2}}END{for (x in a) {print x" "a[x]" "b[x]}}' | sort -g > coverage/gy.txt
+	cat coverage/gy.txt coverage/red.txt | awk '{a[$1] += $2; if ($3 != "red"){b[$1] = $2}}END{for (x in a) {print x" "a[x]" "b[x]}}' | sort -g > coverage/gyr.txt
+	cat coverage/gyr.txt coverage/leafless.txt | awk '{a[$1] += $2; if ($3 != "leafless"){b[$1] = $2}}END{for (x in a) {print x" "a[x]" "b[x]}}' | sort -g > coverage/all.txt
+	gnuplot coverage.plot
 	break
     fi
 done

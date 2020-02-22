@@ -19,10 +19,10 @@ options = [blue, red, yellow, green]
 debug = False
 gif = True
 
-def pick(colors):
+def pick(colors, margin = 1):
     high = max(colors.values()) # max freq
     for o in options:
-        if o in colors.keys() and colors[o] == high:
+        if o in colors.keys() and colors[o] >= high - margin:
             return o
     return None # keep the old one
 
