@@ -1,4 +1,4 @@
-from math import ceil, sqrt
+from math import ceil, floor, sqrt
 from PIL import Image
 import numpy as np
 import colorsys
@@ -20,16 +20,26 @@ def save(a, filename, size = 800):
     a = np.array(sorted(a, key = lambda pixel: step(pixel)))
     n = a.shape[0]
     k = int(ceil(sqrt(n)))
-    d = k**2 - n
-    a = np.concatenate((a, np.repeat(0, 4 * d).reshape(d, 4)), axis = 0)
-    img = Image.fromarray(np.uint8(a).reshape(k, k, 4), 'RGBA')
-    img = img.resize((size, size))
-    print(f'{k}x{k} {filename}')
+    g = 2.168
+    # n = k x k == w * h
+    # w = g * h
+    # n = gh * h = gh^2
+    # n/g = h^2
+    h = int(ceil(sqrt(n / g)))
+    w = int(ceil(n / h))
+    d = w * h - n
+    assert not d < 0
+    if d > 0: # pad
+        a = np.concatenate((a, np.repeat(0, 4 * d).reshape(d, 4)), axis = 0)
+    img = Image.fromarray(np.uint8(a).reshape(h, w, 4), 'RGBA')
+    img = img.rotate(90)
+    print(f'{w}x{h} {filename}')
     img.save(filename)
     return
-    
+
 classes = ['green', 'yellow', 'red', 'leafless']
-datasets = ['jun60', 'jul90', 'jul100', 'aug90', 'aug100']
+datasets = ['jun60', 'jul90', 'jul100', 'aug90', 'aug100'] 
+
 for case in ['original', 'enhanced', 'thresholded']:
     pixels = dict()
     for kind in classes:

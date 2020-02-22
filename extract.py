@@ -11,26 +11,13 @@ def cut(square, d, center, mask, target):
     circle.paste(square.crop((center)), (0, 0), mask)
     circle.save(target)
 
+from trees import parse
 from gsd import radius
 debug = False # mask files are saved in debug mode (to see how round they are)
 postprocess = 'post' in argv # whether this is pre- or post-processing
 
 dataset = argv[1]
-trees = []
-ow = None
-with open('annotations/{:s}.map'.format(dataset)) as data:
-    for line in data:
-        if 'Coordinates' in line:
-            ow = int(line.split()[4]) 
-        elif '#' not in line:
-            fields = line.split()
-            treeID = int(fields.pop(0))
-            if treeID > 30:
-                label = fields.pop(0)
-                x = int(fields.pop(0))
-                y = int(fields.pop(0))
-                trees.append((x, y, label, treeID))
-
+trees, ow = parse(dataset)
 sqr = radius(dataset)
 goal = 4*sqr**2
 r = sqr // 2
@@ -58,7 +45,9 @@ if postprocess:
     sr = sd // 2
     if debug:
         mask.save(f'mask_{sr}.png', quality=100)
-for (x, y, label, treeID) in trees:
+for treeID in trees:
+    pos, label = trees[treeID]
+    x, y = pos
     zone = (x - sqr, y - sqr, x + sqr, y + sqr)
     square = original.crop(zone)
     if goal == np.array(square).any(axis=-1).sum(): # ignore partial samples

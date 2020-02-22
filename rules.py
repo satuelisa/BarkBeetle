@@ -1,10 +1,18 @@
 from PIL import Image
 from math import ceil
+from sys import argv
 import numpy as np
+
 
 datasets = ['jun60', 'jul90', 'jul100', 'aug90', 'aug100']
 classes = ['green', 'yellow', 'red', 'leafless']
-cutoff = 0.975
+defq = 0.95 # default quantile
+cutoff = None
+try:
+     cutoff = float(argv[1])
+except:
+    cutoff = defq
+assert cutoff > 0 and cutoff < 1
 
 tb = [] # others/leafless threshold
 tg = [] # green/yellow threshold

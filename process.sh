@@ -20,7 +20,7 @@ do
     fi
 done
 # these are separate loops to ensure correct order if multiple are chosen
-width=2000 # to which width to scale down the processing 
+width=1000 # to which width to scale down the processing 
 for arg in "$@" 
 do
     if [ "$arg" == "scale" ] 
@@ -76,15 +76,35 @@ do
 		convert -background none individual/enhanced/*_${kind}_*.png +append composite/enhanced/${kind}.png
 		convert -background none individual/original/${dataset}_${kind}_*.png +append composite/original/${dataset}_${kind}.png
 		convert -background none individual/enhanced/${dataset}_${kind}_*.png +append composite/enhanced/${dataset}_${kind}.png
+		
+	    done
+	    for kind in "${classes[@]}"
+	    do
+		echo $kind
+		ls -lh individual/enhanced/*_${kind}_*.png | wc -l
 	    done
 	done
-	python3 rules.py > thresholds.txt
-	date > timestamps/extraction_end_time.txt
-	for kind in "${classes[@]}"
+	break
+    fi
+done
+quantiles="93 94 95 96 97"
+for arg in "$@"
+do
+    if [ "$arg" == "rules" ]
+    then
+	rm -f ruleperf.txt
+	touch ruleperf.txt
+	for q in ${quantiles[@]}
 	do
-	    echo $kind
-	    ls -lh individual/enhanced/*_${kind}_*.png | wc -l
+	    echo Using quantile 0.$q
+	    python3 rules.py 0.$q> thresholds_$q.txt
+	    for kind in "${classes[@]}"
+	    do
+		python3 threshold.py $kind $q >> ruleperf.txt
+	    done
 	done
+	python3 ruleperf.py # produces the illustration for the selection made below
+	cp thresholds_95.txt thresholds.txt # see reasoning for the quantile selection in the manuscript
 	break
     fi
 done
@@ -110,21 +130,36 @@ done
 mkdir -p thresholded
 for arg in "$@" 
 do
-    if [ "$arg" == "proc" ] 
+    if [ "$arg" == "thr" ] 
     then
-	echo Processing
-	date > timestamps/processing_start_time.txt
-	rm -rf automaton/frames # force clear so as not to affect the GIF
-	mkdir -p automaton/frames
+	echo Thresholding
+	date > timestamps/thresholding_start_time.txt
 	for file in `ls -1 orthomosaics/*.tiff`
 	do
 	    dataset=`basename $file .tiff`
 	    echo "Processing $dataset"
 	    python3 threshold.py $dataset
+	done
+	date > timestamps/thresholding_end_time.txt	
+	break
+    fi
+done
+for arg in "$@" 
+do
+    if [ "$arg" == "ca" ] 
+    then
+	echo Processing
+	rm -rf automaton/frames # force clear so as not to affect the GIF
+	mkdir -p automaton/frames	
+	date > timestamps/automaton_start_time.txt
+	for file in `ls -1 orthomosaics/*.tiff`
+	do
+	    dataset=`basename $file .tiff`
+	    echo "Processing $dataset"
 	    python3 automaton.py $dataset > automaton/${dataset}.log
 	    wc -l automaton/${dataset}.log
 	done
-	date > timestamps/processing_end_time.txt	
+	date > timestamps/automaton_end_time.txt	
 	break
     fi
 done
@@ -152,6 +187,15 @@ do
 done
 for arg in "$@" 
 do
+    if [ "$arg" == "cover" ] 
+    then
+	python3 counts.py > coverage.txt
+	python3 coverage.py
+	break
+    fi
+done
+for arg in "$@" 
+do
     if [ "$arg" == "forecast" ] 
     then
 	mkdir -p output/ground/original
@@ -160,14 +204,14 @@ do
 	mkdir -p output/ground/thresholded
 	rm ground.txt # redo the forecast result file
 	touch ground.txt
-	date > timestamps/forecast_start_time.txt
+	date > timestamps/forecasting_start_time.txt
 	for file in `ls -1 orthomosaics/*.tiff`
 	do
 	    dataset=`basename $file .tiff`
 	    echo "Forecasting $dataset"
 	    python3 test.py $dataset ground >> ground.txt 
 	done
-	date > timestamps/forecast_end_time.txt	
+	date > timestamps/forecasting_end_time.txt	
 	break
     fi
 done

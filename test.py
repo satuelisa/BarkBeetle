@@ -1,6 +1,8 @@
 import cv2
 import color
 from sys import argv
+
+from trees import parse
 from gsd import radius
 
 hl = {
@@ -17,28 +19,8 @@ targets = {
     'automaton': cv2.imread(f'automaton/{dataset}.png', cv2.IMREAD_UNCHANGED)}
     
 h, w, channels = targets['automaton'].shape
-trees = dict()
-kind = dict()
-relabel = {'red': 'red', 'dry': 'red',
-           'leafless': 'leafless',
-           'green': 'green', 'infested': 'green',
-           'yellow': 'yellow', 'orange': 'yellow'}
-with open('annotations/{:s}.map'.format(dataset)) as data:
-    for line in data:
-        if '#' not in line:
-            fields = line.split()
-            treeID = int(fields.pop(0))
-            if ground and treeID > 30:
-                continue
-            elif not ground and treeID <= 30:
-                continue
-            label = relabel[fields.pop(0)]
-            x = int(fields.pop(0))
-            y = int(fields.pop(0))
-            trees[treeID] = (x, y)
-            kind[treeID] = label
-        elif 'Coordinates' in line:
-             factor = int(line.split()[4]) / w # scaling factor
+trees, ow = parse(dataset, ground)
+factor = ow / w # scaling factor
 lw = 3
 step = lw + 1
 r = radius(dataset, factor)
@@ -46,10 +28,9 @@ offsetL = r + 4 * step
 margin = r + offsetL + 50
 target = 'ground' if ground else 'air'
 for tID in trees:
-    (x, y) = trees[tID]
+    (x, y), label = trees[tID]
     x =  int(round(x / factor))
     y =  int(round(y / factor))
-    label = kind[tID]
     intended = color.BGR[label]
     present = color.majority(x, y, r, w, h, targets['automaton'])
     match = label in present

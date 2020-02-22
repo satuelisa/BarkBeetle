@@ -1,3 +1,4 @@
+from collections import defaultdict
 from math import fabs
 from PIL import Image
 import warnings
@@ -5,18 +6,23 @@ import warnings
 # metadata causes this
 warnings.simplefilter('ignore', Image.DecompressionBombWarning)
 
-def values():
+def values(q = None):
+    suffix = '' if q is None else f'_{q}'
     th = dict()
-    with open('thresholds.txt') as data:
+    with open(f'thresholds{suffix}.txt') as data:
         for line in data:
             fields = line.split()
             th[fields[0]] = int(fields[1])
     return th
 
-def threshold(filename, thresholds, outputfile):
+def threshold(dataset = None, kind = None, quantile = None, target = None):
+    thresholds = values(quantile)
+    filename = f'scaled/enhanced/{dataset}.png' if dataset is not None else f'composite/enhanced/{kind}.png'
     img = Image.open(filename)
     (w, h) = img.size
     pix = img.load()
+    if target is None:
+        counts = defaultdict(int)
     for x in range(w):
         for y in range(h):
             p = pix[x, y]
@@ -31,26 +37,66 @@ def threshold(filename, thresholds, outputfile):
             diff = max(fabs(rg), fabs(rb), fabs(gb))
             if a == 255: # completely opaque pixels only
                 if tone < thresholds['td']: # dark
-                    pix[x, y] = (0, 0, 0, 0) # shadows
+                    if target is not None:
+                        pix[x, y] = (0, 0, 0, 0) # shadows
+                    else:
+                        counts['background'] += 1
                 elif b > thresholds['tb']:
-                    pix[x, y] = (0, 0, 255, 255) # blue (leafless)
+                    if target is not None:
+                        pix[x, y] = (0, 0, 255, 255) # blue (leafless)
+                    else:
+                        counts['leafless'] += 1
                 elif tone > thresholds['tl']: # light
-                    pix[x, y] = (0, 0, 0, 0) # rocks
-                elif rg < thresholds['tg']: 
-                    pix[x, y] = (0, 255, 0, 255) # green                    
-                elif rg > thresholds['tr']: 
-                    pix[x, y] = (255, 0, 0, 255) # red
+                    if target is not None:
+                        pix[x, y] = (0, 0, 0, 0) # rocks
+                    else:
+                        counts['background'] += 1
+                elif rg < thresholds['tg']:
+                    if target is not None:
+                        pix[x, y] = (0, 255, 0, 255) # green
+                    else:
+                        counts['green'] += 1
+                elif rg > thresholds['tr']:
+                    if target is not None:
+                        pix[x, y] = (255, 0, 0, 255) # red
+                    else:
+                        counts['red'] += 1
                 elif diff < thresholds['tm']: # gray
-                    pix[x, y] = (0, 0, 0, 0) # ground                    
+                    if target is not None:
+                        pix[x, y] = (0, 0, 0, 0) # ground
+                    else:
+                        counts['background'] += 1
                 else:
-                    pix[x, y] = (255, 255, 0, 255) # yellow
+                    if target is not None:
+                        pix[x, y] = (255, 255, 0, 255) # yellow
+                    else:
+                        counts['yellow'] += 1
             else:
                 pix[x, y] = (0, 0, 0, 0) # transparent (black)
-    img.save(outputfile)
+    if target is not None:
+        img.save(target)
+    else:
+        total = w * h
+        for (k, v) in counts.items():
+            print(kind, '0.' + quantile, k, 100 * v / total)
     return
 
 if __name__ == '__main__':
     from sys import argv
-    dataset = argv[1]
-    th = values()
-    threshold(f'scaled/enhanced/{dataset}.png', th, f'thresholded/{dataset}.png')
+    data = argv[1]
+    q = None
+    try:
+        q = argv[2]
+    except:
+        pass
+    t = None if q is not None else f'thresholded/{data}.png'
+    if data in ['jun60', 'jul90', 'jul100', 'aug90', 'aug100']:
+        assert q is None
+        threshold(dataset = data, target = t)
+    elif data in ['green', 'yellow', 'red', 'leafless']:
+        assert q is not None
+        threshold(kind = data, quantile = q)
+    else:
+        print('Unknown data source', data)
+
+

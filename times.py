@@ -1,11 +1,15 @@
 import datetime
+from sys import argv
 
-phases = ['enhancement', 'characterization', 'evaluation', 'forecast', 'processing']
+phases = None
+with open(argv[1]) as data:
+    phases = data.readlines()
+
 f = '%H:%M:%S'
-
 print('{\\bf Phase} & {\\bf Runtime} \\\\')
 print('\\hline')
 for phase in phases:
+    phase = phase.strip()
     try: # see if the files exist
         values = dict()
         for step in ['start', 'end']:

@@ -1,31 +1,39 @@
-from os import popen # for the GIF
-from PIL import Image
 from collections import defaultdict
+from math import ceil, sqrt
+from PIL import Image
+from os import popen # for the GIF
 import warnings
 
 # metadata causes this
 warnings.simplefilter('ignore', Image.DecompressionBombWarning)
+
+from trees import parse
+from gsd import radius
 
 red = (255, 0, 0, 255)
 green = (0, 255, 0, 255)
 blue = (0, 0, 255, 255)
 yellow = (255, 255, 0, 255)
 
-options = [blue, yellow, red, green]
+options = [blue, red, yellow, green]
 debug = False
 gif = True
 
-def pick(colors, k):
+def pick(colors):
     high = max(colors.values()) # max freq
     for o in options:
         if o in colors.keys() and colors[o] == high:
             return o
     return None # keep the old one
 
-def colfreq(dataset, rad = 1, k = 4):
+def colfreq(dataset):
     filename = 'thresholded/' + dataset + '.png'    
     img = Image.open(filename)
     (w, h) = img.size
+    trees, ow = parse(dataset)
+    trees = None # we do not need this here
+    factor = ow / w
+    rad = int(ceil(sqrt(radius(dataset, factor))))
     threshold = int((w * h) / 10000)
     tmp = img.copy() # copy so that the same pixels are blank
     pix = img.load()
@@ -33,7 +41,7 @@ def colfreq(dataset, rad = 1, k = 4):
     n = [(dx, dy) for dx in range(-rad, rad + 1) for dy in range(-rad, rad + 1)] # Moore neighborhood
     stable = set()
     iteration = 0
-    print('# iterating until less than', threshold, 'pixels change')
+    print(f'# iterating with {rad} radius until less than', threshold, 'pixels change')
     while True:
         changes = 0
         for x in range(w):
@@ -51,7 +59,7 @@ def colfreq(dataset, rad = 1, k = 4):
                             if pn[3] == 255: # opaque
                                 c[pn] += 1
                                 nn.add((nx, ny))
-                    repl = pick(c, k)
+                    repl = pick(c)
                     if repl is not None and p != repl:
                         update[x, y] = repl
                         stable -= nn
@@ -76,4 +84,4 @@ def colfreq(dataset, rad = 1, k = 4):
             img.resize((300, 300)).save(frame)
 
 from sys import argv
-colfreq(argv[1], 3)
+colfreq(argv[1])

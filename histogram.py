@@ -22,10 +22,10 @@ def getGray(v):
     return '#%02x%02x%02x' % (v, v, v)
 
 def getPurple(v):
-    return '#%02x%02x%02x' % (v, v // 3, v // 2)
+    return '#%02x%02x%02x' % (v // 4, v // 3, v // 2)
 
 def getBrown(v):
-    return '#%02x%02x%02x' % (v, v // 2, v // 3)
+    return '#%02x%02x%02x' % (v // 4, v // 2, v // 3)
 
 def histo(filename, ax, ylim, bw = 5, tw = 2, dark = 1, bright = 254, seglen = 256): 
     histogram = Image.open(filename).histogram()

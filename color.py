@@ -1,6 +1,9 @@
 from math import sqrt
 from collections import defaultdict
 
+# matplotlib pie chart colors
+pltcol = {'green': '#00ff00', 'red': '#ff0000', 'yellow': '#ffff00', 'leafless': '#0000ff', 'background': 'k'}
+
 BGR = { 'red': (0, 0, 255, 255),
         'green': (0, 255, 0, 255),
         'yellow': (0, 255, 255, 255),
@@ -8,10 +11,13 @@ BGR = { 'red': (0, 0, 255, 255),
         'black': (0, 0, 0, 255),
         'blue': (255, 0, 0, 255) }
 
-def col2str(col):
-    b = col[0]
-    g = col[1]
-    r = col[2]
+def col2str(col, cv = True):
+    b = col[0] if cv else col[2]
+    g = col[1] 
+    r = col[2] if cv else col[0]
+    if len(col) == 4:
+        if col[3] < 255: # transparent
+            return 'black'
     if r == 0 and b == 255 and g == 0:
         return 'blue'
     elif r == 0 and b == 0 and g == 255:
