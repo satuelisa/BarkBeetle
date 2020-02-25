@@ -15,7 +15,7 @@ green = (0, 255, 0, 255)
 blue = (0, 0, 255, 255)
 yellow = (255, 255, 0, 255)
 
-options = [blue, red, yellow, green]
+options = [red, blue, yellow, green]
 debug = False
 gif = True
 

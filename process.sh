@@ -9,15 +9,35 @@ done
 mkdir -p timestamps
 for arg in "$@"
 do
+    if [ "$arg" == "crop" ] 
+    then
+	date > timestamps/cropping_start_time.txt	
+	mkdir -p cropped
+	python3 bb.py > bb.plot
+	grep '# crop' bb.plot > offsets.txt
+	for file in `ls -1 orthomosaics/*.tiff`
+	do
+	    dataset=`basename $file .tiff`
+	    python3 grayscale.py $dataset # figure for the manuscript
+	done
+	date > timestamps/cropping_end_time.txt	
+	break
+    fi
+done
+
+for arg in "$@"
+do
     if [ "$arg" == "enhance" ] 
     then
+	date > timestamps/enhancement_start_time.txt	
 	echo Enhancing	
 	bash enhance.sh
 	for file in `ls -1 orthomosaics/*.tiff`
 	do
-	    dataset=`basename $file .tiff`	
+	    dataset=`basename $file .tiff`
 	    python3 grayscale.py $dataset # figure for the manuscript
 	done
+	date > timestamps/enhancement_end_time.txt		
 	break
     fi
 done
@@ -93,24 +113,28 @@ for arg in "$@"
 do
     if [ "$arg" == "rules" ]
     then
-	start=75
-	end=95
-	step=5
+	start=70
+	end=99
+	step=1
 	quantiles=`python -c "print(' '.join([str(x) for x in range($start, $end + 1, $step)]))"`
 	echo $quantiles
 	rm -f ruleperf.txt
 	touch ruleperf.txt
+	mkdir -p thresholds
+	rm -f thresholds/*
 	for q in ${quantiles[@]}
 	do
 	    echo Using quantile 0.$q
-	    python3 rules.py 0.$q> thresholds_$q.txt
+	    python3 rules.py 0.$q> thresholds/thr_$q.txt
 	    for kind in "${classes[@]}"
 	    do
 		python3 threshold.py $kind $q >> ruleperf.txt
 	    done
 	done 
-	python3 ruleperf.py $start $end $step # produces the illustration for the selection made below
-	cp thresholds_90.txt thresholds.txt # see reasoning for the quantile selection in the manuscript
+	python3 ruleperf.py > best.txt
+	best=`head -n 1 best.txt | awk '{print $1}'` # just use the first if there are many
+	cp thresholds/thr_$best.txt thresholds.txt
+	echo The BEST quantile was $best
 	break
     fi
 done
