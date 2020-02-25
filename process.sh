@@ -54,7 +54,7 @@ do
 	for file in `ls -1 orthomosaics/*.tiff`
 	do
 	    dataset=`basename $file .tiff`	
-	    convert -resize ${width}x orthomosaics/$dataset.png scaled/original/$dataset.png	
+	    convert -resize ${width}x cropped/$dataset.png scaled/original/$dataset.png	
 	    convert -resize ${width}x enhanced/$dataset.png scaled/enhanced/$dataset.png
 	done
 	break
@@ -228,10 +228,12 @@ do
 	do	
 	    grep $kind coverage.txt | awk -v k=$kind '{print $1" "$3" "k}' | sed 's/jun60/0/g;s/jul90/1/g;s/jul100/2/g;s/aug90/3/g;s/aug100/4/g' > coverage/$kind.txt
 	done
+	grep black coverage.txt | awk -v k=$kind '{print $1" "$3" "k}' | sed 's/jun60/0/g;s/jul90/1/g;s/jul100/2/g;s/aug90/3/g;s/aug100/4/g' > coverage/background.txt	
 	cat coverage/green.txt | awk '{print $1" "$2" "0}' | sort -g > coverage/g.txt	
 	cat coverage/g.txt coverage/yellow.txt | awk '{a[$1] += $2; if ($3 != "yellow"){b[$1] = $2}}END{for (x in a) {print x" "a[x]" "b[x]}}' | sort -g > coverage/gy.txt
 	cat coverage/gy.txt coverage/red.txt | awk '{a[$1] += $2; if ($3 != "red"){b[$1] = $2}}END{for (x in a) {print x" "a[x]" "b[x]}}' | sort -g > coverage/gyr.txt
-	cat coverage/gyr.txt coverage/leafless.txt | awk '{a[$1] += $2; if ($3 != "leafless"){b[$1] = $2}}END{for (x in a) {print x" "a[x]" "b[x]}}' | sort -g > coverage/all.txt
+	cat coverage/gyr.txt coverage/leafless.txt | awk '{a[$1] += $2; if ($3 != "leafless"){b[$1] = $2}}END{for (x in a) {print x" "a[x]" "b[x]}}' | sort -g > coverage/gyrl.txt
+	cat coverage/gyrl.txt coverage/background.txt | awk '{a[$1] += $2; if ($3 != "background"){b[$1] = $2}}END{for (x in a) {print x" "a[x]" "b[x]}}' | sort -g > coverage/all.txt
 	gnuplot coverage.plot
 	break
     fi

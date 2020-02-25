@@ -30,7 +30,7 @@ def lon2x(d, o):
     assert span > 0
     assert o['W'] <= d
     assert d <= o['E']
-    pos = (d - o['E']) / span
+    pos = (o['E'] - d) / span
     w = o['width']
     return round(o['x0'] + pos * w)
     

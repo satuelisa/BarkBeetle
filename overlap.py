@@ -26,7 +26,7 @@ with open('annotations/{:s}.annot'.format(dataset)) as data:
                 if ok:
                     print(treeID, label, str(x), str(y), file = target)
                     pos.add(p)
-            else:
+            else: # leave the ground ones be
                 print(line, file = target)
         else:
             print(line, file = target)
