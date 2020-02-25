@@ -13,6 +13,7 @@ do
     then
 	date > timestamps/cropping_start_time.txt	
 	mkdir -p cropped
+	rm -rf cropped/*.png
 	python3 bb.py > bb.plot
 	grep '# crop' bb.plot > offsets.txt
 	for file in `ls -1 orthomosaics/*.tiff`
@@ -24,7 +25,6 @@ do
 	break
     fi
 done
-
 for arg in "$@"
 do
     if [ "$arg" == "enhance" ] 
@@ -32,6 +32,7 @@ do
 	date > timestamps/enhancement_start_time.txt	
 	echo Enhancing	
 	bash enhance.sh
+	rm -rf enhanced/*.png
 	for file in `ls -1 orthomosaics/*.tiff`
 	do
 	    dataset=`basename $file .tiff`
@@ -85,9 +86,11 @@ do
 	mkdir -p individual/enhanced
 	mkdir -p composite/enhanced
 	mkdir -p composite/original
+	rm -rf individual/*/*.png
+	rm -rf composite/*/*.png
 	date > timestamps/extraction_start_time.txt
 	for file in `ls -1 orthomosaics/*.tiff`; do
-	    echo "Extracting samples from $dataset"
+	    echo Extracting samples from $dataset
 	    dataset=`basename $file .tiff`
 	    python3 extract.py ${dataset} # individual samples in individual files
 	    convert -background none individual/enhanced/${dataset}_*.png +append composite/enhanced/${dataset}.png
@@ -100,11 +103,11 @@ do
 		convert -background none individual/enhanced/${dataset}_${kind}_*.png +append composite/enhanced/${dataset}_${kind}.png
 		
 	    done
-	    for kind in "${classes[@]}"
-	    do
-		echo $kind
-		ls -lh individual/enhanced/*_${kind}_*.png | wc -l
-	    done
+	done
+	for kind in "${classes[@]}"
+	do
+	    echo $kind
+	    ls -lh individual/enhanced/*_${kind}_*.png | wc -l
 	done
 	break
     fi

@@ -30,3 +30,63 @@ plt.title('')
 m = np.mean(data['diff'])
 plt.savefig('difference.png',  dpi=150)
 print('Mean difference: ', m)
+
+from collections import defaultdict
+offsets = defaultdict(dict)
+maps = dict()
+with open('offsets.txt') as od:
+    for line in od:
+        fields = line.split()
+        f = fields[2]
+        maps[f] = open(f'annotations/{f}.annot', 'w')
+        offsets[f]['x0'] = int(fields[3])
+        offsets[f]['y0'] = int(fields[4])
+        offsets[f]['x1'] = int(fields[5])
+        offsets[f]['y1'] = int(fields[6])
+        offsets[f]['wOrig'] = int(fields[7][1:-1]) # skip ( and ,
+        offsets[f]['hOrig'] = int(fields[8][:-1]) # skip )
+        offsets[f]['N'] = float(fields[9])
+        offsets[f]['S'] = float(fields[10])
+        offsets[f]['W'] = float(fields[11])
+        offsets[f]['E'] = float(fields[12])
+        w = offsets[f]['x1'] - offsets[f]['x0']
+        offsets[f]['width'] = w
+        h = offsets[f]['y1'] - offsets[f]['y0'] 
+        offsets[f]['height'] = h
+        print(f'# dim {w} {h}', file = maps[f])
+
+from latlon import lon2x, lat2y
+        
+with open('trees.tex', 'w') as target:
+    print('''\\begin{tabular}{r|c|cc|rrrr}
+    {\\bf \\#} & {\\bf Class} & {\\bf Latitude } & {\bf Longitude } & {\\bf Diam.\} & {\\bf Height} & {\\bf N-S } & {\\bf E-W }
+    \\\\ \\hline''', file = target)
+    # treeID class lon lat diam height NSspan EWspan
+    for i, row in data.iterrows():
+        treeID =  row.treeID
+        lon = row.lon
+        lat = row.lat
+        label = row.kind
+        print(f'{treeID} & {label} & {lon} & {lat} & {row.diam:.2f} & {row.height:.1f} & {row.NSspan:.2f} {row.EWspan:.2f} \\', file = target)
+        for f in offsets:
+            o =  offsets[f]
+            x = lon2x(lon, o)
+            y = lat2y(lat, o)
+            if x >= 0 and y >= 0 and x <= o['width'] and y <= o['height']:
+                print(treeID, label, x, y, file = maps[f])
+    print('\end{tabular}', file = target)
+for f in maps:
+    with open(f'annotations/{f}.raw') as data:
+        o = offsets[f]
+        dx = o['x0']
+        dy = o['y0']
+        for line in data:
+            fields = line.split()
+            treeID = fields[0]
+            label = fields[1]
+            x = int(fields[2]) - dx
+            y = int(fields[3]) - dy
+            # only keep the ones that fall in the zone
+            if x > 0 and y > 0 and x <= o['width'] and y <= o['height']: 
+                print(treeID, label, x, y, file = maps[f]) 
+    maps[f].close()

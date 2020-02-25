@@ -5,7 +5,7 @@ from PIL import Image, ImageDraw
 
 margin = 15
 size = 200
-rows = 5
+rows = 4
 cols = 4
 w = rows * size + (rows + 1) * margin
 h = cols * size + (cols + 1) * margin

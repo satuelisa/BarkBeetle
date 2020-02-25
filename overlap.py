@@ -6,7 +6,6 @@ from gsd import radius
 dataset = argv[1]
 threshold = 2 * radius(dataset) # no overlap allowed
 pos = set()
-nID = 31 # the ground-based ones are 1-30
 target =  open('annotations/{:s}.map'.format(dataset), 'w')
 with open('annotations/{:s}.annot'.format(dataset)) as data:
     for line in data:
@@ -25,9 +24,8 @@ with open('annotations/{:s}.annot'.format(dataset)) as data:
                         ok = False
                         break
                 if ok:
-                    print(nID, label, str(x), str(y), file = target)
+                    print(treeID, label, str(x), str(y), file = target)
                     pos.add(p)
-                    nID += 1
             else:
                 print(line, file = target)
         else:
