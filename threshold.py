@@ -7,9 +7,9 @@ import warnings
 warnings.simplefilter('ignore', Image.DecompressionBombWarning)
 
 def values(q = None, plain = True):
-    suffix = '' if q is None else f'_{q}'
+    source = 'thresholds' if q is None else f'thresholds/thr_{q}'
     th = dict()
-    with open(f'thresholds{suffix}.txt') as data:
+    with open(f'{source}.txt') as data:
         for line in data:
             fields = line.split()
             key = fields[0]
@@ -27,9 +27,8 @@ def accept(value, criterion):
     else:
         return value < limit
 
-def threshold(dataset = None, kind = None, quantile = None, target = None):
-    thresholds = values(quantile, plain = False)
-    filename = f'scaled/enhanced/{dataset}.png' if dataset is not None else f'composite/enhanced/{kind}.png'
+def threshold(thresholds, source, target = None):
+    filename = f'scaled/enhanced/{source}.png' if target is not None else f'composite/enhanced/{source}.png'
     img = Image.open(filename)
     (w, h) = img.size
     pix = img.load()
@@ -73,34 +72,30 @@ def threshold(dataset = None, kind = None, quantile = None, target = None):
                             counts['leafless'] += 1
                 else: # not likely to be a sample pixel
                     if target is not None:
-                        pix[x, y] = (0, 0, 0, 0) # black (background)
+                        pix[x, y] = (0, 0, 0, 0) # background
                     else:
-                        counts['black'] += 1
+                        counts['bg'] += 1
 
     if target is not None:
         img.save(target)
+        return
     else:
-        total = w * h
-        for (k, v) in counts.items():
-            print(kind, '0.' + quantile, k, 100 * v / total)
-    return
+        return counts
 
+kinds = ['green', 'yellow', 'red', 'leafless']
 if __name__ == '__main__':
     from sys import argv
     data = argv[1]
-    q = None
-    try:
+    if len(argv) > 2:
         q = argv[2]
-    except:
-        pass
-    t = None if q is not None else f'thresholded/{data}.png'
-    if data in ['jun60', 'jul90', 'jul100', 'aug90', 'aug100']:
-        assert q is None
-        threshold(dataset = data, target = t)
-    elif data in ['green', 'yellow', 'red', 'leafless']:
-        assert q is not None
-        threshold(kind = data, quantile = q)
+        v = values(q, plain = False)
+        if data in kinds:
+            counts = threshold(v, source = data)
+            total = sum(counts.values()) 
+            for (k, v) in counts.items():
+                print(data, '0.' + q, k, 100 * v / total)
     else:
-        print('Unknown data source', data)
+        threshold(values(q = None, plain = False), source = data, target = f'thresholded/{data}.png')
+
 
 

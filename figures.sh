@@ -4,9 +4,11 @@ cp diameter.png ${location}/fig1a.png # tree spans
 cp difference.png ${location}/fig1b.png # span difference
 
 # example validation
+gnuplot bb.plot
+convert -density 200 bb.eps ${location}/fig2a.png
 cp validation/aug100.png fig2_raw.png 
 convert -transparent black -resize $width fig2_raw.png fig2_small.png
-convert -transparent black -crop 400x400+200+205 fig2_small.png ${location}/fig2.png
+convert -transparent black -crop 400x400+200+205 fig2_small.png ${location}/fig2b.png
 
 # example sample areas (square)
 cp examples/squares/green.png ${location}/fig3a.png
