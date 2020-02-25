@@ -6,7 +6,7 @@ cp difference.png ${location}/fig1b.png # span difference
 # example validation
 gnuplot bb.plot
 convert -density 200 bb.eps ${location}/fig2a.png
-cp validation/aug100.png fig2_raw.png 
+cp validation/aug100_both.png fig2_raw.png 
 convert -transparent black -resize $width fig2_raw.png fig2_small.png
 convert -transparent black -crop 400x400+200+205 fig2_small.png ${location}/fig2b.png
 
@@ -124,7 +124,7 @@ convert -crop 800x800+300+300 output/air/automaton/aug100.png ${location}/fig13d
 
 convert -density 300 coverage.eps ${location}/fig14.png
 
-cp trees.tex > ${location}/table2.tex
+cp trees.tex ${location}/table2.tex
 ls -1 timestamps/*start* | awk -F '_' '{print $1}' | cut -c 12-40 > measured.txt
 python3 times.py measured.txt > ${location}/table3.tex
 sed 's/black/bg/g' conf.tex > ${location}/table4.tex

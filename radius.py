@@ -59,7 +59,7 @@ from latlon import lon2x, lat2y
         
 with open('trees.tex', 'w') as target:
     print('''\\begin{tabular}{r|c|cc|rrrr}
-    {\\bf \\#} & {\\bf Class} & {\\bf Latitude } & {\bf Longitude } & {\\bf Diam.\} & {\\bf Height} & {\\bf N-S } & {\\bf E-W }
+    {\\bf \\#} & {\\bf Class} & {\\bf Latitude } & {\\bf Longitude } & {\\bf Diameter} & {\\bf Height} & {\\bf N-S } & {\\bf E-W }
     \\\\ \\hline''', file = target)
     # treeID class lon lat diam height NSspan EWspan
     for i, row in data.iterrows():
@@ -67,11 +67,12 @@ with open('trees.tex', 'w') as target:
         lon = row.lon
         lat = row.lat
         label = row.kind
-        print(f'{treeID} & {label} & {lon} & {lat} & {row.diam:.2f} & {row.height:.1f} & {row.NSspan:.2f} {row.EWspan:.2f} \\', file = target)
+        print(f'{treeID} & {label} & {lon} & {lat} & {row.diam:.2f} & {row.height:.1f} & {row.NSspan:.2f} {row.EWspan:.2f} \\\\', file = target)
         for f in offsets:
             o =  offsets[f]
             x = lon2x(lon, o)
             y = lat2y(lat, o)
+            print(x, y)
             if x >= 0 and y >= 0 and x <= o['width'] and y <= o['height']:
                 print(treeID, label, x, y, file = maps[f])
     print('\end{tabular}', file = target)

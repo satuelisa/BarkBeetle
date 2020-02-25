@@ -4,25 +4,37 @@ import numpy as np
 
 from color import col2str
 
-repl = {'black': 'background', 'blue': 'leafless'}
-skip = ['background', 'black']
+m = 150 # margin on the left and the right side
 datasets = ['jun60', 'jul90', 'jul100', 'aug90', 'aug100']
+o = dict()
+p = dict()
+c = defaultdict(dict)
+w = None
+h = dict()
+
 for d in datasets:
-     counts = defaultdict(int)
      filename = f'automaton/{d}.png'
      img = Image.open(filename)
-     (w, h) = img.size
-     total = w * h
-     pix = img.load()
-     for x in range(w):
-          for y in range(h):
-               counts[col2str(pix[x, y], False)] += 1
-     assert sum(counts.values()) == total
-     for s in skip:
-          if s in counts:
-               del counts[s]
+     (iw, ih) = img.size
+     h[d] = ih # slight variation
+     if w is None:
+          w = iw
+     else:
+          assert iw == w
+     p[d] = img.load()
+     o[d] = np.array(Image.open(f'scaled/original/{d}.png'))
+     c[d] = defaultdict(int)
+
+goal = w - 2 * m
+for y in range(min(h.values())):
+     if all([o[d][y, m : (w - m)].any(axis=-1).sum() == goal for d in datasets]):
+          # only process the pixels if the row is opaque in all cropped and scaled originals
+          for x in range(m, w - m): # iterate over the row (skipping the margins)
+               for d in datasets:
+                    c[d][col2str(p[d][x, y], False)] += 1
+
+for d in datasets:
+     counts = c[d]
      total = sum(counts.values())
      for (k, v) in counts.items():
-          for (o, r) in repl.items():
-               k = k.replace(o, r)
-          print(d, k, 100 * v / total)
+          print(d, k.replace('blue', 'leafless'), 100 * v / total)

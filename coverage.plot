@@ -14,7 +14,8 @@ set tics scale 3,2 rotate by 45
 set xtics out offset 0, -4
 set style data lines
 set key off
-plot 'coverage/all.txt' u 1:3:2 w filledcurves lc rgb '#0000ff', \
+plot 'coverage/all.txt' u 1:3:2 w filledcurves lc rgb '#000000', \
+     'coverage/gyrl.txt' u 1:3:2 w filledcurves lc rgb '#0000ff', \
      'coverage/gyr.txt' u 1:3:2 w filledcurves lc rgb '#ff0000', \
      'coverage/gy.txt' u 1:3:2 w filledcurves lc rgb '#ffff00', \
      'coverage/g.txt' u 1:3:2 w filledcurves lc rgb '#00ff00'
