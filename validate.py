@@ -17,7 +17,6 @@ color = {'red': (0, 0, 255, 255), 'green': (0, 255, 0, 255),
          'infested': (0, 255, 0, 255)}
 
 def place(trees, r, frames, labels):
-    offset = int(1.2 * r)
     assert len(frames) == len(labels) - 1
     for tID in trees:
         pos, label = trees[tID]
@@ -25,12 +24,12 @@ def place(trees, r, frames, labels):
         for img in frames:
             cv2.rectangle(img, (x - r, y - r), (x + r, y + r), color[label], 20)
         for img in labels:
-            cv2.putText(img, str(tID), (x + offset, y + offset),
+            cv2.putText(img, str(tID), (x, y),
                         cv2.FONT_HERSHEY_SIMPLEX, 5.0, (240, 0, 240, 255), 12)
 
 dataset = argv[1]
 rad = radius(dataset)
-img = cv2.imread('orthomosaics/{:s}.png'.format(dataset))
+img = cv2.imread('cropped/{:s}.png'.format(dataset))
 targets = [img.copy(), img.copy(), img.copy()]
 place(parse(dataset, True)[0], rad, targets[1:], targets)
 place(parse(dataset, False)[0], rad, targets[:2], targets)

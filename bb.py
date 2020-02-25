@@ -1,23 +1,6 @@
-def decimal(string):
-    pd = string.find('d')
-    pm = string.find('\'')
-    ps = string.find('"')
-    d = int(string[0:pd])
-    m = int(string[(pd + 1):pm])
-    s = float(string[(pm + 1):ps])
-    v = d + m / 60 + s / 60**2
-    return v if string[-1] in 'NE' else -v
-
-def latitude(s):
-    assert 'N' in s or 'S' in s    
-    return decimal(s)    
-
-def longitude(s):
-    assert 'E' in s or 'W' in s    
-    return decimal(s)    
-
 LAT = 1
 LON = 0
+from latlon import latitude, longitude
 
 def parse(line):
     start = line.rfind('(') + 1 
@@ -104,7 +87,7 @@ i += 1
 color = {'jun60': '#ff0000', 'jul90': '#00cc00', 'jul100': '#66cc33', 'aug90': '#0000cc', 'aug100': '#6633cc'}
 label = {'jun60': 'June 60 m', 'jul90': 'July 90 m', 'jul100': 'July 100 m', 'aug90': 'August 90 m', 'aug100': 'August 100 m'}
 lc = {'jun60': 2, 'jul90': 0, 'jul100': 0, 'aug90': 2, 'aug100': 2}
-
+aspectratio = set()
 for f in fc:
     c = fc[f]
     (w, h) = sizes[f]
@@ -134,7 +117,8 @@ for f in fc:
     zone = (x0, y0, x1, y1)
     nw = x1 - x0  
     nh = y1 - y0
-    print('# crop', f, x0, y0, x1, y1, nw / nh, sizes[f])
+    aspectratio.add(nw / nh)
+    print('# crop', f, x0, y0, x1, y1, sizes[f], north, south, west, east)
     full = Image.open(f'orthomosaics/{f}.tiff')
     cropped = full.crop(zone)
     cropped.save(f'cropped/{f}.png')
@@ -152,3 +136,4 @@ for f in fc:
         print(f'set arrow {i} from {x1}, {y1} to {x2}, {y2} nohead lc rgb "{color[f]}" lw 4')
         i += 1
 print('plot NaN t ""')
+assert fabs(min(aspectratio) - max(aspectratio)) < 0.1 # should be roughly constant

@@ -17,11 +17,11 @@ cp examples/squares/red.png ${location}/fig3c.png
 cp examples/squares/leafless.png ${location}/fig3d.png
 
 # unmodified colors
-convert -transparent black -resize $width orthomosaics/jun60.tiff ${location}/fig4a.png
-convert -transparent black -resize $width orthomosaics/jul90.tiff ${location}/fig4b.png
-convert -transparent black -resize $width orthomosaics/jul100.tiff ${location}/fig4c.png
-convert -transparent black -resize $width orthomosaics/aug90.tiff ${location}/fig4d.png
-convert -transparent black -resize $width orthomosaics/aug100.tiff ${location}/fig4e.png
+convert -transparent black -resize $width cropped/jun60.png ${location}/fig4a.png
+convert -transparent black -resize $width cropped/jul90.png ${location}/fig4b.png
+convert -transparent black -resize $width cropped/jul100.png ${location}/fig4c.png
+convert -transparent black -resize $width cropped/aug90.png ${location}/fig4d.png
+convert -transparent black -resize $width cropped/aug100.png ${location}/fig4e.png
 
 # enhanced
 convert -transparent black -resize $width  enhanced/jun60.png ${location}/fig4f.png 
@@ -124,6 +124,7 @@ convert -crop 800x800+300+300 output/air/automaton/aug100.png ${location}/fig13d
 
 convert -density 300 coverage.eps ${location}/fig14.png
 
+cp trees.tex > ${location}/table2.tex
 ls -1 timestamps/*start* | awk -F '_' '{print $1}' | cut -c 12-40 > measured.txt
 python3 times.py measured.txt > ${location}/table3.tex
 sed 's/black/bg/g' conf.tex > ${location}/table4.tex

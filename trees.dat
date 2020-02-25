@@ -1,4 +1,4 @@
-treeID class lon lat diam height NSspan EWspan
+treeID kind lat lon diam height NSspan EWspan
 1 leafless 24.209580011665821 -99.898820025846362 40.8 10 15.8 17.12
 2 leafless 24.209550004452467 -99.899380020797253 38 7 6.81 9.08
 3 dry 24.209220008924603 -99.899080032482743 44.5 11 8.5 11

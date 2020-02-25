@@ -27,7 +27,7 @@ mask = Image.new("L", (d, d), 0)
 draw = ImageDraw.Draw(mask)
 draw.ellipse((0, 0, d, d), fill = 255)
 r = d // 2
-original = Image.open('orthomosaics/{:s}.png'.format(dataset))
+original = Image.open('cropped/{:s}.png'.format(dataset))
 enhanced = Image.open('enhanced/{:s}.png'.format(dataset))
 if postprocess:
     print('Post-processing', dataset)

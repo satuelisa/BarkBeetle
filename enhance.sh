@@ -3,7 +3,7 @@ mkdir -p enhanced/equalized
 mkdir -p enhanced/uniform
 mkdir -p enhanced/modulated
 date > timestamps/enhancement_start_time.txt
-for file in `ls -1 complete/*.png`; do
+for file in `ls -1 cropped/*.png`; do
     dataset=`basename $file .png`
     echo Enhancing $dataset
     convert $file -separate -normalize -combine enhanced/normalized/$dataset.png
