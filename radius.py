@@ -67,7 +67,7 @@ with open('trees.tex', 'w') as target:
         lon = row.lon
         lat = row.lat
         label = row.kind
-        print(f'{treeID} & {label} & {lon} & {lat} & {row.diam:.2f} & {row.height:.1f} & {row.NSspan:.2f} {row.EWspan:.2f} \\\\', file = target)
+        print(f'{treeID} & {label} & {lon:.14f} & {lat:.14f} & {row.diam:.2f} & {row.height:.1f} & {row.NSspan:.2f} & {row.EWspan:.2f} \\\\', file = target)
         for f in offsets:
             o =  offsets[f]
             x = lon2x(lon, o)

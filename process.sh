@@ -1,13 +1,21 @@
 all=`grep "\$arg" process.sh | grep '==' | grep -v 'process' | cut -c 21-30 | awk -F '"' '{print $1}' | tr '\n' ' '`
 declare -a classes=("green" "yellow" "red" "leafless")
+req=$@
 echo Available: $all
+for arg in "${req}"
+do
+    if [ "$arg" == "all" ] 
+    then
+	req="${all}"
+    fi
+done
 echo Requested:
-for arg in "$@"
+for arg in "${req}"
 do
     echo "* " $arg
 done
 mkdir -p timestamps
-for arg in "$@"
+for arg in "${req}"
 do
     if [ "$arg" == "crop" ] 
     then
@@ -25,7 +33,7 @@ do
 	break
     fi
 done
-for arg in "$@"
+for arg in "${req}"
 do
     if [ "$arg" == "enhance" ] 
     then
@@ -44,7 +52,7 @@ do
 done
 # these are separate loops to ensure correct order if multiple are chosen
 width=1000 # to which width to scale down the processing 
-for arg in "$@" 
+for arg in "${req}" 
 do
     if [ "$arg" == "scale" ] 
     then
@@ -60,7 +68,7 @@ do
 	break
     fi
 done
-for arg in "$@" 
+for arg in "${req}" 
 do
     if [ "$arg" == "valid" ] # if locations change
     then
@@ -76,7 +84,7 @@ do
 	break
     fi
 done
-for arg in "$@" 
+for arg in "${req}" 
 do
     if [ "$arg" == "ext" ] 
     then
@@ -112,7 +120,7 @@ do
 	break
     fi
 done
-for arg in "$@"
+for arg in "${req}"
 do
     if [ "$arg" == "rules" ]
     then
@@ -141,7 +149,7 @@ do
 	break
     fi
 done
-for arg in "$@"
+for arg in "${req}"
 do
     if [ "$arg" == "char" ] 
     then
@@ -161,7 +169,7 @@ do
     fi
 done
 mkdir -p thresholded
-for arg in "$@" 
+for arg in "${req}" 
 do
     if [ "$arg" == "thr" ] 
     then
@@ -177,7 +185,7 @@ do
 	break
     fi
 done
-for arg in "$@" 
+for arg in "${req}" 
 do
     if [ "$arg" == "ca" ] 
     then
@@ -196,7 +204,7 @@ do
 	break
     fi
 done
-for arg in "$@" 
+for arg in "${req}" 
 do
     if [ "$arg" == "eval" ] 
     then
@@ -218,7 +226,7 @@ do
 	break
     fi
 done
-for arg in "$@" 
+for arg in "${req}" 
 do
     if [ "$arg" == "cover" ] 
     then
@@ -238,7 +246,7 @@ do
 	break
     fi
 done
-for arg in "$@" 
+for arg in "${req}" 
 do
     if [ "$arg" == "forecast" ] 
     then
@@ -260,7 +268,7 @@ do
     fi
 done
 
-for arg in "$@" 
+for arg in "${req}" 
 do
     if [ "$arg" == "update" ] # update the manuscript
     then

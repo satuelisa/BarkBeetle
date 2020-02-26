@@ -47,7 +47,7 @@ with open(argv[1]) as data:
             specific[dataset] = defaultdict(int)
         specific[dataset][(expected, predicted)] += 1
 
-order = sorted(list(classes))
+order = ['green', 'yellow', 'red', 'leafless']
 for (case, matrix) in [('global', overall)] + list(specific.items()):
     correct = sum([matrix.get((c, c), 0) for c in classes])
     total = sum(matrix.values())
@@ -57,7 +57,9 @@ for (case, matrix) in [('global', overall)] + list(specific.items()):
     e = 'Error' if not latex else ' & $\mathcal{E}$'
     a = 'Accuracy' if not latex else ' & $\mathcal{A}$'
     fe = '{\\bf' + f'{error:.2f}' + '}' if latex else f'{error:.2f}'
-    fa = '{\\bf' + f'{accuracy:.2f}' + '}' if latex else f'{accuracy:.2f}'
+    fa = '{\\bf' + f'{accuracy:.2f}' + '} \\\\ \\hline' if latex else f'{accuracy:.2f}'
+    if case == 'global' and latex:
+        case = '\\hline ' + case
     print(f'{case}{sep}{e}{sep}{fe}{sep}{a}{sep}{fa}')
     for c in classes:
         if c != 'black': 
