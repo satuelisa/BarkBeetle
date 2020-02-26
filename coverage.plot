@@ -8,8 +8,8 @@ unset xlabel
 set ylabel 'Percentage assigned to each class'
 set yrange [0:100]
 set ytics 0, 10
-set xrange[0:4]
-set xtics ("June 60 m" 0, "July 90 m" 1, "July 100 m" 1.5, "August 90 m" 2.5, "August 100 m" 3)
+set xrange[-0.2:4.2]
+set xtics ("June 60 m" 0, "July 90 m" 1, "July 100 m" 2, "August 90 m" 3, "August 100 m" 4)
 set tics scale 3,2 rotate by 45
 set xtics out offset 0, -4
 set style data lines

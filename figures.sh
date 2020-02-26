@@ -8,7 +8,7 @@ gnuplot bb.plot
 convert -density 200 bb.eps ${location}/fig2a.png
 cp validation/aug100_both.png fig2_raw.png 
 convert -transparent black -resize $width fig2_raw.png fig2_small.png
-convert -transparent black -crop 400x400+200+205 fig2_small.png ${location}/fig2b.png
+convert -transparent black -crop 800x400+100+100 fig2_small.png ${location}/fig2b.png
 
 # example sample areas (square)
 cp examples/squares/green.png ${location}/fig3a.png
@@ -53,7 +53,7 @@ cp histograms/jun60_diff.png ${location}/fig7a.png # example difference histogra
 cp histograms/jul90_diff.png ${location}/fig7b.png # example difference histogram 90m
 cp histograms/aug100_diff.png ${location}/fig7c.png # example difference histogram 100m
 
-cp ruleperf.png ${location}/fig8.png
+convert -trim ruleperf.png ${location}/fig8.png
 
 convert -density 300 changes.eps ${location}/fig9.png
 
@@ -73,8 +73,8 @@ convert -rotate 90 collages/thresholded/yellow.png ${location}/fig10j.png
 convert -rotate 90 collages/thresholded/red.png ${location}/fig10k.png 
 convert -rotate 90 collages/thresholded/leafless.png ${location}/fig10l.png   
 
-x=100
-y=100
+x=150
+y=150
 w=300
 h=300
 
@@ -117,10 +117,14 @@ cp examples/automaton/yellow.png ${location}/fig12n.png
 cp examples/automaton/red.png ${location}/fig12o.png
 cp examples/automaton/leafless.png ${location}/fig12p.png 
 
-convert -crop 800x800+300+300 output/air/original/aug100.png ${location}/fig13a.png 
-convert -crop 800x800+300+300 output/air/enhanced/aug100.png ${location}/fig13b.png
-convert -crop 800x800+300+300 output/air/thresholded/aug100.png ${location}/fig13c.png
-convert -crop 800x800+300+300 output/air/automaton/aug100.png ${location}/fig13d.png 
+w=900
+h=500
+x=50
+y=50
+convert -crop ${w}x${h}+${x}+${y} output/air/original/aug100.png ${location}/fig13a.png 
+convert -crop ${w}x${h}+${x}+${y} output/air/enhanced/aug100.png ${location}/fig13b.png
+convert -crop ${w}x${h}+${x}+${y} output/air/thresholded/aug100.png ${location}/fig13c.png
+convert -crop ${w}x${h}+${x}+${y} output/air/automaton/aug100.png ${location}/fig13d.png 
 
 convert -density 300 coverage.eps ${location}/fig14.png
 

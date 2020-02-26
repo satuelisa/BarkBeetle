@@ -16,7 +16,7 @@ def bars(h, t, ax, c = 'black', a = 0.6):
 
 # visualize the change in the grayscale tones
 dataset = argv[1]
-orig = Image.open(f'orthomosaics/{dataset}.png')
+orig = Image.open(f'cropped/{dataset}.png')
 w, h = orig.size
 t = w * h
 fig, ax = plt.subplots(figsize = (14, 7)) 
