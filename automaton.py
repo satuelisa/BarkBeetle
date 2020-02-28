@@ -1,7 +1,8 @@
 from collections import defaultdict
-from math import ceil, sqrt
+from math import floor, sqrt
 from PIL import Image
 from os import popen # for the GIF
+from sys import argv
 import warnings
 
 # metadata causes this
@@ -17,7 +18,7 @@ yellow = (255, 255, 0, 255)
 
 options = [red, blue, yellow, green]
 debug = False
-gif = True
+gif = 'gif' in argv
 
 def pick(colors, margin = 1):
     high = max(colors.values()) # max freq
@@ -33,7 +34,7 @@ def colfreq(dataset):
     trees, ow = parse(dataset)
     trees = None # we do not need this here
     factor = ow / w
-    rad = int(ceil(sqrt(radius(dataset, factor))))
+    rad = int(floor(sqrt(radius(dataset, factor))))
     threshold = int((w * h) / 10000)
     tmp = img.copy() # copy so that the same pixels are blank
     pix = img.load()
@@ -83,5 +84,4 @@ def colfreq(dataset):
             frame = f'automaton/frames/{dataset}_{iteration:04}.png'
             img.resize((300, 300)).save(frame)
 
-from sys import argv
 colfreq(argv[1])

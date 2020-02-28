@@ -1,21 +1,24 @@
-all=`grep "\$arg" process.sh | grep '==' | grep -v 'process' | cut -c 21-30 | awk -F '"' '{print $1}' | tr '\n' ' '`
+GIF='' # set to gif if you want the GIF animation for the automaton (leave blank if you just want to time it)
 declare -a classes=("green" "yellow" "red" "leafless")
-req=$@
-echo Available: $all
+req=($(echo $@ | tr ' ' '\n'))
+all=`grep "\$arg" process.sh | grep '==' | grep -v 'process' | grep -v 'all' | cut -c 21-30 | awk -F '"' '{print $1}'`
+echo Available $all
 for arg in "${req}"
 do
     if [ "$arg" == "all" ] 
     then
-	req="${all}"
-    fi
+	req=($(echo $all | tr ' ' '\n'))
+	req=`echo $all | tr ' ' '\n'`
+	break
+    fi    
 done
-echo Requested:
-for arg in "${req}"
+echo Requested: 
+for arg in "${req[@]}"
 do
     echo "* " $arg
 done
 mkdir -p timestamps
-for arg in "${req}"
+for arg in "${req[@]}"
 do
     if [ "$arg" == "crop" ] 
     then
@@ -24,23 +27,18 @@ do
 	rm -rf cropped/*.png
 	python3 bb.py > bb.plot
 	grep '# crop' bb.plot > offsets.txt
-	for file in `ls -1 orthomosaics/*.tiff`
-	do
-	    dataset=`basename $file .tiff`
-	    python3 grayscale.py $dataset # figure for the manuscript
-	done
 	date > timestamps/cropping_end_time.txt	
 	break
     fi
 done
-for arg in "${req}"
+for arg in "${req[@]}"
 do
     if [ "$arg" == "enhance" ] 
     then
 	date > timestamps/enhancement_start_time.txt	
-	echo Enhancing	
-	bash enhance.sh
+	echo Enhancing
 	rm -rf enhanced/*.png
+	bash enhance.sh
 	for file in `ls -1 orthomosaics/*.tiff`
 	do
 	    dataset=`basename $file .tiff`
@@ -52,7 +50,7 @@ do
 done
 # these are separate loops to ensure correct order if multiple are chosen
 width=1000 # to which width to scale down the processing 
-for arg in "${req}" 
+for arg in "${req[@]}" 
 do
     if [ "$arg" == "scale" ] 
     then
@@ -68,7 +66,7 @@ do
 	break
     fi
 done
-for arg in "${req}" 
+for arg in "${req[@]}" 
 do
     if [ "$arg" == "valid" ] # if locations change
     then
@@ -84,7 +82,7 @@ do
 	break
     fi
 done
-for arg in "${req}" 
+for arg in "${req[@]}" 
 do
     if [ "$arg" == "ext" ] 
     then
@@ -120,7 +118,7 @@ do
 	break
     fi
 done
-for arg in "${req}"
+for arg in "${req[@]}"
 do
     if [ "$arg" == "rules" ]
     then
@@ -132,7 +130,7 @@ do
 	rm -f ruleperf.txt
 	touch ruleperf.txt
 	mkdir -p thresholds
-	rm -f thresholds/*
+	rm -f thresholds/*.txt
 	for q in ${quantiles[@]}
 	do
 	    echo Using quantile 0.$q
@@ -149,7 +147,7 @@ do
 	break
     fi
 done
-for arg in "${req}"
+for arg in "${req[@]}"
 do
     if [ "$arg" == "char" ] 
     then
@@ -169,7 +167,7 @@ do
     fi
 done
 mkdir -p thresholded
-for arg in "${req}" 
+for arg in "${req[@]}" 
 do
     if [ "$arg" == "thr" ] 
     then
@@ -185,26 +183,26 @@ do
 	break
     fi
 done
-for arg in "${req}" 
+for arg in "${req[@]}" 
 do
     if [ "$arg" == "ca" ] 
     then
 	echo Processing
 	rm -rf automaton/frames # force clear so as not to affect the GIF
 	mkdir -p automaton/frames	
-	date > timestamps/automata_start_time.txt
+	date > timestamps/automata_start_time$GIF.txt
 	for file in `ls -1 orthomosaics/*.tiff`
 	do
 	    dataset=`basename $file .tiff`
 	    echo "Processing $dataset"
-	    python3 automaton.py $dataset > automaton/${dataset}.log
+	    python3 automaton.py $dataset $GIF > automaton/${dataset}.log
 	    wc -l automaton/${dataset}.log
 	done
-	date > timestamps/automata_end_time.txt	
+	date > timestamps/automata_end_time$GIF.txt	
 	break
     fi
 done
-for arg in "${req}" 
+for arg in "${req[@]}" 
 do
     if [ "$arg" == "eval" ] 
     then
@@ -226,7 +224,7 @@ do
 	break
     fi
 done
-for arg in "${req}" 
+for arg in "${req[@]}" 
 do
     if [ "$arg" == "cover" ] 
     then
@@ -246,7 +244,7 @@ do
 	break
     fi
 done
-for arg in "${req}" 
+for arg in "${req[@]}" 
 do
     if [ "$arg" == "forecast" ] 
     then
@@ -268,7 +266,7 @@ do
     fi
 done
 
-for arg in "${req}" 
+for arg in "${req[@]}" 
 do
     if [ "$arg" == "update" ] # update the manuscript
     then
@@ -276,7 +274,8 @@ do
 	mkdir -p individual/automaton
 	for file in `ls -1 orthomosaics/*.tiff`
 	do # update the individual samples to include the thresholded and the automata versions
-	    dataset=`basename $file .tiff`  
+	    dataset=`basename $file .tiff`
+	    python3 grayscale.py $dataset # figure for the manuscript
 	    python3 extract.py ${dataset} post 
 	done
 	# extractions for the comparative illustrations in the manuscript
