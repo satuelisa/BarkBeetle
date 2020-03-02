@@ -49,7 +49,7 @@ def colfreq(dataset):
             for y in range(h):
                 if (x, y) not in stable:
                     p = pix[x, y]
-                    if p[3] < 255: # trasparent pixels never change
+                    if p[3] < 255: # transparent
                         continue
                     c = defaultdict(int)
                     nn = set()
@@ -63,8 +63,8 @@ def colfreq(dataset):
                     repl = pick(c)
                     if repl is not None and p != repl:
                         update[x, y] = repl
-                        stable -= nn
                         changes += 1
+                        stable -= nn
                     else:
                         stable.add((x, y)) # no change
                         update[x, y] = p

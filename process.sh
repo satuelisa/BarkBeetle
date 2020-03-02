@@ -99,6 +99,10 @@ do
 	    echo Extracting samples from $dataset
 	    dataset=`basename $file .tiff`
 	    python3 extract.py ${dataset} # individual samples in individual files
+	done
+	for file in `ls -1 orthomosaics/*.tiff`; do
+	    echo Converting and combining samples from $dataset
+	    dataset=`basename $file .tiff`
 	    convert -background none individual/enhanced/${dataset}_*.png +append composite/enhanced/${dataset}.png
 	    convert -background none individual/original/${dataset}_*.png +append composite/original/${dataset}.png	
 	    for kind in "${classes[@]}"
@@ -303,9 +307,8 @@ do
 	mkdir -p examples/automaton
 	python3 examples.py # the examples of the samples for the manuscript
 	python3 confusion.py results.txt tex > results.tex # format the results in LaTeX
-	gnuplot changes.plot # update the convergence figure for the manuscript
-	fgrep "\\\\" results.tex > conf.tex
-	fgrep "$" results.tex | sed 's/$/ \\\\/' > perf.tex
+	fgrep "% CM" results.tex | tail -n +2 > conf.tex
+	fgrep "% STATS" results.tex > perf.tex
 	bash figures.sh # update the manuscript figure files based on the results
 	break
     fi
