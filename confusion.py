@@ -22,7 +22,7 @@ def display(l, m, o, latex = False):
         l = l.capitalize()
         if l != 'Global':
             l = l[:3] + ' ' + l[3:] + ' m'
-    print('\\hline % CM \n\\multirow{' + str(len(o) + 1) + '}{*}{' + case + '}' + ' & '.join([c for c in o]) + ' \\\\ % CM')
+    print('\\hline % CM \n\\multirow{' + str(len(o) + 1) + '}{*}{' + case + '} & & ' + ' & '.join([c for c in o]) + ' \\\\ % CM')
     for row in o:
         r = ('& ' if latex else '') + ' ' * (w - len(row)) + row if not latex else f' & {row}'
         for col in o:
@@ -54,7 +54,7 @@ with open(argv[1]) as data:
             specific[dataset] = defaultdict(int)
         specific[dataset][(expected, predicted)] += 1
 
-order = ['green', 'yellow', 'red', 'leafless', 'black']
+order = ['green', 'yellow', 'red', 'leafless']
 for (case, matrix) in [('global', overall)] + list(specific.items()):
     correct = sum([matrix.get((c, c), 0) for c in classes])
     total = sum(matrix.values())
