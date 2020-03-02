@@ -119,8 +119,8 @@ cp examples/automaton/yellow.png ${location}/fig12n.png
 cp examples/automaton/red.png ${location}/fig12o.png
 cp examples/automaton/leafless.png ${location}/fig12p.png 
 
-w=900
-h=500
+w=800
+h=800
 x=50
 y=50
 convert -crop ${w}x${h}+${x}+${y} output/air/original/aug100.png ${location}/fig13a.png 
