@@ -3,6 +3,13 @@ from collections import defaultdict
 overall = defaultdict(int)
 specific = dict()
 classes = set()
+repl = {
+    'jun60': 'June 60 m',
+    'jul90': 'July 90 m', 
+    'jul100': 'July 100 m',
+    'aug90': 'August 90 m',
+    'aug100': 'August 100 m'
+}
 
 from math import floor, log
 
@@ -15,7 +22,7 @@ def display(l, m, o, latex = False):
         l = l.capitalize()
         if l != 'Global':
             l = l[:3] + ' ' + l[3:] + ' m'
-        print('\multirow{' + str(len(o) + 1) + '}{*}{' + l + '} & & ' + ' & '.join([c for c in o]), '\\\\ \\hline')
+    print('\\hline % CM \n\\multirow{' + str(len(o) + 1) + '}{*}{' + case + '}' + ' & '.join([c for c in o]) + ' \\\\ % CM')
     for row in o:
         r = ('& ' if latex else '') + ' ' * (w - len(row)) + row if not latex else f' & {row}'
         for col in o:
@@ -26,7 +33,7 @@ def display(l, m, o, latex = False):
                 before = '' if col != row else '{\\bf '
                 after = '' if col != row else '}'
                 r += f' & {before}{m[(row, col)]}{after}'
-        print(r, '\\\\' if latex else '')
+        print(r, '\\\\ % CM' if latex else '')
 
 from sys import argv
 
@@ -47,20 +54,23 @@ with open(argv[1]) as data:
             specific[dataset] = defaultdict(int)
         specific[dataset][(expected, predicted)] += 1
 
-order = ['green', 'yellow', 'red', 'leafless']
+order = ['green', 'yellow', 'red', 'leafless', 'black']
 for (case, matrix) in [('global', overall)] + list(specific.items()):
     correct = sum([matrix.get((c, c), 0) for c in classes])
     total = sum(matrix.values())
     accuracy = correct / total
     error = 1 - accuracy
     sep = ' & ' if latex else '\t'
-    e = 'Error' if not latex else ' & $\mathcal{E}$'
-    a = 'Accuracy' if not latex else ' & $\mathcal{A}$'
-    fe = '{\\bf' + f'{error:.2f}' + '}' if latex else f'{error:.2f}'
-    fa = '{\\bf' + f'{accuracy:.2f}' + '} \\\\ \\hline' if latex else f'{accuracy:.2f}'
+    e = 'Error' if not latex else '$\mathcal{E}$'
+    a = 'Accuracy' if not latex else '$\mathcal{A}$'
+    fe = '{\\bf ' + f'{error:.2f}' + '}' if latex else f'{error:.2f}'
+    fa = '{\\bf ' + f'{accuracy:.2f}' + '}' if latex else f'{accuracy:.2f}'
     if case == 'global' and latex:
-        case = '\\hline ' + case
-    print(f'{case}{sep}{e}{sep}{fe}{sep}{a}{sep}{fa}')
+        case = '{\\bf ' + case + '}'
+    if latex:
+        if case in repl:
+            case = repl[case]
+    print(f'{case}{sep}{e}{sep}{fe}{sep}{a}{sep}{fa} \\\\ % STATS')
     for c in classes:
         if c != 'black': 
             tp = matrix.get((c, c), 0) # predicted == expected
@@ -77,7 +87,10 @@ for (case, matrix) in [('global', overall)] + list(specific.items()):
             if tn + fp > 0: # success rate in recognizing when the sample does not belong in the class
                 specificity = tn / (tn + fp)
             sp = 'Specificity' if not latex else '$S_p$'
-            print(f'{sep}{c:s}{sep}{se}{sep}{sensitivity:.2f}{sep}{c:s}{sep}{sp}{sep}{specificity:.2f}')
+            print(f'{c:s}{sep}{se}{sep}{sensitivity:.2f}{sep}{sp}{sep}{specificity:.2f} \\\\ % STATS')
+    if latex:
+        print('\\hline % STATS')
+    
     display(case, matrix, order, latex)
 
 

@@ -16,7 +16,7 @@ def col2str(col, cv = True):
     b = col[0] if cv else col[2]
     g = col[1] 
     r = col[2] if cv else col[0]
-    if len(col) == 4:
+    if len(col) == 4: # alpha channel
         if col[3] < 255: # transparent
             return 'black'
     if r == 0 and b == 255 and g == 0:
@@ -52,12 +52,16 @@ def match(colstr): # openCV pixels output at strings
 
 def majority(x, y, r, w, h, img):
     freq = defaultdict(int)
-    for col in range(max(0, x - r), min(x + r + 1, w)):
-        dx = (x - col)**2
-        for row in range(max(0, y - r), min(y + r + 1, h)):
-            dy = (y - row)**2
+    for nx in range(max(0, x - r), min(x + r + 1, w)):
+        dx = (x - nx)**2
+        for ny in range(max(0, y - r), min(y + r + 1, h)):
+            dy = (y - ny)**2
             if sqrt(dx + dy) <= r: # within
-                freq[str(img[y, x])] += 1
+                pixel = img[ny, nx]
+                if pixel[3] == 255: # opaque
+                    freq[str(pixel)] += 1
+    if len(freq.keys()) == 0:
+        print(img[y, x], x, y, r)
     most = 0
     chosen = set()
     for c in freq:

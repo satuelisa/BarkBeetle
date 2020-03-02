@@ -8,7 +8,7 @@ gnuplot bb.plot
 convert -density 200 bb.eps ${location}/fig2a.png
 cp validation/aug100_both.png fig2_raw.png 
 convert -transparent black -resize $width fig2_raw.png fig2_small.png
-convert -transparent black -crop 800x400+100+100 fig2_small.png ${location}/fig2b.png
+convert -transparent black -crop 800x600+100+100 fig2_small.png ${location}/fig2b.png
 
 # example sample areas (square)
 cp examples/squares/green.png ${location}/fig3a.png
@@ -55,6 +55,8 @@ cp histograms/aug100_diff.png ${location}/fig7c.png # example difference histogr
 
 convert -trim ruleperf.png ${location}/fig8.png
 
+cmax=`wc -l automaton/*.log | grep automaton | awk '{print $1}' | sort -g | tail -n 1`
+gnuplot -e "cmax=$cmax" changes.plot # update the convergence figure for the manuscript
 convert -density 300 changes.eps ${location}/fig9.png
 
 # collage panels
