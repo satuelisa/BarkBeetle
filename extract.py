@@ -15,7 +15,6 @@ from trees import parse
 from gsd import radius
 debug = False # mask files are saved in debug mode (to see how round they are)
 postprocess = 'post' in argv # whether this is pre- or post-processing
-
 dataset = argv[1]
 trees, ow = parse(dataset)
 sqr = radius(dataset)
@@ -30,7 +29,7 @@ r = d // 2
 original = Image.open('cropped/{:s}.png'.format(dataset))
 enhanced = Image.open('enhanced/{:s}.png'.format(dataset))
 if postprocess:
-    print('Post-processing', dataset)
+    print('Post-processing for manuscript figures', dataset)
     thresholded = Image.open('thresholded/{:s}.png'.format(dataset))
     automaton = Image.open('automaton/{:s}.png'.format(dataset))
     w, h = thresholded.size

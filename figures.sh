@@ -10,32 +10,36 @@ cp validation/aug100_both.png fig2_raw.png
 convert -transparent black -resize $width fig2_raw.png fig2_small.png
 convert -transparent black -crop 800x600+100+100 fig2_small.png ${location}/fig2b.png
 
+gap=30
+gaps="-background white -splice ${gap}x0+0+0 +append -chop ${gap}x0+0+0"
+vgaps="-background white -splice 0x${gap}+0+0 -append -chop 0x${gap}+0+0"
+
 # example sample areas (square)
-cp examples/squares/green.png ${location}/fig3a.png
-cp examples/squares/yellow.png ${location}/fig3b.png
-cp examples/squares/red.png ${location}/fig3c.png
-cp examples/squares/leafless.png ${location}/fig3d.png
+convert examples/squares/green.png examples/squares/yellow.png examples/squares/red.png examples/squares/leafless.png $gaps +append ${location}/fig3.png 
 
 # unmodified colors
-convert -transparent black -resize $width cropped/jun60.png ${location}/fig4a.png
-convert -transparent black -resize $width cropped/jul90.png ${location}/fig4b.png
-convert -transparent black -resize $width cropped/jul100.png ${location}/fig4c.png
-convert -transparent black -resize $width cropped/aug90.png ${location}/fig4d.png
-convert -transparent black -resize $width cropped/aug100.png ${location}/fig4e.png
-
+convert -transparent black -resize $width cropped/jun60.png fig4a1.png
+convert -transparent black -resize $width cropped/jul90.png fig4a2.png
+convert -transparent black -resize $width cropped/jul100.png fig4a3.png
+convert -transparent black -resize $width cropped/aug90.png fig4a4.png
+convert -transparent black -resize $width cropped/aug100.png fig4a5.png
 # enhanced
-convert -transparent black -resize $width  enhanced/jun60.png ${location}/fig4f.png 
-convert -transparent black -resize $width  enhanced/jul90.png ${location}/fig4g.png 
-convert -transparent black -resize $width  enhanced/jul100.png ${location}/fig4h.png
-convert -transparent black -resize $width  enhanced/aug90.png ${location}/fig4i.png 
-convert -transparent black -resize $width  enhanced/aug100.png ${location}/fig4j.png
-
+convert -transparent black -resize $width enhanced/jun60.png fig4b1.png 
+convert -transparent black -resize $width enhanced/jul90.png fig4b2.png 
+convert -transparent black -resize $width enhanced/jul100.png fig4b3.png
+convert -transparent black -resize $width enhanced/aug90.png fig4b4.png 
+convert -transparent black -resize $width enhanced/aug100.png figb4.png
 # grayscale histograms
-cp histograms/jun60_uniform.png ${location}/fig4k.png 
-cp histograms/jul90_uniform.png ${location}/fig4l.png 
-cp histograms/jul100_uniform.png ${location}/fig4m.png 
-cp histograms/aug90_uniform.png ${location}/fig4n.png 
-cp histograms/aug100_uniform.png ${location}/fig4o.png 
+cp histograms/jun60_uniform.png fig4c1.png 
+cp histograms/jul90_uniform.png fig4c2.png 
+cp histograms/jul100_uniform.png fig4c3.png 
+cp histograms/aug90_uniform.png fig4c4.png 
+cp histograms/aug100_uniform.png fig4c5.png 
+
+convert fig4a?.png $gaps fig4a_top.png 
+convert fig4b?.png $gaps fig4a_bot.png
+convert fig4c?.png $gaps ${location}/fig4b.png 
+convert fig4a_???.png $vgaps ${location}/fig4a.png
 
 # projections
 cp projections/green_vs_yellow.png ${location}/fig5b.png
@@ -60,73 +64,62 @@ gnuplot -e "cmax=$cmax" changes.plot # update the convergence figure for the man
 convert -density 300 changes.eps ${location}/fig9.png
 
 # collage panels
-convert -rotate 90 collages/original/green.png ${location}/fig10a.png 
-convert -rotate 90 collages/original/yellow.png ${location}/fig10b.png
-convert -rotate 90 collages/original/red.png ${location}/fig10c.png 
-convert -rotate 90 collages/original/leafless.png ${location}/fig10d.png
-
-convert -rotate 90 collages/enhanced/green.png ${location}/fig10e.png 
-convert -rotate 90 collages/enhanced/yellow.png ${location}/fig10f.png
-convert -rotate 90 collages/enhanced/red.png ${location}/fig10g.png
-convert -rotate 90 collages/enhanced/leafless.png ${location}/fig10h.png
-
-convert -rotate 90 collages/thresholded/green.png ${location}/fig10i.png 
-convert -rotate 90 collages/thresholded/yellow.png ${location}/fig10j.png
-convert -rotate 90 collages/thresholded/red.png ${location}/fig10k.png 
-convert -rotate 90 collages/thresholded/leafless.png ${location}/fig10l.png   
+convert -rotate 90 collages/original/green.png fig10a1.png 
+convert -rotate 90 collages/original/yellow.png fig10a2.png
+convert -rotate 90 collages/original/red.png fig10a2.png 
+convert -rotate 90 collages/original/leafless.png fig10a4.png
+convert -rotate 90 collages/enhanced/green.png fig10b1.png 
+convert -rotate 90 collages/enhanced/yellow.png fig10b2.png
+convert -rotate 90 collages/enhanced/red.png fig10b3.png
+convert -rotate 90 collages/enhanced/leafless.png fig10b4.png
+convert -rotate 90 collages/thresholded/green.png fig10c1.png 
+convert -rotate 90 collages/thresholded/yellow.png fig10c2.png
+convert -rotate 90 collages/thresholded/red.png fig10c3.png 
+convert -rotate 90 collages/thresholded/leafless.png fig10c3.png   
+convert fig10a?.png $gaps fig10a.png
+convert fig10b?.png $gaps fig10b.png
+convert fig10c?.png $gaps fig10c.png
+convert fig10?.png $vgaps ${location}/fig10.png
 
 x=150
 y=150
 w=300
 h=300
 
-convert -crop ${w}x${h}+${x}+${y} scaled/original/jun60.png ${location}/fig11a.png # processing example: original
-convert -crop ${w}x${h}+${x}+${y} scaled/enhanced/jun60.png ${location}/fig11b.png # processing example: enhanced
-convert -crop ${w}x${h}+${x}+${y} thresholded/jun60.png ${location}/fig11c.png # processing example: thresholded
-convert -crop ${w}x${h}+${x}+${y} automaton/jun60.png ${location}/fig11d.png # processing example: automaton
+convert -crop ${w}x${h}+${x}+${y} scaled/original/jun60.png fig11a1.png 
+convert -crop ${w}x${h}+${x}+${y} scaled/enhanced/jun60.png fig11a2.png 
+convert -crop ${w}x${h}+${x}+${y} thresholded/jun60.png fig11a3.png 
+convert -crop ${w}x${h}+${x}+${y} automaton/jun60.png fig11a4.png 
+convert -crop ${w}x${h}+${x}+${y} scaled/original/jul90.png fig11b1.png
+convert -crop ${w}x${h}+${x}+${y} scaled/enhanced/jul90.png fig11b2.png
+convert -crop ${w}x${h}+${x}+${y} thresholded/jul90.png fig11b3.png
+convert -crop ${w}x${h}+${x}+${y} automaton/jul90.png fig11b4.png
+convert -crop ${w}x${h}+${x}+${y} scaled/original/aug100.png fig11c1.png
+convert -crop ${w}x${h}+${x}+${y} scaled/enhanced/aug100.png fig11c1.png
+convert -crop ${w}x${h}+${x}+${y} thresholded/aug100.png fig11c1.png
+convert -crop ${w}x${h}+${x}+${y} automaton/aug100.png fig11c1.png
+convert fig11a?.png $gaps fig11a.png
+convert fig11b?.png $gaps fig11b.png
+convert fig11c?.png $gaps fig11c.png
+convert fig11?.png $vgaps ${location}/fig11.png
 
-convert -crop ${w}x${h}+${x}+${y} scaled/original/jul90.png ${location}/fig11e.png # processing example: original
-convert -crop ${w}x${h}+${x}+${y} scaled/enhanced/jul90.png ${location}/fig11f.png # processing example: enhanced
-convert -crop ${w}x${h}+${x}+${y} thresholded/jul90.png ${location}/fig11g.png # processing example: thresholded
-convert -crop ${w}x${h}+${x}+${y} automaton/jul90.png ${location}/fig11h.png # processing example: automaton
-
-convert -crop ${w}x${h}+${x}+${y} scaled/original/aug100.png ${location}/fig11i.png # processing example: original
-convert -crop ${w}x${h}+${x}+${y} scaled/enhanced/aug100.png ${location}/fig11j.png # processing example: enhanced
-convert -crop ${w}x${h}+${x}+${y} thresholded/aug100.png ${location}/fig11k.png # processing example: thresholded
-convert -crop ${w}x${h}+${x}+${y} automaton/aug100.png ${location}/fig11l.png # processing example: automaton
-
-# examples as circles in original color
-cp examples/original/green.png ${location}/fig12a.png 
-cp examples/original/yellow.png ${location}/fig12b.png 
-cp examples/original/red.png ${location}/fig12c.png 
-cp examples/original/leafless.png ${location}/fig12d.png 
-
-# examples as circles in enhanced color
-cp examples/enhanced/green.png ${location}/fig12e.png 
-cp examples/enhanced/yellow.png ${location}/fig12f.png 
-cp examples/enhanced/red.png ${location}/fig12g.png
-cp examples/enhanced/leafless.png ${location}/fig12h.png 
-
-# examples as circles threholded
-cp examples/thresholded/green.png ${location}/fig12i.png 
-cp examples/thresholded/yellow.png ${location}/fig12j.png 
-cp examples/thresholded/red.png ${location}/fig12k.png
-cp examples/thresholded/leafless.png ${location}/fig12l.png 
-
-# examples as circles after automaton
-cp examples/automaton/green.png ${location}/fig12m.png 
-cp examples/automaton/yellow.png ${location}/fig12n.png 
-cp examples/automaton/red.png ${location}/fig12o.png
-cp examples/automaton/leafless.png ${location}/fig12p.png 
+convert examples/original/green.png examples/original/yellow.png examples/original/red.png examples/original/leafless.png $gaps fig12a.png
+convert examples/enhanced/green.png examples/enhanced/yellow.png examples/enhanced/red.png examples/enhanced/leafless.png $gaps fig12b.png
+convert examples/thresholded/green.png examples/thresholded/yellow.png examples/thresholded/red.png examples/thresholded/leafless.png $gaps fig12c.png
+convert examples/automaton/green.png examples/automaton/yellow.png examples/automaton/red.png examples/automaton/leafless.png $gaps fig12d.png
+convert fig12?.png $vgaps ${location}/fig12.png
 
 w=800
 h=800
 x=50
 y=50
-convert -crop ${w}x${h}+${x}+${y} output/air/original/aug100.png ${location}/fig13a.png 
-convert -crop ${w}x${h}+${x}+${y} output/air/enhanced/aug100.png ${location}/fig13b.png
-convert -crop ${w}x${h}+${x}+${y} output/air/thresholded/aug100.png ${location}/fig13c.png
-convert -crop ${w}x${h}+${x}+${y} output/air/automaton/aug100.png ${location}/fig13d.png 
+convert -crop ${w}x${h}+${x}+${y} output/air/original/aug100.png fig13a1.png 
+convert -crop ${w}x${h}+${x}+${y} output/air/enhanced/aug100.png fig13a1.png
+convert -crop ${w}x${h}+${x}+${y} output/air/thresholded/aug100.png fig13b1.png
+convert -crop ${w}x${h}+${x}+${y} output/air/automaton/aug100.png fig13b2.png 
+convert fig13a?.png $gaps fig13a.png
+convert fig13b?.png $gaps fig13b.png
+convert fig13?.png $vgaps ${location}/fig13.png
 
 convert -density 300 coverage.eps ${location}/fig14.png
 
