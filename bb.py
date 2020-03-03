@@ -1,3 +1,10 @@
+from PIL import Image
+from math import fabs, ceil
+from collections import defaultdict
+import warnings
+# metadata causes this
+warnings.simplefilter('ignore', Image.DecompressionBombWarning)
+
 LAT = 1
 LON = 0
 from latlon import latitude, longitude
@@ -13,10 +20,6 @@ def parse(line):
             coords[LAT] = latitude(value.strip().lstrip())
     assert coords[LAT] > 0 and coords[LON] < 0
     return coords
-
-from PIL import Image
-from math import fabs, ceil
-from collections import defaultdict
 
 flights = ['jun60', 'jul90', 'jul100', 'aug90', 'aug100']
 corners = ['Upper Left', 'Lower Left', 'Upper Right', 'Lower Right']
@@ -119,7 +122,7 @@ for f in fc:
     nh = y1 - y0
     aspectratio.add(nw / nh)
     print('# crop', f, x0, y0, x1, y1, sizes[f], north, south, west, east)
-    full = Image.open(f'orthomosaics/{f}.tiff')
+    full = Image.open(f'orthomosaics/{f}.png')
     cropped = full.crop(zone)
     cropped.save(f'cropped/{f}.png')
     segments = [(c['Upper Left'], c['Upper Right']), # upper left to upper right

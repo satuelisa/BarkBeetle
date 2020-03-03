@@ -12,14 +12,18 @@ hl = {
 
 ground = 'ground' in argv
 dataset = argv[1]
-targets = {
+annotate = 'images' in argv
+
+sources = {
     'original': cv2.imread(f'scaled/original/{dataset}.png', cv2.IMREAD_UNCHANGED),
     'enhanced': cv2.imread(f'scaled/enhanced/{dataset}.png', cv2.IMREAD_UNCHANGED),
     'thresholded': cv2.imread(f'thresholded/{dataset}.png', cv2.IMREAD_UNCHANGED),
     'automaton': cv2.imread(f'automaton/{dataset}.png', cv2.IMREAD_UNCHANGED)
 }
+if annotate:
+    targets = dict({f: sources[f].copy() for f in sources}))
     
-h, w, channels = targets['automaton'].shape
+h, w, channels = sources['automaton'].shape
 trees, ow = parse(dataset, ground)
 factor = ow / w # scaling factor
 lw = 3
@@ -37,10 +41,10 @@ for tID in trees:
     x =  int(round(x / factor))
     y =  int(round(y / factor))
     intended = color.BGR[label]
-    present = color.majority(x, y, r, w, h, targets['automaton'])
+    present = color.majority(x, y, r, w, h, sources['automaton'])
     match = label in present
     print(dataset, tID, label in present, label, ' '.join(present))
-    if ground:
+    if ground or not annotate:
         continue # no need to draw
     for t in targets.values():
         cv2.circle(t, (x, y), r, hl[match], lw)
@@ -55,7 +59,7 @@ for tID in trees:
     lp = (x + offsetL, y + offsetL) # label position
     for t in targets.values():
         cv2.putText(t, str(tID), lp, cv2.FONT_HERSHEY_SIMPLEX, 1.5, (240, 0, 240, 255), 2)
-if not ground:
+if annotate or not ground:
     for (name, image) in targets.items():
         cv2.imwrite(f'output/{target}/{name}/{dataset}.png', image)
 

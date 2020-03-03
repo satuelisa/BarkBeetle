@@ -42,7 +42,8 @@ def colfreq(dataset):
     n = [(dx, dy) for dx in range(-rad, rad + 1) for dy in range(-rad, rad + 1)] # Moore neighborhood
     stable = set()
     iteration = 0
-    print(f'# iterating with {rad} radius until less than', threshold, 'pixels change')
+    if not gif:
+        print(f'# iterating with {rad} radius until less than', threshold, 'pixels change')
     while True:
         changes = 0
         for x in range(w):
@@ -69,13 +70,14 @@ def colfreq(dataset):
                         stable.add((x, y)) # no change
                         update[x, y] = p
         if changes < threshold:
-            img.save(f'automaton/{dataset}.png') # final stage
+            img.save(f'automaton/{dataset}.png') # final stage is always savec
             if gif: # build an animated GIF with ImageMagick
                 popen(f'convert -delay 50 automaton/frames/{dataset}_*.png -loop 0 automaton/{dataset}.gif') 
             return
         pix, update = update, pix # swap
         img, tmp = tmp, img
-        print(changes, 'changes')        
+        if not gif:
+            print(changes, 'changes')        
         if debug:
             img.show()
             input('Press enter to continue')
