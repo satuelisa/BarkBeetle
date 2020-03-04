@@ -63,19 +63,19 @@ cmax=`wc -l automaton/*.log | grep automaton | awk '{print $1}' | sort -g | tail
 gnuplot -e "cmax=$cmax" changes.plot # update the convergence figure for the manuscript
 convert -density 300 changes.eps ${location}/fig9.png
 
-# collage panels
-convert -rotate 90 collages/original/green.png fig10a1.png 
-convert -rotate 90 collages/original/yellow.png fig10a2.png
-convert -rotate 90 collages/original/red.png fig10a2.png 
-convert -rotate 90 collages/original/leafless.png fig10a4.png
-convert -rotate 90 collages/enhanced/green.png fig10b1.png 
-convert -rotate 90 collages/enhanced/yellow.png fig10b2.png
-convert -rotate 90 collages/enhanced/red.png fig10b3.png
-convert -rotate 90 collages/enhanced/leafless.png fig10b4.png
-convert -rotate 90 collages/thresholded/green.png fig10c1.png 
-convert -rotate 90 collages/thresholded/yellow.png fig10c2.png
-convert -rotate 90 collages/thresholded/red.png fig10c3.png 
-convert -rotate 90 collages/thresholded/leafless.png fig10c3.png   
+h=500
+convert -resize x$h -rotate 90 collages/original/green.png fig10a1.png 
+convert -resize x$h -rotate 90 collages/original/yellow.png fig10a2.png
+convert -resize x$h -rotate 90 collages/original/red.png fig10a2.png 
+convert -resize x$h -rotate 90 collages/original/leafless.png fig10a4.png
+convert -resize x$h -rotate 90 collages/enhanced/green.png fig10b1.png 
+convert -resize x$h -rotate 90 collages/enhanced/yellow.png fig10b2.png
+convert -resize x$h -rotate 90 collages/enhanced/red.png fig10b3.png
+convert -resize x$h -rotate 90 collages/enhanced/leafless.png fig10b4.png
+convert -resize x$h -rotate 90 collages/thresholded/green.png fig10c1.png 
+convert -resize x$h -rotate 90 collages/thresholded/yellow.png fig10c2.png
+convert -resize x$h -rotate 90 collages/thresholded/red.png fig10c3.png 
+convert -resize x$h -rotate 90 collages/thresholded/leafless.png fig10c3.png   
 convert fig10a?.png $gaps fig10a.png
 convert fig10b?.png $gaps fig10b.png
 convert fig10c?.png $gaps fig10c.png
@@ -85,7 +85,6 @@ x=150
 y=150
 w=300
 h=300
-
 convert -crop ${w}x${h}+${x}+${y} scaled/original/jun60.png fig11a1.png 
 convert -crop ${w}x${h}+${x}+${y} scaled/enhanced/jun60.png fig11a2.png 
 convert -crop ${w}x${h}+${x}+${y} thresholded/jun60.png fig11a3.png 
