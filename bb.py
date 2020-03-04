@@ -1,3 +1,4 @@
+from sys import argv
 from PIL import Image
 from math import fabs, ceil
 from collections import defaultdict
@@ -122,9 +123,10 @@ for f in fc:
     nh = y1 - y0
     aspectratio.add(nw / nh)
     print('# crop', f, x0, y0, x1, y1, sizes[f], north, south, west, east)
-    full = Image.open(f'orthomosaics/{f}.png')
-    cropped = full.crop(zone)
-    cropped.save(f'cropped/{f}.png')
+    if 'crop' in argv:
+        full = Image.open(f'orthomosaics/{f}.png')
+        cropped = full.crop(zone)
+        cropped.save(f'cropped/{f}.png')
     segments = [(c['Upper Left'], c['Upper Right']), # upper left to upper right
                 (c['Upper Right'], c['Lower Right']), # upper right to lower right
                 (c['Lower Right'], c['Lower Left']), # lower right to lower left

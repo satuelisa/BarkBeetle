@@ -11,24 +11,24 @@ convert -transparent black -resize $width fig2_raw.png fig2_small.png
 convert -transparent black -crop 800x600+100+100 fig2_small.png ${location}/fig2b.png
 
 gap=30
-gaps="-background white -splice ${gap}x0+0+0 +append -chop ${gap}x0+0+0"
-vgaps="-background white -splice 0x${gap}+0+0 -append -chop 0x${gap}+0+0"
+gaps="-background transparent -splice ${gap}x0+0+0 +append -chop ${gap}x0+0+0"
+vgaps="-background transparent -splice 0x${gap}+0+0 -append -chop 0x${gap}+0+0"
 
 # example sample areas (square)
 convert examples/squares/green.png examples/squares/yellow.png examples/squares/red.png examples/squares/leafless.png $gaps +append ${location}/fig3.png 
 
 # unmodified colors
-convert -transparent black -resize $width cropped/jun60.png fig4a1.png
-convert -transparent black -resize $width cropped/jul90.png fig4a2.png
-convert -transparent black -resize $width cropped/jul100.png fig4a3.png
-convert -transparent black -resize $width cropped/aug90.png fig4a4.png
-convert -transparent black -resize $width cropped/aug100.png fig4a5.png
+convert -transparent black scaled/original/jun60.png fig4a1.png
+convert -transparent black scaled/original/jul90.png fig4a2.png
+convert -transparent black scaled/original/jul100.png fig4a3.png
+convert -transparent black scaled/original/aug90.png fig4a4.png
+convert -transparent black scaled/original/aug100.png fig4a5.png
 # enhanced
-convert -transparent black -resize $width enhanced/jun60.png fig4b1.png 
-convert -transparent black -resize $width enhanced/jul90.png fig4b2.png 
-convert -transparent black -resize $width enhanced/jul100.png fig4b3.png
-convert -transparent black -resize $width enhanced/aug90.png fig4b4.png 
-convert -transparent black -resize $width enhanced/aug100.png figb4.png
+convert -transparent black scaled/enhanced/jun60.png fig4b1.png 
+convert -transparent black scaled/enhanced/jul90.png fig4b2.png 
+convert -transparent black scaled/enhanced/jul100.png fig4b3.png
+convert -transparent black scaled/enhanced/aug90.png fig4b4.png 
+convert -transparent black scaled/enhanced/aug100.png figb4.png
 # grayscale histograms
 cp histograms/jun60_uniform.png fig4c1.png 
 cp histograms/jul90_uniform.png fig4c2.png 
@@ -39,7 +39,7 @@ cp histograms/aug100_uniform.png fig4c5.png
 convert fig4a?.png $gaps fig4a_top.png 
 convert fig4b?.png $gaps fig4a_bot.png
 convert fig4c?.png $gaps ${location}/fig4b.png 
-convert fig4a_???.png $vgaps ${location}/fig4a.png
+convert fig4a_top.png fig4a_bot.png $vgaps ${location}/fig4a.png
 
 # projections
 cp projections/green_vs_yellow.png ${location}/fig5b.png
