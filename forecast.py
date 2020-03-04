@@ -25,10 +25,11 @@ with open(argv[1]) as data:
                 observed[treeID] = expert
             assigned = ' '.join(fields)
             trees[treeID][flight] = (assigned, match)
-print('ID & June 60 m & July 90 m & July 100 m & Aug 90 m & Aug 100 m & Expert \\\\')
+print('ID & June 60 m & July 90 m & July 100 m & Aug 90 m & Aug 100 m & Expert & \# \\\\')
 print('\\toprule')
 for t in range(1, 31):
     assignments = ''
+    matches = 0
     for f in flights:
         a = 'NA'
         m = False
@@ -37,8 +38,9 @@ for t in range(1, 31):
         c = cell(a)
         if m:
             a = '{\\bf ' + a + '}'
+            matches += 1
         assignments += ' & ' + c + a
     if 'NA' not in assignments:
         co = cell(observed[t])
-        print(t, assignments, '& {\em', co, observed[t], '} \\\\')
+        print(t, assignments, '& {\em', co, observed[t], '} &', matches, '\\\\')
     
