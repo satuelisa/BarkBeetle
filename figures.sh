@@ -28,7 +28,7 @@ convert -transparent black scaled/enhanced/jun60.png fig4b1.png
 convert -transparent black scaled/enhanced/jul90.png fig4b2.png 
 convert -transparent black scaled/enhanced/jul100.png fig4b3.png
 convert -transparent black scaled/enhanced/aug90.png fig4b4.png 
-convert -transparent black scaled/enhanced/aug100.png figb4.png
+convert -transparent black scaled/enhanced/aug100.png fig4b5.png
 # grayscale histograms
 cp histograms/jun60_uniform.png fig4c1.png 
 cp histograms/jul90_uniform.png fig4c2.png 
@@ -66,7 +66,7 @@ convert -density 300 changes.eps ${location}/fig9.png
 h=500
 convert -resize x$h -rotate 90 collages/original/green.png fig10a1.png 
 convert -resize x$h -rotate 90 collages/original/yellow.png fig10a2.png
-convert -resize x$h -rotate 90 collages/original/red.png fig10a2.png 
+convert -resize x$h -rotate 90 collages/original/red.png fig10a3.png 
 convert -resize x$h -rotate 90 collages/original/leafless.png fig10a4.png
 convert -resize x$h -rotate 90 collages/enhanced/green.png fig10b1.png 
 convert -resize x$h -rotate 90 collages/enhanced/yellow.png fig10b2.png
@@ -75,7 +75,7 @@ convert -resize x$h -rotate 90 collages/enhanced/leafless.png fig10b4.png
 convert -resize x$h -rotate 90 collages/thresholded/green.png fig10c1.png 
 convert -resize x$h -rotate 90 collages/thresholded/yellow.png fig10c2.png
 convert -resize x$h -rotate 90 collages/thresholded/red.png fig10c3.png 
-convert -resize x$h -rotate 90 collages/thresholded/leafless.png fig10c3.png   
+convert -resize x$h -rotate 90 collages/thresholded/leafless.png fig10c4.png   
 convert fig10a?.png $gaps fig10a.png
 convert fig10b?.png $gaps fig10b.png
 convert fig10c?.png $gaps fig10c.png
@@ -108,12 +108,12 @@ convert examples/thresholded/green.png examples/thresholded/yellow.png examples/
 convert examples/automaton/green.png examples/automaton/yellow.png examples/automaton/red.png examples/automaton/leafless.png $gaps fig12d.png
 convert fig12?.png $vgaps ${location}/fig12.png
 
-w=800
-h=800
+w=900
+h=900
 x=50
 y=50
 convert -crop ${w}x${h}+${x}+${y} output/air/original/aug100.png fig13a1.png 
-convert -crop ${w}x${h}+${x}+${y} output/air/enhanced/aug100.png fig13a1.png
+convert -crop ${w}x${h}+${x}+${y} output/air/enhanced/aug100.png fig13a2.png
 convert -crop ${w}x${h}+${x}+${y} output/air/thresholded/aug100.png fig13b1.png
 convert -crop ${w}x${h}+${x}+${y} output/air/automaton/aug100.png fig13b2.png 
 convert fig13a?.png $gaps fig13a.png

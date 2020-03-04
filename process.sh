@@ -314,14 +314,14 @@ do
 	mkdir -p individual/thresholded
 	mkdir -p individual/automaton
 	for file in `ls -1 orthomosaics/*.tiff`
-	do # include the thresholded and the automata versions of the samples
+	do 
 	    dataset=`basename $file .tiff`
 	    python3 grayscale.py $dataset 
 	    python3 extract.py ${dataset} post
 	    python3 validate.py $dataset
-	    python3 histogram.py ${dataset} # the channel histograms 
-	    python3 chandiff.py ${dataset} # the channel-difference histograms 
-	    python3 test.py $dataset images  # annotate the results
+	    python3 histogram.py ${dataset} 
+	    python3 chandiff.py ${dataset} 
+	    python3 test.py $dataset images 
 	done
 	mkdir -p composite/thresholded
 	mkdir -p composite/automaton
