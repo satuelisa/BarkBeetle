@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-plt.rcParams.update({'font.size': 30})
+plt.rcParams.update({'font.size': 14})
 from collections import defaultdict
 from os.path import exists
 from PIL import Image
@@ -64,7 +64,7 @@ classes = ['enhanced', 'green', 'yellow', 'red', 'leafless']
 differences = ['R - G', 'B - R', 'B - G'] 
 dataset = argv[1]
 fig, ax = plt.subplots(nrows = len(classes), ncols = len(differences),
-                       figsize=(len(differences) * 6, (len(classes) + 1) * 2))
+                       figsize=(len(differences) * 4, (len(classes) + 1) * 2))
 
 row = 0 
 for kind in classes:

@@ -55,10 +55,10 @@ for q in pareto:
             c = 0
             r += 1
             
-plt.rcParams.update({'font.size': 14})
-plt.figure(figsize = (nk * 2, nq * 2))
+plt.rcParams.update({'font.size': 11})
+plt.figure(figsize = (round(nk * 2.2), nq * 2))
 gs = gridspec.GridSpec(nq, nk)
-gs.update(wspace = 0.02, hspace = 0.25) 
+gs.update(wspace = 0.03, hspace = 0.6) 
 
 incl = m.q.isin(pareto)
 m = m[incl]
