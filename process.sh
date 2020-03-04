@@ -186,6 +186,8 @@ do
 	{ date & echo $slowReplicas; } >> timestamps/characterization_end_time.txt
 	best=`head -n 1 best.txt | awk '{print $1}'` # just use the first if there are many
 	cp thresholds/thr_$best.txt thresholds.txt
+	echo Examined quantiles were $quantiles
+	echo The BEST quantile was $best
 	break
     fi
 done
@@ -309,8 +311,6 @@ do
 	    echo $kind
 	    ls -lh individual/enhanced/*_${kind}_*.png | wc -l
 	done
-	echo Examined quantiles were $quantiles
-	echo The BEST quantile was $best
 	mkdir -p individual/thresholded
 	mkdir -p individual/automaton
 	for file in `ls -1 orthomosaics/*.tiff`

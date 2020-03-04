@@ -26,7 +26,7 @@ with open(argv[1]) as data:
             assigned = ' '.join(fields)
             trees[treeID][flight] = (assigned, match)
 print('ID & June 60 m & July 90 m & July 100 m & Aug 90 m & Aug 100 m & Expert \\\\')
-print('\\hline')
+print('\\toprule')
 for t in range(1, 31):
     assignments = ''
     for f in flights:

@@ -22,7 +22,7 @@ def display(l, m, o, latex = False):
         l = l.capitalize()
         if l != 'Global':
             l = l[:3] + ' ' + l[3:] + ' m'
-    print('\\hline % CM \n\\multirow{' + str(len(o) + 1) + '}{*}{' + case + '} & & ' + ' & '.join([c for c in o]) + ' \\\\ % CM')
+    print('\\midrule % CM \n\\multirow{' + str(len(o) + 1) + '}{*}{' + case + '} & & ' + ' & '.join([c for c in o]) + ' \\\\ % CM')
     for row in o:
         r = ('& ' if latex else '') + ' ' * (w - len(row)) + row if not latex else f' & {row}'
         for col in o:
@@ -89,7 +89,7 @@ for (case, matrix) in [('global', overall)] + list(specific.items()):
             sp = 'Specificity' if not latex else '$S_p$'
             print(f'{c:s}{sep}{se}{sep}{sensitivity:.2f}{sep}{sp}{sep}{specificity:.2f} \\\\ % STATS')
     if latex:
-        print('\\hline % STATS')
+        print('\\midrule % STATS')
     
     display(case, matrix, order, latex)
 
