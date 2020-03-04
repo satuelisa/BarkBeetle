@@ -21,7 +21,8 @@ sources = {
     'automaton': cv2.imread(f'automaton/{dataset}.png', cv2.IMREAD_UNCHANGED)
 }
 if annotate:
-    targets = dict({f: sources[f].copy() for f in sources}))
+    print('Annotating the images with the classification results')
+    targets = {f: sources[f].copy() for f in sources}
     
 h, w, channels = sources['automaton'].shape
 trees, ow = parse(dataset, ground)
@@ -59,7 +60,7 @@ for tID in trees:
     lp = (x + offsetL, y + offsetL) # label position
     for t in targets.values():
         cv2.putText(t, str(tID), lp, cv2.FONT_HERSHEY_SIMPLEX, 1.5, (240, 0, 240, 255), 2)
-if annotate or not ground:
+if annotate and not ground:
     for (name, image) in targets.items():
         cv2.imwrite(f'output/{target}/{name}/{dataset}.png', image)
 

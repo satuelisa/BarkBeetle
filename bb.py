@@ -69,7 +69,7 @@ endLat = min(highLat)
 delta = 0.0003
 assert startLat <= endLat
 assert startLon <= endLon
-print('set term postscript eps color 15')
+print('set term postscript eps color 25')
 print('set xlabel "Longitude (W)"')
 print('set ylabel "Latitude (N)"')
 print('set output "bb.eps"')

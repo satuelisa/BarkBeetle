@@ -255,7 +255,6 @@ do
 		dataset=`basename $file .tiff`
 		python3 test.py $dataset >> results.txt 
 	    done
-	    python3 confusion.py results.txt 	    
 	done
 	{ date & echo $fastReplicas; } >> timestamps/evaluation_end_time.txt
 	break

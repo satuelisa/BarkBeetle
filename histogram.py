@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-plt.rcParams.update({'font.size': 17})
+plt.rcParams.update({'font.size': 20})
 from PIL import Image
 from sys import argv
 import numpy as np
@@ -82,7 +82,7 @@ classes = ['green', 'yellow', 'red', 'leafless']
 channels = ['red channel', 'green channel', 'blue channel', 'grayscale', 'minimum', 'maximum']
 
 fig, ax = plt.subplots(nrows = len(classes) + 1, ncols = len(channels),
-                       figsize=(len(channels) * 3, (len(classes) + 1) * 3))
+                       figsize=(len(channels) * 6, (len(classes) + 1) * 3))
 
 # https://stackoverflow.com/questions/25812255/row-and-column-headers-in-matplotlibs-subplots
 for a, c in zip(ax[0], channels): # column titles

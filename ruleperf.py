@@ -55,7 +55,7 @@ for q in pareto:
             c = 0
             r += 1
             
-plt.rcParams.update({'font.size': 8})
+plt.rcParams.update({'font.size': 14})
 plt.figure(figsize = (nk * 2, nq * 2))
 gs = gridspec.GridSpec(nq, nk)
 gs.update(wspace = 0.02, hspace = 0.25) 
@@ -76,7 +76,7 @@ for label, group in m.groupby(['q', 'k']):
         highlight = [0] * len(values)
         highlight[pos] += 0.05
     quantile = '{:.2f}'.format(q)
-    target.set_title(f'{k} samples ({quantile})')
+    target.set_title(f'{k} ({quantile})')
     slices, texts, at = target.pie(g.perc, labels = g.pixels, autopct = text, shadow = False,
                                explode = highlight)
     for s in slices:
