@@ -134,7 +134,11 @@ ls -1 timestamps/*start* | awk -F '_' '{print $1}' | cut -c 12-40 > measured.txt
 python3 times.py measured.txt > ${location}/table3.tex
 sed 's/black/bg/g' conf.tex > ${location}/table4.tex
 sed 's/black/bg/g' perf.tex > ${location}/table5.tex
-python3 forecast.py ground.txt > ${location}/table6.tex
+python3 forecast.py ground.txt > table6.tex
+cp table6.tex ${location}/table6.tex
+fgrep '& 0 ' table6.tex | awk '{print $1}' > mismatched.txt
+python3 mismatches.py
+cp mismatches.png ${location}/fig16.png
 
 convert examples/ground/original/green.png examples/ground/enhanced/green.png examples/ground/thresholded/green.png examples/ground/automaton/green.png $(echo $vgaps) fig15a.png
 convert examples/ground/original/yellow.png examples/ground/enhanced/yellow.png examples/ground/thresholded/yellow.png examples/ground/automaton/yellow.png $(echo $vgaps) fig15b.png
@@ -146,3 +150,5 @@ gap=80
 gaps="-background transparent -splice ${gap}x0+0+0 +append -chop ${gap}x0+0+0"
 convert fig15?.png $(echo $gaps) fig15.png
 convert -transparent black fig15.png ${location}/fig15.png
+
+cp examples/ground/original/

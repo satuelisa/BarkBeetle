@@ -4,8 +4,8 @@ from collections import defaultdict
 cc = {'black': 'gray', 'leafless': 'blue', 'orange': 'orange', 'dry': 'gray', 'infested': 'lime'}
       
 def cell(color):
-    if color == '' or color == 'NA':
-        return 'NA' # will get cut
+    if color is None or color == '' or color == 'blank':
+        return ''
     return '\\cellcolor{' + cc.get(color, color) + '!50}'
 
 flights = ['jun60', 'jul90', 'jul100', 'aug90', 'aug100']
@@ -24,6 +24,8 @@ with open(argv[1]) as data:
             else:
                 observed[treeID] = expert
             assigned = ' '.join(fields)
+            if len(assigned.strip()) == 0:
+                assigned = 'blank'
             trees[treeID][flight] = (assigned, match)
 print('ID & June 60 m & July 90 m & July 100 m & Aug 90 m & Aug 100 m & Expert & Original & \\# \\\\')
 print('\\toprule')
@@ -38,15 +40,14 @@ for t in range(1, 31):
     assignments = ''
     matches = 0
     for f in flights:
-        a = 'NA'
+        a = 'blank'
         m = False
         if f in trees[t]:
             (a, m) = trees[t][f]
         c = cell(a)
         matches += 1 * m
         assignments += ' & ' + c + m * '{\\bf ' + a + m * '}'
-    if 'NA' not in assignments:
         cobs = cell(observed[t])
         corig = cell(orig[t])
-        print(t, assignments, '&', cobs, '{\\em '+ observed[t], '} &', corig, '{\em ', orig[t], '} &', matches, '\\\\')
+    print(t, assignments, '&', cobs, '{\\em '+ observed[t], '} &', corig, '{\em ', orig[t], '} &', matches, '\\\\')
     
