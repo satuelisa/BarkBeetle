@@ -3,7 +3,8 @@ from collections import defaultdict
 
 # matplotlib pie chart colors
 pltcol = {'green': '#00ff00', 'red': '#ff0000', 'yellow': '#ffff00', 'leafless': '#0000ff',
-          'background': 'k', 'black': 'k', 'bg': 'k'}
+          'background': 'k', 'black': 'k', 'bg': 'k', 'infested': '#a5ff00',
+          'orange': '#ffa500', 'dry': '#999999'}
 
 BGR = { 'red': (0, 0, 255, 255),
         'green': (0, 255, 0, 255),
