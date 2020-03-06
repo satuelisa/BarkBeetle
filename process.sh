@@ -1,73 +1,100 @@
-fastReplicas=30 # the only purpose of the replicas is the time measurement
-slowReplicas=3 # slower phases are repeated fewer times
-width=1000 # to which width to scale down the images for the final phases 
-declare -a classes=("green" "yellow" "red" "leafless")
+#!/bin/zsh
+timestamps=false
+if [ "$timestamps" = true ]
+then
+    echo Storing timestamps
+    fastReplicas=30 
+    slowReplicas=3
+else
+    echo Performing a single execution per step
+    fastReplicas=1
+    slowReplicas=1
+fi
+width=1000 
+declare -a classes=( "green" "yellow" "red" "leafless" )
+declare -A rgb=( ["dry"]="0x999999" ["green"]="0x00ff00" ["infested"]="0xa5ff00" ["leafless"]="0x0000ff" ["orange"]="0xffa500" ["yellow"]="0xffff00" ["red"]="0xff0000" )
 req=($(echo $@ | tr ' ' '\n'))
-all=`grep "\$arg" process.sh | grep '==' | grep -v 'process' | grep -v 'all' | cut -c 21-30 | awk -F '"' '{print $1}'`
+all=$(grep "\$arg" process.sh | grep -v "process" | grep -v "all" | grep '=' | cut -c 20-30 | awk -F '"' '{print $1}')
 echo Available $all
-for arg in "${req}"
+for arg in $req
 do
-    if [ "$arg" == "all" ] 
+    if [ "$arg" = "all" ] 
     then
-	req=($(echo "all" $all | tr ' ' '\n'))
-	req=`echo $all | tr ' ' '\n'`
+	req=($(echo $all | tr ' ' '\n'))
 	break
     fi    
 done
 echo Requested:
-for arg in "${req[@]}"
+for arg in $req
 do
-    echo "*" $arg
+    echo "+" $arg
 done
-mkdir -p timestamps
-for arg in "${req[@]}"
+if [ "$timestamps" = true ]
+then
+    mkdir -p timestamps
+fi
+for arg in $req
 do
-    if [ "$arg" == "crop" ] 
+    if [ "$arg" = "crop" ] 
     then
 	mkdir -p cropped
 	rm -rf cropped/*.png
-	rm -f timestamps/crop*
-	{ date & echo $slowReplicas; } >> timestamps/cropping_start_time.txt	
+	if [ "$timestamps" = true ]
+	then	
+	    rm -f timestamps/crop*
+	    { date & echo $slowReplicas; } >> timestamps/cropping_start_time.txt
+	fi
 	for n in $(seq $slowReplicas)
 	do
 	    echo Cropping, replica $n out of $slowReplicas
-	    python3 bb.py > bb.plot
+	    python3 bb.py crop > offsets.txt
 	done
-	{ date & echo $slowReplicas; } >> timestamps/cropping_end_time.txt
-	grep '# crop' bb.plot > offsets.txt
+	if [ "$timestamps" = true ]
+	then
+	    { date & echo $slowReplicas; } >> timestamps/cropping_end_time.txt
+	fi
 	break
     fi
 done
-for arg in "${req[@]}"
+for arg in $req
 do
-    if [ "$arg" == "enhance" ] 
+    if [ "$arg" = "enhance" ] 
     then
-	rm -f timestamps/enhance*
 	mkdir -p enhanced/normalized
 	mkdir -p enhanced/equalized
 	mkdir -p enhanced/uniform
 	mkdir -p enhanced/modulated
 	rm -rf enhanced/*/*.png
 	rm -rf enhanced/*.png
-	{ date & echo $slowReplicas; } >> timestamps/enhancement_start_time.txt	
+	if [ "$timestamps" = true ]
+	then
+	    rm -f timestamps/enhance*
+	    { date & echo $slowReplicas; } >> timestamps/enhancement_start_time.txt
+	fi
 	for n in $(seq $slowReplicas)
 	do
 	    echo Enhancing, replica $n out of $slowReplicas	    
-	    bash enhance.sh
+	    zsh enhance.sh
 	done
-	{ date & echo $slowReplicas; } >> timestamps/enhancement_end_time.txt
+	if [ "$timestamps" = true ]
+	then
+	    { date & echo $slowReplicas; } >> timestamps/enhancement_end_time.txt
+	fi
 	break
     fi
 done
 # these are separate loops to ensure correct order in case phases are picked out of order
-for arg in "${req[@]}" 
+for arg in $req
 do
-    if [ "$arg" == "scale" ] 
+    if [ "$arg" = "scale" ] 
     then
 	mkdir -p scaled/enhanced
 	mkdir -p scaled/original
-	rm -f timestamps/scal*
-	{ date & echo $slowReplicas; } >> timestamps/scaling_start_time.txt		
+	if [ "$timestamps" = true ]
+	then	
+	    rm -f timestamps/scal*
+	    { date & echo $slowReplicas; } >> timestamps/scaling_start_time.txt
+	fi
 	for n in $(seq $slowReplicas)
 	do
 	    echo Scaling, replica $n out of $slowReplicas	    	    
@@ -78,16 +105,22 @@ do
 		convert -resize ${width}x enhanced/$dataset.png scaled/enhanced/$dataset.png
 	    done
 	done
-	{ date & echo $slowReplicas; } >> timestamps/scaling_end_time.txt
+	if [ "$timestamps" = true ]
+	then
+	    { date & echo $slowReplicas; } >> timestamps/scaling_end_time.txt
+	fi
 	break
     fi
 done
-for arg in "${req[@]}" 
+for arg in $req
 do
-    if [ "$arg" == "pre" ] # preproc annotations
+    if [ "$arg" = "pre" ] # preproc annotations
     then
-	rm -f timestamps/preprocess*
-	{ date & echo $fastReplicas; } >> timestamps/preprocessing_start_time.txt 	
+	if [ "$timestamps" = true ]
+	then
+	    rm -f timestamps/preprocess*
+	    { date & echo $fastReplicas; } >> timestamps/preprocessing_start_time.txt
+	fi
 	for n in $(seq $fastReplicas)
 	do
 	    echo Preproc, replica $n out of $fastReplicas	    	    	    
@@ -98,19 +131,25 @@ do
 		python3 overlap.py $dataset 
 	    done
 	done
-	{ date & echo $fastReplicas; } >> timestamps/preprocessing_end_time.txt	 
+	if [ "$timestamps" = true ]
+	then
+	    { date & echo $fastReplicas; } >> timestamps/preprocessing_end_time.txt
+	fi
 	break
     fi
 done
-for arg in "${req[@]}" 
+for arg in $req
 do
-    if [ "$arg" == "ext" ] 
+    if [ "$arg" = "ext" ] 
     then
 	mkdir -p individual/squares
 	mkdir -p individual/original
 	mkdir -p individual/enhanced
-	rm -f timestamps/extract*
-	{ date & echo $slowReplicas; } >> timestamps/extraction_start_time.txt
+	if [ "$timestamps" = true ]
+	then	
+	    rm -f timestamps/extract*
+	    { date & echo $slowReplicas; } >> timestamps/extraction_start_time.txt
+	fi
 	for n in $(seq $slowReplicas)
 	do
 	    echo Extracting, replica $n out of $slowReplicas
@@ -121,19 +160,25 @@ do
 		python3 extract.py ${dataset} 
 	    done
 	done
-	{ date & echo $slowReplicas; } >> timestamps/extraction_end_time.txt	    
+	if [ "$timestamps" = true ]
+	then
+	    { date & echo $slowReplicas; } >> timestamps/extraction_end_time.txt
+	fi
 	break
     fi
 done
-for arg in "${req[@]}" 
+for arg in $req
 do
-    if [ "$arg" == "post" ] 
+    if [ "$arg" = "post" ] 
     then
 	mkdir -p composite/enhanced
 	mkdir -p composite/original
 	rm -rf composite/*/*.png
-	rm -f timestamps/post*
-	{ date & echo $slowReplicas; } >> timestamps/postprocessing_start_time.txt	
+	if [ "$timestamps" = true ]
+	then	
+	    rm -f timestamps/post*
+	    { date & echo $slowReplicas; } >> timestamps/postprocessing_start_time.txt
+	fi
 	for n in $(seq $slowReplicas)
 	do
 	    echo Postprocessing, replica $n out of $slowReplicas
@@ -151,24 +196,30 @@ do
 		done
 	    done
 	done
-	{ date & echo $slowReplicas; } >> timestamps/postprocessing_end_time.txt
+	if [ "$timestamps" = true ]
+	then
+	    { date & echo $slowReplicas; } >> timestamps/postprocessing_end_time.txt
+	fi
 	break
     fi
 done
-for arg in "${req[@]}"
+for arg in $req
 do
-    if [ "$arg" == "char" ]
+    if [ "$arg" = "char" ]
     then
 	start=80
 	end=99
 	step=1
 	listing=`python -c "print(' '.join([str(x) for x in range($start, $end + 1, $step)]))"`
 	echo Using quantiles $listing
-	quantiles=($(echo $listing | tr ' ' '\n'))	
+	quantiles=($(echo $listing | tr ' ' '\n')) 
 	mkdir -p thresholds
 	rm -f thresholds/*.txt
-	rm -f timestamps/char*
-	{ date & echo $slowReplicas; } >> timestamps/characterization_start_time.txt
+	if [ "$timestamps" = true ]
+	then	
+	    rm -f timestamps/char*
+	    { date & echo $slowReplicas; } >> timestamps/characterization_start_time.txt
+	fi
 	for n in $(seq $slowReplicas)
 	do
 	    echo Characterizing, replica $n out of $slowReplicas
@@ -183,7 +234,10 @@ do
 	    done
 	    python3 ruleperf.py > best.txt
 	done
-	{ date & echo $slowReplicas; } >> timestamps/characterization_end_time.txt
+	if [ "$timestamps" = true ]
+	then
+	    { date & echo $slowReplicas; } >> timestamps/characterization_end_time.txt
+	fi
 	best=`head -n 1 best.txt | awk '{print $1}'` # just use the first if there are many
 	cp thresholds/thr_$best.txt thresholds.txt
 	echo Examined quantiles were $quantiles
@@ -192,12 +246,15 @@ do
     fi
 done
 mkdir -p thresholded
-for arg in "${req[@]}" 
+for arg in $req
 do
-    if [ "$arg" == "thr" ] 
+    if [ "$arg" = "thr" ] 
     then
-	rm -f timestamps/thr*
-	{ date & echo $slowReplicas; } >> timestamps/thresholding_start_time.txt
+	if [ "$timestamps" = true ]
+	then	
+	    rm -f timestamps/thr*
+	    { date & echo $slowReplicas; } >> timestamps/thresholding_start_time.txt
+	fi
 	for n in $(seq $slowReplicas)
 	do
 	    echo Thresholding, replica $n out of $slowReplicas	    
@@ -207,16 +264,22 @@ do
 		python3 threshold.py $dataset
 	    done
 	done
-	{ date & echo $slowReplicas; } >> timestamps/thresholding_end_time.txt
+	if [ "$timestamps" = true ]
+	then
+	    { date & echo $slowReplicas; } >> timestamps/thresholding_end_time.txt
+	fi
 	break
     fi
 done
-for arg in "${req[@]}" 
+for arg in $req
 do
-    if [ "$arg" == "ca" ] 
+    if [ "$arg" = "ca" ] 
     then
-	rm -f timestamps/autom*
-	{ date & echo $slowReplicas; } >> timestamps/automata_start_time.txt
+	if [ "$timestamps" = true ]
+	then
+	    rm -f timestamps/autom*
+	    { date & echo $slowReplicas; } >> timestamps/automata_start_time.txt
+	fi
 	for n in $(seq $slowReplicas)
 	do
 	    echo Automata, replica $n out of $slowReplicas	    
@@ -226,7 +289,10 @@ do
 		python3 automaton.py $dataset > automaton/${dataset}.log
 	    done
 	done
-	{ date & echo $slowReplicas; } >> timestamps/automata_end_time.txt
+	if [ "$timestamps" = true ]
+	then
+	    { date & echo $slowReplicas; } >> timestamps/automata_end_time.txt
+	fi
 	echo Creating GIFs
 	rm -rf automaton/frames # force clear so as not to affect the GIF
 	mkdir -p automaton/frames
@@ -238,16 +304,19 @@ do
 	break
     fi
 done
-for arg in "${req[@]}" 
+for arg in $req
 do
-    if [ "$arg" == "eval" ] 
+    if [ "$arg" = "eval" ] 
     then
 	mkdir -p output/air/original
 	mkdir -p output/air/automaton
 	mkdir -p output/air/enhanced
 	mkdir -p output/air/thresholded
-	rm -f timestamps/eval*
-	{ date & echo $fastReplicas; } >> timestamps/evaluation_start_time.txt
+	if [ "$timestamps" = true ]
+	then
+	    rm -f timestamps/eval*
+	    { date & echo $fastReplicas; } >> timestamps/evaluation_start_time.txt
+	fi
 	for n in $(seq $fastReplicas)
 	do
 	    echo Evaluating, replica $n out of $fastReplicas	
@@ -258,36 +327,48 @@ do
 		python3 test.py $dataset >> results.txt 
 	    done
 	done
-	{ date & echo $fastReplicas; } >> timestamps/evaluation_end_time.txt
+	if [ "$timestamps" = true ]
+	then
+	    { date & echo $fastReplicas; } >> timestamps/evaluation_end_time.txt
+	fi
 	break
     fi
 done
-for arg in "${req[@]}" 
+for arg in $req
 do
-    if [ "$arg" == "cover" ] 
+    if [ "$arg" = "cover" ] 
     then
-	rm -f timestamps/cover*
-	{ date & echo $fastReplicas; } >> timestamps/coverage_start_time.txt
+	if [ "$timestamps" = true ]
+	then	
+	    rm -f timestamps/cover*
+	    { date & echo $fastReplicas; } >> timestamps/coverage_start_time.txt
+	fi
 	for n in $(seq $fastReplicas)
 	do
 	    echo Computing coverage, replica $n out of $fastReplicas		    
 	    python3 counts.py > coverage.txt
 	    python3 coverage.py
 	done
-	{ date & echo $fastReplicas; } >> timestamps/coverage_end_time.txt	    
+	if [ "$timestamps" = true ]
+	then
+	    { date & echo $fastReplicas; } >> timestamps/coverage_end_time.txt
+	fi
 	break
     fi
 done
-for arg in "${req[@]}" 
+for arg in $req
 do
-    if [ "$arg" == "forecast" ] 
+    if [ "$arg" = "forecast" ] 
     then
 	mkdir -p output/ground/original
 	mkdir -p output/ground/automaton
 	mkdir -p output/ground/enhanced
 	mkdir -p output/ground/thresholded
-	rm -f timestamps/forecast*
-	{ date & echo $fastReplicas; } >> timestamps/forecasting_start_time.txt
+	if [ "$timestamps" = true ]
+	then	
+	    rm -f timestamps/forecast*
+	    { date & echo $fastReplicas; } >> timestamps/forecasting_start_time.txt
+	fi
 	for n in $(seq $fastReplicas)
 	do
 	    echo Forecasting, replica $n out of $fastReplicas		    	    
@@ -298,14 +379,25 @@ do
 	    python3 test.py $dataset ground >> ground.txt 
 	    done
 	done
-	{ date & echo $fastReplicas; } >> timestamps/forecasting_end_time.txt
+	if [ "$timestamps" = true ]
+	then
+	    { date & echo $fastReplicas; } >> timestamps/forecasting_end_time.txt
+	fi
 	break
     fi
 done
-for arg in "${req[@]}" 
+for arg in $req
 do
-    if [ "$arg" == "update" ] # update the manuscript
+    if [ "$arg" = "update" ] # update the manuscript
     then
+	ec=`awk '{print $2}' trees.dat | sort | uniq | grep -v kind`
+        eclasses=($(echo $ec)) 
+	for expc in "${eclasses[@]}"
+	do
+	    color=`echo ${rgb[$expc]}`
+	    grep $expc trees.dat | tail -n +2 | awk -v color=$color '{print $4" "$3" "color}' > exp_$expc.dat
+	done
+	python3 bb.py > bb.plot
 	for kind in "${classes[@]}" # count the samples 
 	do
 	    echo $kind
@@ -313,10 +405,15 @@ do
 	done
 	mkdir -p individual/thresholded
 	mkdir -p individual/automaton
+	mkdir -p ground/individual/thresholded
+	mkdir -p ground/individual/automaton	
+	mkdir -p ground/individual/squares
+	mkdir -p ground/individual/original
+	mkdir -p ground/individual/enhanced
 	for file in `ls -1 orthomosaics/*.tiff`
 	do 
 	    dataset=`basename $file .tiff`
-	    python3 grayscale.py $dataset 
+	    python3 grayscale.py $dataset
 	    python3 extract.py ${dataset} post
 	    python3 validate.py $dataset
 	    python3 histogram.py ${dataset} 
@@ -348,7 +445,13 @@ do
 	mkdir -p examples/original
 	mkdir -p examples/thresholded
 	mkdir -p examples/automaton
-	python3 examples.py # the examples of the samples for the manuscript
+	python3 examples.py 4 4
+	mkdir -p examples/ground/squares
+	mkdir -p examples/ground/enhanced
+	mkdir -p examples/ground/original
+	mkdir -p examples/ground/thresholded
+	mkdir -p examples/ground/automaton	
+	python3 examples.py 1 5 ground 
 	python3 confusion.py results.txt tex > results.tex # format the results in LaTeX
 	fgrep "% CM" results.tex | tail -n +2 > conf.tex
 	fgrep "% STATS" results.tex > perf.tex
@@ -363,7 +466,7 @@ do
 	cat coverage/gyr.txt coverage/leafless.txt | awk '{a[$1] += $2; if ($3 != "leafless"){b[$1] = $2}}END{for (x in a) {print x" "a[x]" "b[x]}}' | sort -g > coverage/gyrl.txt
 	cat coverage/gyrl.txt coverage/background.txt | awk '{a[$1] += $2; if ($3 != "background"){b[$1] = $2}}END{for (x in a) {print x" "a[x]" "b[x]}}' | sort -g > coverage/all.txt
 	gnuplot coverage.plot
-	bash figures.sh # figure files for the manuscript
+	zsh figures.sh # figure files for the manuscript
 	break
     fi
 done

@@ -16,21 +16,21 @@ def longitude(s):
     assert 'E' in s or 'W' in s    
     return decimal(s)    
 
+def translate(pos, start, end, scale, offset, invert):
+    span = end - start # degree span
+    assert span > 0 # there is a span
+    assert start <= pos # position comes after it starts
+    assert pos <= end # position comes before it ends
+    assert offset >= 0
+    r = (pos - start) / span # relative position
+    if invert: # origin in the top left corner for pixels
+        r = 1 - r
+    originalPixel = round(r * scale) - offset
+    return originalPixel 
+
 def lat2y(d, o):
-    span = o['N'] - o['S']
-    assert span > 0    
-    assert o['S'] <= d
-    assert d <= o['N']
-    pos = (d - o['S']) / span
-    h = o['height']
-    return round(o['y0'] + pos * h)
+    return translate(d, o['S'], o['N'], o['hOrig'], o['y0'], True)
 
 def lon2x(d, o):
-    span = o['E'] - o['W']
-    assert span > 0
-    assert o['W'] <= d
-    assert d <= o['E']
-    pos = (o['E'] - d) / span
-    w = o['width']
-    return round(o['x0'] + pos * w)
+    return translate(d, o['W'], o['E'], o['wOrig'], o['x0'], False)
     

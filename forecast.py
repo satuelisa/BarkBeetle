@@ -4,7 +4,7 @@ from collections import defaultdict
 cc = {'black': 'gray', 'leafless': 'blue'}
       
 def cell(color):
-    if color == 'NA':
+    if color == '' or color == 'NA':
         return 'NA' # will get cut
     return '\\cellcolor{' + cc.get(color, color) + '!50}'
 
@@ -36,11 +36,9 @@ for t in range(1, 31):
         if f in trees[t]:
             (a, m) = trees[t][f]
         c = cell(a)
-        if m:
-            a = '{\\bf ' + a + '}'
-            matches += 1
-        assignments += ' & ' + c + a
+        matches += 1 * m
+        assignments += ' & ' + c + m * '{\\bf ' + a + m * '}'
     if 'NA' not in assignments:
         co = cell(observed[t])
-        print(t, assignments, '& {\em', co, observed[t], '} &', matches, '\\\\')
+        print(t, assignments, '&', co, '{\\em '+ observed[t], '} &', matches, '\\\\')
     

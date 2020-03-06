@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from scipy.stats import describe
 
 plt.rcParams.update({'font.size': 14})
-data = pd.read_csv('trees.dat', sep=' ') # treeID class lon lat diam height NSspan EWspan
+data = pd.read_csv('trees.txt', sep=' ') # treeID class lon lat diam height NSspan EWspan
 print(describe(data['NSspan']))
 print(describe(data['EWspan']))
 fig, ax = plt.subplots()
@@ -33,27 +33,35 @@ print('Mean difference: ', m)
 
 from collections import defaultdict
 offsets = defaultdict(dict)
-maps = dict()
+annotations = dict()
 with open('offsets.txt') as od:
     for line in od:
         fields = line.split()
         f = fields[2]
-        maps[f] = open(f'annotations/{f}.annot', 'w')
-        offsets[f]['x0'] = int(fields[3])
-        offsets[f]['y0'] = int(fields[4])
-        offsets[f]['x1'] = int(fields[5])
-        offsets[f]['y1'] = int(fields[6])
-        offsets[f]['wOrig'] = int(fields[7][1:-1]) # skip ( and ,
-        offsets[f]['hOrig'] = int(fields[8][:-1]) # skip )
+        annotations[f] = open(f'annotations/{f}.annot', 'w')
+        x0 = int(fields[3])
+        y0 = int(fields[4])
+        x1 = int(fields[5])
+        y1 = int(fields[6])
+        offsets[f]['x0'] = x0
+        offsets[f]['y0'] = y0
+        offsets[f]['x1'] = x1
+        offsets[f]['y1'] = y1
+        ow = int(fields[7])
+        oh = int(fields[8])
+        offsets[f]['wOrig'] = ow
+        offsets[f]['hOrig'] = oh
         offsets[f]['N'] = float(fields[9])
         offsets[f]['S'] = float(fields[10])
         offsets[f]['W'] = float(fields[11])
         offsets[f]['E'] = float(fields[12])
         w = offsets[f]['x1'] - offsets[f]['x0']
         offsets[f]['width'] = w
+        assert(ow - w == x0 + (ow - x1))
         h = offsets[f]['y1'] - offsets[f]['y0'] 
         offsets[f]['height'] = h
-        print(f'# dim {w} {h}', file = maps[f])
+        assert(oh - h == y0 + (oh - y1))
+        print(f'# dim {w} {h}', file = annotations[f])
 
 from latlon import lon2x, lat2y
         
@@ -72,11 +80,10 @@ with open('trees.tex', 'w') as target:
             o =  offsets[f]
             x = lon2x(lon, o)
             y = lat2y(lat, o)
-            print(x, y)
             if x >= 0 and y >= 0 and x <= o['width'] and y <= o['height']:
-                print(treeID, label, x, y, file = maps[f])
+                print(treeID, label, x, y, lon, lat, file = annotations[f])
     print('\end{tabular}', file = target)
-for f in maps:
+for f in annotations:
     with open(f'annotations/{f}.raw') as data:
         o = offsets[f]
         dx = o['x0']
@@ -89,5 +96,5 @@ for f in maps:
             y = int(fields[3]) - dy
             # only keep the ones that fall in the zone
             if x > 0 and y > 0 and x <= o['width'] and y <= o['height']: 
-                print(treeID, label, x, y, file = maps[f]) 
-    maps[f].close()
+                print(treeID, label, x, y, file = annotations[f]) 
+    annotations[f].close()
