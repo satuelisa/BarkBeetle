@@ -25,8 +25,15 @@ with open(argv[1]) as data:
                 observed[treeID] = expert
             assigned = ' '.join(fields)
             trees[treeID][flight] = (assigned, match)
-print('ID & June 60 m & July 90 m & July 100 m & Aug 90 m & Aug 100 m & Expert & \# \\\\')
+print('ID & June 60 m & July 90 m & July 100 m & Aug 90 m & Aug 100 m & Expert & Original & \\# \\\\')
 print('\\toprule')
+orig = dict()
+with open('trees.txt') as data:
+    data.readline() # skip header row
+    for line in data:
+        fields = line.split()
+        treeID = int(fields[0])
+        orig[treeID] = fields[1]
 for t in range(1, 31):
     assignments = ''
     matches = 0
@@ -40,5 +47,5 @@ for t in range(1, 31):
         assignments += ' & ' + c + m * '{\\bf ' + a + m * '}'
     if 'NA' not in assignments:
         co = cell(observed[t])
-        print(t, assignments, '&', co, '{\\em '+ observed[t], '} &', matches, '\\\\')
+        print(t, assignments, '&', co, '{\\em '+ observed[t], '} & {\em ', orig[t], '} &', matches, '\\\\')
     
