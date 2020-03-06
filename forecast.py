@@ -1,7 +1,7 @@
 from sys import argv
 from collections import defaultdict
 
-cc = {'black': 'gray', 'leafless': 'blue'}
+cc = {'black': 'gray', 'leafless': 'blue', 'orange': 'orange', 'dry': 'gray', 'infested': 'lime'}
       
 def cell(color):
     if color == '' or color == 'NA':
@@ -46,6 +46,7 @@ for t in range(1, 31):
         matches += 1 * m
         assignments += ' & ' + c + m * '{\\bf ' + a + m * '}'
     if 'NA' not in assignments:
-        co = cell(observed[t])
-        print(t, assignments, '&', co, '{\\em '+ observed[t], '} & {\em ', orig[t], '} &', matches, '\\\\')
+        cobs = cell(observed[t])
+        corig = cell(orig[t])
+        print(t, assignments, '&', cobs, '{\\em '+ observed[t], '} &', corig, '{\em ', orig[t], '} &', matches, '\\\\')
     
