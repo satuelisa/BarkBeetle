@@ -1,21 +1,21 @@
-width=1000 # to what width to scale the images (dowm from enormous)
-location='/Users/elisa/Dropbox/Research/Topics/Arboles/manuscripts/plaga'
-cp diameter.png ${location}/fig1a.png # tree spans
-cp difference.png ${location}/fig1b.png # span difference
+#!/bin/zsh
 
-# example validation
+width=1000 
+location='/Users/elisa/Dropbox/Research/Topics/Arboles/manuscripts/plaga'
+cp diameter.png ${location}/fig1a.png 
+cp difference.png ${location}/fig1b.png 
 gnuplot bb.plot
 convert -density 200 bb.eps ${location}/fig2a.png
-cp validation/aug100_both.png fig2_raw.png 
+cp validation/aug100_both.png fig2_raw.png  
 convert -transparent black -resize $width fig2_raw.png fig2_small.png
 convert -transparent black -crop 800x600+100+100 fig2_small.png ${location}/fig2b.png
 
 gap=30
-gaps="-background black -splice ${gap}x0+0+0 +append -chop ${gap}x0+0+0"
-vgaps="-background black -splice 0x${gap}+0+0 -append -chop 0x${gap}+0+0"
+gaps="-background transparent -splice ${gap}x0+0+0 +append -chop ${gap}x0+0+0"
+vgaps="-background transparent -splice 0x${gap}+0+0 -append -chop 0x${gap}+0+0"
 
 # example sample areas (square)
-convert examples/squares/green.png examples/squares/yellow.png examples/squares/red.png examples/squares/leafless.png $gaps +append fig3.png
+convert examples/squares/green.png examples/squares/yellow.png examples/squares/red.png examples/squares/leafless.png $(echo $gaps) fig3.png
 convert -transparent black fig3.png ${location}/fig3.png 
 
 # unmodified colors
@@ -37,10 +37,10 @@ cp histograms/jul100_uniform.png fig4c3.png
 cp histograms/aug90_uniform.png fig4c4.png 
 cp histograms/aug100_uniform.png fig4c5.png 
 
-convert fig4a?.png $gaps fig4a_top.png 
-convert fig4b?.png $gaps fig4a_bot.png
-convert fig4c?.png $gaps fig4b.png 
-convert fig4a_top.png fig4a_bot.png $vgaps fig4a.png
+convert fig4a?.png $(echo $gaps) fig4a_top.png 
+convert fig4b?.png $(echo $gaps) fig4a_bot.png
+convert fig4c?.png $(echo $gaps) fig4b.png 
+convert fig4a_top.png fig4a_bot.png $(echo $vgaps) fig4a.png
 convert -transparent black fig4a.png ${location}/fig4a.png
 convert -transparent black fig4b.png ${location}/fig4b.png 
 
@@ -79,10 +79,10 @@ convert -resize x$h -rotate 90 collages/thresholded/green.png fig10c1.png
 convert -resize x$h -rotate 90 collages/thresholded/yellow.png fig10c2.png
 convert -resize x$h -rotate 90 collages/thresholded/red.png fig10c3.png 
 convert -resize x$h -rotate 90 collages/thresholded/leafless.png fig10c4.png   
-convert fig10a?.png $gaps fig10a.png
-convert fig10b?.png $gaps fig10b.png
-convert fig10c?.png $gaps fig10c.png
-convert fig10?.png $vgaps fig10.png
+convert fig10a?.png $(echo $gaps) fig10a.png
+convert fig10b?.png $(echo $gaps) fig10b.png
+convert fig10c?.png $(echo $gaps) fig10c.png
+convert fig10?.png $(echo $vgaps) fig10.png
 convert -transparent black fig10.png ${location}/fig10.png
 
 x=150
@@ -101,17 +101,17 @@ convert -crop ${w}x${h}+${x}+${y} scaled/original/aug100.png fig11c1.png
 convert -crop ${w}x${h}+${x}+${y} scaled/enhanced/aug100.png fig11c2.png
 convert -crop ${w}x${h}+${x}+${y} thresholded/aug100.png fig11c3.png
 convert -crop ${w}x${h}+${x}+${y} automaton/aug100.png fig11c4.png
-convert fig11a?.png $gaps fig11a.png
-convert fig11b?.png $gaps fig11b.png
-convert fig11c?.png $gaps fig11c.png
-convert fig11?.png $vgaps fig11.png
+convert fig11a?.png $(echo $gaps) fig11a.png
+convert fig11b?.png $(echo $gaps) fig11b.png
+convert fig11c?.png $(echo $gaps) fig11c.png
+convert fig11?.png $(echo $vgaps) fig11.png
 convert -transparent black fig11.png ${location}/fig11.png
 
-convert examples/original/green.png examples/original/yellow.png examples/original/red.png examples/original/leafless.png $gaps fig12a.png
-convert examples/enhanced/green.png examples/enhanced/yellow.png examples/enhanced/red.png examples/enhanced/leafless.png $gaps fig12b.png
-convert examples/thresholded/green.png examples/thresholded/yellow.png examples/thresholded/red.png examples/thresholded/leafless.png $gaps fig12c.png
-convert examples/automaton/green.png examples/automaton/yellow.png examples/automaton/red.png examples/automaton/leafless.png $gaps fig12d.png
-convert fig12?.png $vgaps fig12.png
+convert examples/original/green.png examples/original/yellow.png examples/original/red.png examples/original/leafless.png $(echo $gaps) fig12a.png
+convert examples/enhanced/green.png examples/enhanced/yellow.png examples/enhanced/red.png examples/enhanced/leafless.png $(echo $gaps) fig12b.png
+convert examples/thresholded/green.png examples/thresholded/yellow.png examples/thresholded/red.png examples/thresholded/leafless.png $(echo $gaps) fig12c.png
+convert examples/automaton/green.png examples/automaton/yellow.png examples/automaton/red.png examples/automaton/leafless.png $(echo $gaps) fig12d.png
+convert fig12?.png $(echo $vgaps) fig12.png
 convert -transparent black fig12.png ${location}/fig12.png
 
 w=900
@@ -122,9 +122,9 @@ convert -crop ${w}x${h}+${x}+${y} output/air/original/aug100.png fig13a1.png
 convert -crop ${w}x${h}+${x}+${y} output/air/enhanced/aug100.png fig13a2.png
 convert -crop ${w}x${h}+${x}+${y} output/air/thresholded/aug100.png fig13b1.png
 convert -crop ${w}x${h}+${x}+${y} output/air/automaton/aug100.png fig13b2.png 
-convert fig13a?.png $gaps fig13a.png
-convert fig13b?.png $gaps fig13b.png
-convert fig13?.png $vgaps fig13.png
+convert fig13a?.png $(echo $gaps) fig13a.png
+convert fig13b?.png $(echo $gaps) fig13b.png
+convert fig13?.png $(echo $vgaps) fig13.png
 convert -transparent black fig13.png ${location}/fig13.png
 
 convert -density 300 coverage.eps ${location}/fig14.png
@@ -136,4 +136,13 @@ sed 's/black/bg/g' conf.tex > ${location}/table4.tex
 sed 's/black/bg/g' perf.tex > ${location}/table5.tex
 python3 forecast.py ground.txt > ${location}/table6.tex
 
+convert examples/ground/original/green.png examples/ground/enhanced/green.png examples/ground/thresholded/green.png examples/ground/automaton/green.png $(echo $vgaps) fig15a.png
+convert examples/ground/original/yellow.png examples/ground/enhanced/yellow.png examples/ground/thresholded/yellow.png examples/ground/automaton/yellow.png $(echo $vgaps) fig15b.png
+convert examples/ground/original/red.png examples/ground/enhanced/red.png examples/ground/thresholded/red.png examples/ground/automaton/red.png $(echo $vgaps) fig15c.png
+convert examples/ground/original/leafless.png examples/ground/enhanced/leafless.png examples/ground/thresholded/leafless.png examples/ground/automaton/leafless.png $(echo $vgaps) fig15d.png
 
+# bigger gaps between groups
+gap=80 
+gaps="-background transparent -splice ${gap}x0+0+0 +append -chop ${gap}x0+0+0"
+convert fig15?.png $(echo $gaps) fig15.png
+convert -transparent black fig15.png ${location}/fig15.png

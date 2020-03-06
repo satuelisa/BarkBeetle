@@ -16,7 +16,9 @@ from gsd import radius
 debug = False # mask files are saved in debug mode (to see how round they are)
 postprocess = 'post' in argv # whether this is pre- or post-processing
 dataset = argv[1]
-trees, ow = parse(dataset)
+ground = 'ground' in argv
+prefix = 'ground/' if ground else ''
+trees, ow = parse(dataset, ground)
 sqr = radius(dataset)
 goal = 4*sqr**2
 r = sqr // 2
@@ -44,24 +46,22 @@ if postprocess:
     sr = sd // 2
     if debug:
         mask.save(f'mask_{sr}.png', quality=100)
-for treeID in trees:
+for treeID in trees: 
     pos, label = trees[treeID]
     x, y = pos
     zone = (x - sqr, y - sqr, x + sqr, y + sqr)
     square = original.crop(zone)
-    if goal == np.array(square).any(axis=-1).sum(): # ignore partial samples
-        square.save(f'individual/squares/{dataset}_{label}_{treeID}.png')
+    if ground or goal == np.array(square).any(axis=-1).sum(): # ignore partial image-based samples
+        square.save(f'{prefix}individual/squares/{dataset}_{label}_{treeID}.png')
         w, h = square.size
         assert w == 2 * sqr
-        cut(square, d, center, mask, f'individual/original/{dataset}_{label}_{treeID}.png')
-        cut(enhanced.crop(zone), d, center, mask, f'individual/enhanced/{dataset}_{label}_{treeID}.png')
+        cut(square, d, center, mask, f'{prefix}individual/original/{dataset}_{label}_{treeID}.png')
+        cut(enhanced.crop(zone), d, center, mask, f'{prefix}individual/enhanced/{dataset}_{label}_{treeID}.png')
         if postprocess:
             sx = int(round(x / factor))
             sy = int(round(y / factor))
             sz = (sx - ssqr, sy - ssqr, sx + ssqr, sy + ssqr)            
             cut(thresholded.crop(sz), sd, sc, smask,
-                f'individual/thresholded/{dataset}_{label}_{treeID}.png')                    
+                f'{prefix}individual/thresholded/{dataset}_{label}_{treeID}.png')                    
             cut(automaton.crop(sz), sd, sc, smask,
-                f'individual/automaton/{dataset}_{label}_{treeID}.png')
-                        
-
+                f'{prefix}individual/automaton/{dataset}_{label}_{treeID}.png')
