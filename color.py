@@ -61,16 +61,15 @@ def majority(x, y, r, w, h, img):
                 pixel = img[ny, nx]
                 if pixel[3] == 255: # opaque
                     freq[str(pixel)] += 1
-    if len(freq.keys()) == 0:
-        print(img[y, x], x, y, r)
     most = 0
     chosen = set()
-    for c in freq:
-        if freq[c] > most:
-            chosen = { match(c) }
-            most = freq[c]
-        elif freq[c] == most:
-            chosen.add(match(c))
+    if len(freq.keys()) > 0:
+        for c in freq:
+            if freq[c] > most:
+                chosen = { match(c) }
+                most = freq[c]
+            elif freq[c] == most:
+                chosen.add(match(c))
     return chosen
 
 if __name__ == '__main__':
