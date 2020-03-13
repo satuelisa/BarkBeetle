@@ -67,7 +67,7 @@ from latlon import lon2x, lat2y
         
 with open('trees.tex', 'w') as target:
     print('''\\begin{tabular}{r|c|cc|rrrr}
-    {\\bf \\#} & {\\bf Class} & {\\bf Latitude } & {\\bf Longitude } & {\\bf Diameter} & {\\bf Height} & {\\bf N-S } & {\\bf E-W }
+    {\\bf \\#} & {\\bf Class} & {\\bf Latitude } & {\\bf Longitude } & $D$ & $h$ & {\\bf N-S } & {\\bf E-W }
     \\\\ \\toprule''', file = target)
     # treeID class lon lat diam height NSspan EWspan
     for i, row in data.iterrows():

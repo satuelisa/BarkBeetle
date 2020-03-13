@@ -27,7 +27,7 @@ with open(argv[1]) as data:
             if len(assigned.strip()) == 0:
                 assigned = 'blank'
             trees[treeID][flight] = (assigned, match)
-print('ID & June 60 m & July 90 m & July 100 m & Aug 90 m & Aug 100 m & Expert & Original & \\# \\\\')
+print('ID & Jun 60 m & Jul 90 m & Jul 100 m & Aug 90 m & Aug 100 m & Expert & Original & \\# \\\\')
 print('\\toprule')
 orig = dict()
 with open('trees.txt') as data:

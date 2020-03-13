@@ -15,7 +15,7 @@ gaps="-background transparent -splice ${gap}x0+0+0 +append -chop ${gap}x0+0+0"
 vgaps="-background transparent -splice 0x${gap}+0+0 -append -chop 0x${gap}+0+0"
 
 # example sample areas (square)
-convert examples/squares/green.png examples/squares/yellow.png examples/squares/red.png examples/squares/leafless.png $(echo $gaps) fig3.png
+convert examples/squares/green.png examples/squares/yellow.png examples/squares/red.png examples/squares/leafless.png $(echo $vgaps) fig3.png
 convert -transparent black fig3.png ${location}/fig3.png 
 
 # unmodified colors
@@ -42,7 +42,7 @@ convert fig4b?.png $(echo $gaps) fig4a_bot.png
 convert fig4c?.png $(echo $gaps) fig4b.png 
 convert fig4a_top.png fig4a_bot.png $(echo $vgaps) fig4a.png
 convert -transparent black fig4a.png ${location}/fig4a.png
-convert -transparent black fig4b.png ${location}/fig4b.png 
+cp fig4b.png ${location}/fig4b.png 
 
 # projections
 cp projections/green_vs_yellow.png ${location}/fig5b.png
@@ -60,7 +60,7 @@ cp histograms/jun60_diff.png ${location}/fig7a.png # example difference histogra
 cp histograms/jul90_diff.png ${location}/fig7b.png # example difference histogram 90m
 cp histograms/aug100_diff.png ${location}/fig7c.png # example difference histogram 100m
 
-convert -trim ruleperf.png ${location}/fig8.png
+convert -trim -fuzz 2% ruleperf.png ${location}/fig8.png
 
 cmax=`wc -l automaton/*.log | grep automaton | awk '{print $1}' | sort -g | tail -n 1`
 gnuplot -e "cmax=$cmax" changes.plot # update the convergence figure for the manuscript
@@ -146,9 +146,10 @@ convert examples/ground/original/red.png examples/ground/enhanced/red.png exampl
 convert examples/ground/original/leafless.png examples/ground/enhanced/leafless.png examples/ground/thresholded/leafless.png examples/ground/automaton/leafless.png $(echo $vgaps) fig15d.png
 
 # bigger gaps between groups
-gap=80 
-gaps="-background transparent -splice ${gap}x0+0+0 +append -chop ${gap}x0+0+0"
-convert fig15?.png $(echo $gaps) fig15.png
+biggap=80 
+bighgaps="-background transparent -splice ${biggap}x0+0+0 +append -chop ${biggap}x0+0+0"
+bigvgaps="-background transparent -splice 0x${biggap}+0+0 -append -chop 0x${biggap}+0+0"
+convert fig15?.png $(echo $bigvgaps) fig15.png
 convert -transparent black fig15.png ${location}/fig15.png
 
-cp examples/ground/original/
+
