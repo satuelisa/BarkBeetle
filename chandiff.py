@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-plt.rcParams.update({'font.size': 14})
+plt.rcParams.update({'font.size': 18})
 from collections import defaultdict
 from os.path import exists
 from PIL import Image
@@ -49,7 +49,7 @@ def diff(filename, ax, h, tw = 2, bw = 5):
             ax[j].axis('off')
         else:
             norm = 100 / n # as percentages of the total
-            ax[j].text(-240, 0.9 * h, '{0:.2}%'.format(norm * vs[j][0]))
+            ax[j].text(-240, 0.8 * h, '{0:.2}%'.format(norm * vs[j][0]))
             ax[j].set_ylim(0, h)
             for i in range(-255, 255):
                 if i == 0:
