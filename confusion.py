@@ -61,8 +61,8 @@ for (case, matrix) in [('global', overall)] + list(specific.items()):
     accuracy = correct / total
     error = 1 - accuracy
     sep = ' & ' if latex else '\t'
-    e = 'Error' if not latex else '$\mathcal{E}$'
-    a = 'Accuracy' if not latex else '$\mathcal{A}$'
+    e = 'Error' if not latex else '$\epsilon$'
+    a = 'Accuracy' if not latex else '$\alpha$'
     fe = '{\\bf ' + f'{error:.2f}' + '}' if latex else f'{error:.2f}'
     fa = '{\\bf ' + f'{accuracy:.2f}' + '}' if latex else f'{accuracy:.2f}'
     if case == 'global' and latex:
