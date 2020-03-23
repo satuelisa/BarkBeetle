@@ -14,6 +14,11 @@ gap=30
 gaps="-background transparent -splice ${gap}x0+0+0 +append -chop ${gap}x0+0+0"
 vgaps="-background transparent -splice 0x${gap}+0+0 -append -chop 0x${gap}+0+0"
 
+biggap=80 
+bighgaps="-background transparent -splice ${biggap}x0+0+0 +append -chop ${biggap}x0+0+0"
+bigvgaps="-background transparent -splice 0x${biggap}+0+0 -append -chop 0x${biggap}+0+0"
+
+
 # example sample areas (square)
 convert examples/squares/green.png examples/squares/yellow.png examples/squares/red.png examples/squares/leafless.png $(echo $vgaps) fig3.png
 convert -transparent black fig3.png ${location}/fig3.png 
@@ -79,10 +84,10 @@ convert -resize x$h -rotate 90 collages/thresholded/green.png fig10c1.png
 convert -resize x$h -rotate 90 collages/thresholded/yellow.png fig10c2.png
 convert -resize x$h -rotate 90 collages/thresholded/red.png fig10c3.png 
 convert -resize x$h -rotate 90 collages/thresholded/leafless.png fig10c4.png   
-convert fig10a?.png $(echo $gaps) fig10a.png
-convert fig10b?.png $(echo $gaps) fig10b.png
-convert fig10c?.png $(echo $gaps) fig10c.png
-convert fig10?.png $(echo $vgaps) fig10.png
+convert fig10a?.png $(echo $bighgaps) fig10a.png
+convert fig10b?.png $(echo $bighgaps) fig10b.png
+convert fig10c?.png $(echo $bighgaps) fig10c.png
+convert fig10?.png $(echo $bigvgaps) fig10.png
 convert -transparent black fig10.png ${location}/fig10.png
 
 x=150
@@ -145,10 +150,6 @@ convert examples/ground/original/yellow.png examples/ground/enhanced/yellow.png 
 convert examples/ground/original/red.png examples/ground/enhanced/red.png examples/ground/thresholded/red.png examples/ground/automaton/red.png $(echo $vgaps) fig15c.png
 convert examples/ground/original/leafless.png examples/ground/enhanced/leafless.png examples/ground/thresholded/leafless.png examples/ground/automaton/leafless.png $(echo $vgaps) fig15d.png
 
-# bigger gaps between groups
-biggap=80 
-bighgaps="-background transparent -splice ${biggap}x0+0+0 +append -chop ${biggap}x0+0+0"
-bigvgaps="-background transparent -splice 0x${biggap}+0+0 -append -chop 0x${biggap}+0+0"
 convert fig15?.png $(echo $bigvgaps) fig15.png
 convert -transparent black fig15.png ${location}/fig15.png
 
