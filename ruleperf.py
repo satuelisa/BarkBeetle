@@ -58,7 +58,7 @@ for q in pareto:
 plt.rcParams.update({'font.size': 11})
 plt.figure(figsize = (round(nk * 2.2), nq * 2))
 gs = gridspec.GridSpec(nq, nk)
-gs.update(wspace = 0.03, hspace = 0.6) 
+gs.update(wspace = 0.03, hspace = 0.55, top=0.98) 
 
 incl = m.q.isin(pareto)
 m = m[incl]
