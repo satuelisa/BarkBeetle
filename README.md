@@ -1,6 +1,9 @@
 # BarkBeetle
 
-## Image processing to detect bark beetle infestation from aerial orthomosaics
+## Image processing to detect BBI from aerial imagery
+
+We work with UAV-captured RGB images, built into one-per-flight
+orthomosaics, to detect bark-beetle infestations.
 
 **Tools**: Python3, ImageMagick, and zsh
 
