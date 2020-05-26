@@ -134,6 +134,7 @@ convert -transparent black fig13.png ${location}/fig13.png
 
 convert -density 300 coverage.eps ${location}/fig14.png
 
+python3 gsd.py > ${location}/table1.tex
 cp trees.tex ${location}/table2.tex
 ls -1 timestamps/*start* | awk -F '_' '{print $1}' | cut -c 12-40 > measured.txt
 python3 times.py measured.txt > ${location}/table3.tex

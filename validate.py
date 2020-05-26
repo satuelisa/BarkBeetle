@@ -11,10 +11,12 @@ import cv2
 from gsd import radius
 from trees import parse
 
-color = {'red': (0, 0, 255, 255), 'green': (0, 255, 0, 255),
-         'yellow': (0, 255, 255, 255), 'orange': (0, 255, 255, 255),
-         'leafless': (255, 0, 0, 255), 'dry': (0, 0, 255, 255),
-         'infested': (0, 255, 0, 255)}
+color = {
+    'red': (0, 0, 255, 255), # red
+    'green': (0, 255, 0, 255), 'infested': (0, 255, 0, 255), # green
+    'yellow': (0, 255, 255, 255), 'orange': (0, 255, 255, 255), #  yellow
+    'leafless': (255, 0, 0, 255), 'dry': (255, 0, 0, 255) # blue
+}
 
 def place(trees, r, frames, labels):
     assert len(frames) == len(labels) - 1
@@ -22,10 +24,10 @@ def place(trees, r, frames, labels):
         pos, label = trees[tID]
         (x, y) = pos
         for img in frames:
-            cv2.rectangle(img, (x - r, y - r), (x + r, y + r), color[label], 20)
+            cv2.rectangle(img, (x - r, y - r), (x + r, y + r), color[label], 8)
         for img in labels:
             cv2.putText(img, str(tID), (x, y),
-                        cv2.FONT_HERSHEY_SIMPLEX, 5.0, (240, 0, 240, 255), 12)
+                        cv2.FONT_HERSHEY_SIMPLEX, 2.0, (240, 0, 240, 255), 6)
 
 dataset = argv[1]
 rad = radius(dataset)

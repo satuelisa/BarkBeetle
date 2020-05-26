@@ -98,9 +98,9 @@ do
 	for n in $(seq $slowReplicas)
 	do
 	    echo Scaling, replica $n out of $slowReplicas	    	    
-	    for file in `ls -1 orthomosaics/*.tiff`
+	    for file in `ls -1 orthomosaics/*.tif`
 	    do
-		dataset=`basename $file .tiff`	
+		dataset=`basename $file .tif`	
 		convert -resize ${width}x cropped/$dataset.png scaled/original/$dataset.png	
 		convert -resize ${width}x enhanced/$dataset.png scaled/enhanced/$dataset.png
 	    done
@@ -125,9 +125,9 @@ do
 	do
 	    echo Preproc, replica $n out of $fastReplicas	    	    	    
 	    python3 radius.py > radius.dat	    
-	    for file in `ls -1 orthomosaics/*.tiff`
+	    for file in `ls -1 orthomosaics/*.tif`
 	    do
-		dataset=`basename $file .tiff`	
+		dataset=`basename $file .tif`	
 		python3 overlap.py $dataset 
 	    done
 	done
@@ -154,9 +154,9 @@ do
 	do
 	    echo Extracting, replica $n out of $slowReplicas
 	    rm -rf individual/*/*.png
-	    for file in `ls -1 orthomosaics/*.tiff`
+	    for file in `ls -1 orthomosaics/*.tif`
 	    do
-		dataset=`basename $file .tiff`
+		dataset=`basename $file .tif`
 		python3 extract.py ${dataset} 
 	    done
 	done
@@ -182,9 +182,9 @@ do
 	for n in $(seq $slowReplicas)
 	do
 	    echo Postprocessing, replica $n out of $slowReplicas
-	    for file in `ls -1 orthomosaics/*.tiff`
+	    for file in `ls -1 orthomosaics/*.tif`
 	    do
-		dataset=`basename $file .tiff`
+		dataset=`basename $file .tif`
 		convert -background none individual/enhanced/${dataset}_*.png +append composite/enhanced/${dataset}.png
 		convert -background none individual/original/${dataset}_*.png +append composite/original/${dataset}.png	
 		for kind in "${classes[@]}"
@@ -207,7 +207,7 @@ for arg in $req
 do
     if [ "$arg" = "char" ]
     then
-	start=80
+	start=70
 	end=99
 	step=1
 	listing=`python -c "print(' '.join([str(x) for x in range($start, $end + 1, $step)]))"`
@@ -258,9 +258,9 @@ do
 	for n in $(seq $slowReplicas)
 	do
 	    echo Thresholding, replica $n out of $slowReplicas	    
-	    for file in `ls -1 orthomosaics/*.tiff`
+	    for file in `ls -1 orthomosaics/*.tif`
 	    do
-		dataset=`basename $file .tiff`
+		dataset=`basename $file .tif`
 		python3 threshold.py $dataset
 	    done
 	done
@@ -283,9 +283,9 @@ do
 	for n in $(seq $slowReplicas)
 	do
 	    echo Automata, replica $n out of $slowReplicas	    
-	    for file in `ls -1 orthomosaics/*.tiff`
+	    for file in `ls -1 orthomosaics/*.tif`
 	    do
-		dataset=`basename $file .tiff`
+		dataset=`basename $file .tif`
 		python3 automaton.py $dataset > automaton/${dataset}.log
 	    done
 	done
@@ -296,9 +296,9 @@ do
 	echo Creating GIFs
 	rm -rf automaton/frames # force clear so as not to affect the GIF
 	mkdir -p automaton/frames
-	for file in `ls -1 orthomosaics/*.tiff`
+	for file in `ls -1 orthomosaics/*.tif`
 	do
-	    dataset=`basename $file .tiff`
+	    dataset=`basename $file .tif`
 	    python3 automaton.py $dataset GIF # make the GIFs (the method is deterministic) 
 	done
 	break
@@ -321,9 +321,9 @@ do
 	do
 	    echo Evaluating, replica $n out of $fastReplicas	
 	    rm results.txt # redo the result file
-	    for file in `ls -1 orthomosaics/*.tiff`
+	    for file in `ls -1 orthomosaics/*.tif`
 	    do
-		dataset=`basename $file .tiff`
+		dataset=`basename $file .tif`
 		python3 test.py $dataset >> results.txt 
 	    done
 	done
@@ -373,9 +373,9 @@ do
 	do
 	    echo Forecasting, replica $n out of $fastReplicas		    	    
 	    rm ground.txt # redo the forecast result file
-	    for file in `ls -1 orthomosaics/*.tiff`
+	    for file in `ls -1 orthomosaics/*.tif`
 	    do
-		dataset=`basename $file .tiff`
+		dataset=`basename $file .tif`
 	    python3 test.py $dataset ground >> ground.txt 
 	    done
 	done
@@ -390,12 +390,12 @@ for arg in $req
 do
     if [ "$arg" = "update" ] # update the manuscript
     then
-	ec=`awk '{print $2}' trees.dat | sort | uniq | grep -v kind`
+	ec=`awk '{print $2}' trees.txt | sort | uniq | grep -v kind`
         eclasses=($(echo $ec)) 
 	for expc in "${eclasses[@]}"
 	do
 	    color=`echo ${rgb[$expc]}`
-	    grep $expc trees.dat | tail -n +2 | awk -v color=$color '{print $4" "$3" "color}' > exp_$expc.dat
+	    grep $expc trees.txt | tail -n +2 | awk -v color=$color '{print $4" "$3" "color}' > exp_$expc.dat
 	done
 	python3 bb.py > bb.plot
 	for kind in "${classes[@]}" # count the samples 
@@ -410,9 +410,9 @@ do
 	mkdir -p ground/individual/squares
 	mkdir -p ground/individual/original
 	mkdir -p ground/individual/enhanced
-	for file in `ls -1 orthomosaics/*.tiff`
+	for file in `ls -1 orthomosaics/*.tif`
 	do 
-	    dataset=`basename $file .tiff`
+	    dataset=`basename $file .tif`
 	    python3 grayscale.py $dataset
 	    python3 extract.py ${dataset} post
 	    python3 validate.py $dataset
@@ -426,9 +426,9 @@ do
 	do
 	    convert -background none -transparent black individual/thresholded/*_${kind}_*.png +append composite/thresholded/${kind}.png
 	    convert -background none -transparent black individual/automaton/*_${kind}_*.png +append composite/automaton/${kind}.png
-	    for file in `ls -1 orthomosaics/*.tiff`
+	    for file in `ls -1 orthomosaics/*.tif`
 	    do
-		dataset=`basename $file .tiff`
+		dataset=`basename $file .tif`
 		convert -background none -transparent black individual/thresholded/${dataset}_${kind}_*.png +append composite/thresholded/${dataset}_${kind}.png
 		convert -background none -transparent black individual/automaton/${dataset}_${kind}_*.png +append composite/automaton/${dataset}_${kind}.png
 	    done

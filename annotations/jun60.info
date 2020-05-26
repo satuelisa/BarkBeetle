@@ -1,6 +1,6 @@
 Driver: GTiff/GeoTIFF
-Files: jun50.tiff
-Size is 9348, 7778
+Files: orthomosaics/jun60.tif
+Size is 3765, 2582
 Coordinate System is:
 PROJCS["WGS 84 / UTM zone 14N",
     GEOGCS["WGS 84",
@@ -24,25 +24,23 @@ PROJCS["WGS 84 / UTM zone 14N",
     AXIS["Easting",EAST],
     AXIS["Northing",NORTH],
     AUTHORITY["EPSG","32614"]]
-Origin = (408631.440630000026431,2677763.212210000026971)
-Pixel Size = (0.017630000000000,-0.017630000000000)
+Origin = (408627.723493078490719,2677757.716914540156722)
+Pixel Size = (0.049993548092926,-0.049981582519367)
 Metadata:
   AREA_OR_POINT=Area
-  TIFFTAG_SOFTWARE=pix4dmapper
 Image Structure Metadata:
-  COMPRESSION=LZW
+  COMPRESSION=DEFLATE
   INTERLEAVE=PIXEL
 Corner Coordinates:
-Upper Left  (  408631.441, 2677763.212) ( 99d53'59.12"W, 24d12'35.75"N)
-Lower Left  (  408631.441, 2677626.086) ( 99d53'59.09"W, 24d12'31.29"N)
-Upper Right (  408796.246, 2677763.212) ( 99d53'53.28"W, 24d12'35.78"N)
-Lower Right (  408796.246, 2677626.086) ( 99d53'53.25"W, 24d12'31.32"N)
-Center      (  408713.843, 2677694.649) ( 99d53'56.18"W, 24d12'33.54"N)
-Band 1 Block=9348x1 Type=Byte, ColorInterp=Red
-  NoData Value=-10000
-Band 2 Block=9348x1 Type=Byte, ColorInterp=Green
-  NoData Value=-10000
-Band 3 Block=9348x1 Type=Byte, ColorInterp=Blue
-  NoData Value=-10000
-Band 4 Block=9348x1 Type=Byte, ColorInterp=Alpha
-  NoData Value=-10000
+Upper Left  (  408627.723, 2677757.717) ( 99d53'59.25"W, 24d12'35.57"N)
+Lower Left  (  408627.723, 2677628.664) ( 99d53'59.22"W, 24d12'31.37"N)
+Upper Right (  408815.949, 2677757.717) ( 99d53'52.58"W, 24d12'35.61"N)
+Lower Right (  408815.949, 2677628.664) ( 99d53'52.55"W, 24d12'31.41"N)
+Center      (  408721.836, 2677693.191) ( 99d53'55.90"W, 24d12'33.49"N)
+Band 1 Block=512x512 Type=Byte, ColorInterp=Red
+  Mask Flags: PER_DATASET ALPHA 
+Band 2 Block=512x512 Type=Byte, ColorInterp=Green
+  Mask Flags: PER_DATASET ALPHA 
+Band 3 Block=512x512 Type=Byte, ColorInterp=Blue
+  Mask Flags: PER_DATASET ALPHA 
+Band 4 Block=512x512 Type=Byte, ColorInterp=Alpha

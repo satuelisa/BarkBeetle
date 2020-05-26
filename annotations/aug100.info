@@ -1,6 +1,6 @@
 Driver: GTiff/GeoTIFF
-Files: aug100.tiff
-Size is 13015, 10097
+Files: orthomosaics/aug100.tif
+Size is 5267, 4490
 Coordinate System is:
 PROJCS["WGS 84 / UTM zone 14N",
     GEOGCS["WGS 84",
@@ -24,23 +24,23 @@ PROJCS["WGS 84 / UTM zone 14N",
     AXIS["Easting",EAST],
     AXIS["Northing",NORTH],
     AUTHORITY["EPSG","32614"]]
-Origin = (408576.509680000017397,2677787.014530000276864)
-Pixel Size = (0.021020000000000,-0.021020000000000)
+Origin = (408574.570000050007366,2677788.789367823395878)
+Pixel Size = (0.049990029981327,-0.049993818568041)
 Metadata:
   AREA_OR_POINT=Area
-  TIFFTAG_SOFTWARE=pix4dmapper
 Image Structure Metadata:
-  COMPRESSION=LZW
+  COMPRESSION=DEFLATE
   INTERLEAVE=PIXEL
 Corner Coordinates:
-Upper Left  (  408576.510, 2677787.015) ( 99d54' 1.07"W, 24d12'36.51"N)
-Lower Left  (  408576.510, 2677574.776) ( 99d54' 1.02"W, 24d12'29.61"N)
-Upper Right (  408850.085, 2677787.015) ( 99d53'51.38"W, 24d12'36.57"N)
-Lower Right (  408850.085, 2677574.776) ( 99d53'51.33"W, 24d12'29.67"N)
-Center      (  408713.297, 2677680.895) ( 99d53'56.20"W, 24d12'33.09"N)
-Band 1 Block=13015x1 Type=Byte, ColorInterp=Red
-  NoData Value=-10000
-Band 2 Block=13015x1 Type=Byte, ColorInterp=Green
-  NoData Value=-10000
-Band 3 Block=13015x1 Type=Byte, ColorInterp=Blue
-  NoData Value=-10000
+Upper Left  (  408574.570, 2677788.789) ( 99d54' 1.14"W, 24d12'36.57"N)
+Lower Left  (  408574.570, 2677564.317) ( 99d54' 1.09"W, 24d12'29.27"N)
+Upper Right (  408837.867, 2677788.789) ( 99d53'51.81"W, 24d12'36.62"N)
+Lower Right (  408837.867, 2677564.317) ( 99d53'51.76"W, 24d12'29.32"N)
+Center      (  408706.219, 2677676.553) ( 99d53'56.45"W, 24d12'32.95"N)
+Band 1 Block=512x512 Type=Byte, ColorInterp=Red
+  Mask Flags: PER_DATASET ALPHA 
+Band 2 Block=512x512 Type=Byte, ColorInterp=Green
+  Mask Flags: PER_DATASET ALPHA 
+Band 3 Block=512x512 Type=Byte, ColorInterp=Blue
+  Mask Flags: PER_DATASET ALPHA 
+Band 4 Block=512x512 Type=Byte, ColorInterp=Alpha
