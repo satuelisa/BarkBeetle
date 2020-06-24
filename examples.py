@@ -14,8 +14,8 @@ h = cols * size + (cols + 1) * margin
 datasets = ['jun60', 'jul90', 'jul100', 'aug90', 'aug100']
 variants = ['squares', 'original', 'enhanced', 'thresholded', 'automaton']
 
-start = 1 if ground else 30
-end = 30 if ground else 100 
+start = 1 if ground else 31
+end = 30 if ground else 1000 
 for kind in ['green', 'yellow', 'red', 'leafless']:
     images = { v : Image.new('RGBA', (h, w)) for v in variants } 
     chosen = set()

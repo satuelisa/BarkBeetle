@@ -71,7 +71,7 @@ with open('trees.tex', 'w') as target:
     \\\\ \\toprule''', file = target)
     # treeID class lon lat diam height NSspan EWspan
     for i, row in data.iterrows():
-        treeID =  row.treeID
+        treeID = row.treeID
         lon = row.lon
         lat = row.lat
         label = row.kind
@@ -83,18 +83,23 @@ with open('trees.tex', 'w') as target:
             if x >= 0 and y >= 0 and x <= o['width'] and y <= o['height']:
                 print(treeID, label, x, y, lon, lat, file = annotations[f])
     print('\end{tabular}', file = target)
+treeID = 31 # the ground-based ones end at 30
 for f in annotations:
     with open(f'annotations/{f}.raw') as data:
         o = offsets[f]
         dx = o['x0']
         dy = o['y0']
         for line in data:
-            fields = line.split()
-            treeID = fields[0]
-            label = fields[1]
-            x = int(fields[2]) - dx
-            y = int(fields[3]) - dy
-            # only keep the ones that fall in the zone
-            if x > 0 and y > 0 and x <= o['width'] and y <= o['height']: 
-                print(treeID, label, x, y, file = annotations[f]) 
+            if '#' in line: # comments
+                continue
+            fields = line.strip().split()
+            if len(fields) == 4:
+                assert fields[0] == f
+                label = fields[1]
+                x = int(fields[2]) - dx
+                y = int(fields[3]) - dy
+                # only keep the ones that fall in the zone
+                if x > 0 and y > 0 and x <= o['width'] and y <= o['height']: 
+                    print(treeID, label, x, y, file = annotations[f])
+                    treeID += 1 # incremental
     annotations[f].close()

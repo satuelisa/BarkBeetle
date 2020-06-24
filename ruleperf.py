@@ -26,14 +26,22 @@ kinds = ['green', 'yellow', 'red', 'leafless']
 nk = len(kinds)
 
 obj = dict()
+count = 5
+highest = [(None, None)] * count
 for level, data in m.groupby('q'):
     evaluation = dict()
     for cl, subset in data.groupby('k'):
         match = subset.loc[subset.pixels == cl]
         evaluation[cl] = next(iter(match.perc), 0)
     obj[level] = [evaluation[cl] for cl in kinds]
+    total = sum(obj[level])
+    for pos in range(count):
+        (score, lvl) = highest[pos]
+        if score is None or score < total:
+            highest[pos] = (total, level)
+            break
 
-pareto = set()
+chosen = set([h[1] for h in highest])
 for q1 in obj:
     nonDom = True
     for q2 in obj:
@@ -41,13 +49,13 @@ for q1 in obj:
             nonDom = False
             break
     if nonDom and min(obj[q1]) >= bound:
-        pareto.add(q1)
+        chosen.add(q1) # pareto-optimal options always enter
 
 coords = dict()
-nq = len(pareto)
-assert nq > 0 # technically there could be none
+nq = len(chosen)
+assert nq > 0 
 r, c = 0, 0
-for q in pareto:
+for q in chosen:
     for k in kinds:
         coords[(q, k)] = (c, r)
         c += 1
@@ -60,7 +68,7 @@ plt.figure(figsize = (round(nk * 2.2), nq * 2))
 gs = gridspec.GridSpec(nq, nk)
 gs.update(wspace = 0.03, hspace = 0.55, top=0.98) 
 
-incl = m.q.isin(pareto)
+incl = m.q.isin(chosen)
 m = m[incl]
 for label, group in m.groupby(['q', 'k']):
     q, k = label
@@ -93,14 +101,14 @@ a = 0.1 / nq
 plt.subplots_adjust(left = 0.05, right = 1, top = 1 - a, bottom = 0)
 plt.savefig('ruleperf.png', dpi = 150)
 low = None
-chosen = set()
-for q in pareto:
+pick = set()
+for q in chosen:
     penalty = sum([max(50 - o, 0) for o in obj[q]])
     if low is None or penalty <= low:
         if low is not None and penalty < low:
-            chosen = set()
-        chosen.add(q)
+            pick = set()
+        pick.add(q)
         low = penalty
 
-for q in chosen:
+for q in pick:
     print(('{:.2f}'.format(q)).split('.')[1], low)

@@ -37,6 +37,11 @@ for arg in $req
 do
     if [ "$arg" = "crop" ] 
     then
+	for file in `ls -1 orthomosaics/*.tif`
+	do
+	    dataset=`basename $file .tif`	
+	    convert -quiet orthomosaics/$dataset.tif orthomosaics/$dataset.png
+	done
 	mkdir -p cropped
 	rm -rf cropped/*.png
 	if [ "$timestamps" = true ]
@@ -284,7 +289,7 @@ do
 	do
 	    echo Automata, replica $n out of $slowReplicas	    
 	    for file in `ls -1 orthomosaics/*.tif`
-	    do
+ 	    do
 		dataset=`basename $file .tif`
 		python3 automaton.py $dataset > automaton/${dataset}.log
 	    done
