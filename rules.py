@@ -42,11 +42,12 @@ for c in classes:
      comb = np.concatenate([np.abs(dRG), np.abs(dBR), np.abs(dRG)])
      monotone = np.max(comb.reshape(3, n), axis = 0) 
      assert len(monotone) == n
-     tl.append(np.quantile(grayscale, q)) # lightness, those below are ok
-     td.append(np.quantile(grayscale, 1 - q)) # darkness, those _above_ are ok
-     tm.append(np.quantile(monotone, 1 - q)) # grayness, those _above_ are ok
-     if c != 'leafless':
+     if c != 'leafless': # green yellow red
           tb.append(np.quantile(B, q)) # those below are NOT leafless
+          td.append(np.quantile(grayscale, 1 - q)) # the darkest
+     else: # the leafless class 
+          tl.append(np.quantile(grayscale, q)) # the brightest
+          tm.append(np.quantile(monotone, 1 - q)) # the grayest
      if c == 'green':
           tg.append(np.quantile(dRG, q)) # those below are green
      elif c == 'yellow':

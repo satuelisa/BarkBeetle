@@ -6,7 +6,6 @@ import warnings
 # metadata causes this
 warnings.simplefilter('ignore', Image.DecompressionBombWarning)
 
-MARGIN = 500
 LAT = 1
 LON = 0
 from latlon import latitude, longitude
@@ -117,10 +116,10 @@ for f in fc:
     pw = w / sw # width pixel units
     ph = h / sh # height pixel units
     assert fabs(pw - pw) < 1
-    x0 = MARGIN + int(ceil(w * (startLon - west) / sw)) # left margin
-    y0 = MARGIN + int(ceil(h * (north - endLat) / sh)) # top margin
-    x1 = w - MARGIN - int(ceil(w * (east - endLon) / sw)) # right margin
-    y1 = h - MARGIN - int(ceil(h * (startLat - south) / sh)) # top margin
+    x0 = int(ceil(w * (startLon - west) / sw)) # left margin
+    y0 = int(ceil(h * (north - endLat) / sh)) # top margin
+    x1 = w - int(ceil(w * (east - endLon) / sw)) # right margin
+    y1 = h - int(ceil(h * (startLat - south) / sh)) # top margin
     assert x0 < x1
     assert y0 < y1
     assert x1 <= w
