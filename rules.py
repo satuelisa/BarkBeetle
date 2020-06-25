@@ -12,9 +12,7 @@ assert q > 0 and q < 1
 tb = [] # others/leafless threshold
 tg = [] # green/yellow threshold
 tr = [] # red/yellow threshold
-tl = [] # lightness threshold for background
 td = [] # darkness threshold for background
-tm = [] # monotone threshold for background
 for c in classes:
      filename = f'composite/enhanced/{c}.png'
      image = Image.open(filename)
@@ -45,9 +43,6 @@ for c in classes:
      if c != 'leafless': # green yellow red
           tb.append(np.quantile(B, q)) # those below are NOT leafless
           td.append(np.quantile(grayscale, 1 - q)) # the darkest
-     else: # the leafless class 
-          tl.append(np.quantile(grayscale, q)) # the brightest
-          tm.append(np.quantile(monotone, 1 - q)) # the grayest
      if c == 'green':
           tg.append(np.quantile(dRG, q)) # those below are green
      elif c == 'yellow':
@@ -55,7 +50,5 @@ for c in classes:
 print('tb', int(ceil(sum(tb) / len(tb))), '0 #  B < tb are not leafless') # special case: noisy histograms
 print('tg', int(ceil(sum(tg) / len(tg))), '0 #  R - G < tg green')
 print('ty', int(ceil(sum(tr) / len(tr))), '0 #  R - G < ty yellow')
-print('tm', int(ceil(sum(tm) / len(tm))), '1 #  diff > tm non-transparent')
 print('td', int(ceil(sum(td) / len(td))), '1 #  tone > td non-transparent')
-print('tl', int(ceil(sum(tl) / len(tl))), '0 #  tone < tl non-transparent')
 

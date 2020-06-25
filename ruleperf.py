@@ -55,7 +55,7 @@ coords = dict()
 nq = len(chosen)
 assert nq > 0 
 r, c = 0, 0
-for q in chosen:
+for q in sorted(chosen):
     for k in kinds:
         coords[(q, k)] = (c, r)
         c += 1
@@ -67,9 +67,11 @@ plt.rcParams.update({'font.size': 11})
 plt.figure(figsize = (round(nk * 2.2), nq * 2))
 gs = gridspec.GridSpec(nq, nk)
 gs.update(wspace = 0.03, hspace = 0.55, top=0.98) 
-
 incl = m.q.isin(chosen)
 m = m[incl]
+m.reset_index(inplace = True, drop = True)
+m.reindex(sorted(list(set(m.q))), columns = ['q'])
+
 for label, group in m.groupby(['q', 'k']):
     q, k = label
     (c, r) = coords[(q, k)]

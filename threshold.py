@@ -44,11 +44,8 @@ def threshold(thresholds, source, target = None):
                 b = p[2] # blue
                 rg = r - g
                 tone = (r + g + b) / 3
-                notTooDark = accept(tone, thresholds['td']) # accept higher
-                notTooLight = accept(tone, thresholds['tl']) # accept lower
                 diff = max(fabs(rg), fabs(r - b), fabs(g - b))
-                notTooGray = accept(diff, thresholds['tm']) # accept higher
-                if notTooLight and notTooDark and notTooGray:
+                if accept(tone, thresholds['td']): # not too dark
                     if accept(b, thresholds['tb']): # not leafless (accept lower)               
                         if accept(rg, thresholds['tg']): # accept lower
                             if target is not None:

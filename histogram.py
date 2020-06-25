@@ -74,7 +74,6 @@ def histo(filename, ax, ylim, bw = 5, tw = 2, dark = 1, bright = 254, seglen = 2
         if v > 0: # maximum over the three channels
             ax[5].bar(i, v, width = bw, color = getPurple(i), edgecolor = getPurple(i))
         ax[5].axvline(thresholds['td'], lw = tw, color = 'b') # the darkness threshold used in threshold.py
-        ax[5].axvline(thresholds['tl'], lw = tw, color = 'b') # the lightness threshold used in threshold.py            
     return True
 
 dataset = argv[1]
