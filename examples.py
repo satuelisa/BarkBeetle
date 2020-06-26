@@ -3,7 +3,7 @@ from sys import argv
 from random import randint, choice
 from PIL import Image, ImageDraw
 
-maxattempts = 500
+maxattempts = 1000
 margin = 15
 size = 200
 rows = int(argv[1])
@@ -48,6 +48,7 @@ for kind in ['green', 'yellow', 'red', 'leafless', 'ground']:
                 x = margin
                 col = 0
             add = False
+            attempts = 0
         else:
             attempts += 1
             if attempts > maxattempts:
