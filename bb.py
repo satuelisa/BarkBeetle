@@ -151,7 +151,7 @@ if not crop:
     assert fabs(min(aspectratio) - max(aspectratio)) < 0.1 # should be roughly constant    
     specs = ' using 1:2:3 with points pt 7 ps 2 lc rgb variable'
     s = 'plot '
-    for kind in ['green', 'infested', 'yellow', 'orange', 'red', 'dry', 'leafless']:
+    for kind in ['green', 'infested', 'yellow', 'orange', 'red', 'dry', 'leafless']: # experts did not annotate ground
         s += f'"exp_{kind}.dat" {specs} title "{kind}", '
     print(s[:-2])
 

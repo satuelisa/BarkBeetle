@@ -4,12 +4,13 @@ from collections import defaultdict
 # matplotlib pie chart colors
 pltcol = {'green': '#00ff00', 'red': '#ff0000', 'yellow': '#ffff00', 'leafless': '#0000ff',
           'background': 'k', 'black': 'k', 'bg': 'k', 'infested': '#a5ff00',
-          'orange': '#ffa500', 'dry': '#999999'}
+          'orange': '#ffa500', 'dry': '#999999', 'ground': '#f5deb3'}
 
 BGR = { 'red': (0, 0, 255, 255),
         'green': (0, 255, 0, 255),
         'yellow': (0, 255, 255, 255),
         'leafless': (255, 0, 0, 255),
+        'ground': (179, 222, 245),
         'black': (0, 0, 0, 255),
         'blue': (255, 0, 0, 255) }
 
@@ -37,11 +38,14 @@ def match(colstr): # openCV pixels output at strings
     green = False
     colstr = colstr.replace('[', '')
     fields = colstr.split()
-    if int(fields.pop(0)) == 255: # B
+    B = int(fields.pop(0))
+    if B == 255: # B
         return 'leafless' # blue
-    if int(fields.pop(0)) == 255: #  G
+    G = int(fields.pop(0))
+    R = int(fields.pop(0))        
+    if G == 255: #  G
         green = True
-    if int(fields.pop(0)) == 255: # R
+    if R == 255: # R
         if green: # R and G
             return 'yellow'
         else:
@@ -49,6 +53,8 @@ def match(colstr): # openCV pixels output at strings
     if green:
         return 'green'
     else:
+        if B > 0:
+            return 'ground'
         return 'black'
 
 def majority(x, y, r, w, h, img):

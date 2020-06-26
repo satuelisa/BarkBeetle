@@ -54,7 +54,7 @@ with open(argv[1]) as data:
             specific[dataset] = defaultdict(int)
         specific[dataset][(expected, predicted)] += 1
 
-order = ['green', 'yellow', 'red', 'leafless']
+order = ['green', 'yellow', 'red', 'leafless', 'ground']
 for (case, matrix) in [('global', overall)] + list(specific.items()):
     correct = sum([matrix.get((c, c), 0) for c in classes])
     total = sum(matrix.values())

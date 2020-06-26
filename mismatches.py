@@ -15,7 +15,7 @@ h = size
 files = dict()
 labels = dict()
 for treeID in incl:
-    for kind in ['green', 'yellow', 'red', 'leafless']:
+    for kind in ['green', 'yellow', 'red', 'leafless', 'ground']:
         filename = f'ground/individual/squares/aug100_{kind}_{treeID}.png'
         if os.path.exists(filename): 
             files[treeID] = filename

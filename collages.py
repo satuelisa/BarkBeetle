@@ -32,7 +32,7 @@ def save(a, filename, size = 800):
     img.save(filename)
     return
 
-classes = ['green', 'yellow', 'red', 'leafless']
+classes = ['green', 'yellow', 'red', 'leafless', 'ground']
 datasets = ['jun60', 'jul90', 'jul100', 'aug90', 'aug100'] 
 
 for case in ['original', 'enhanced', 'thresholded']:

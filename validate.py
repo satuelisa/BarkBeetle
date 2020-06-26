@@ -2,16 +2,18 @@ from sys import argv
 import cv2
 
 # CV2 BGR
-# four categories
+# categories
 # red: red, dry
 # yellow: yellow, orange
 # blue: leafless
 # green: green, infested
+# gray: ground
 
 from gsd import radius
 from trees import parse
 
 color = {
+    'ground': (127, 127, 127), # gray
     'red': (0, 0, 255, 255), # red
     'green': (0, 255, 0, 255), 'infested': (0, 255, 0, 255), # green
     'yellow': (0, 255, 255, 255), 'orange': (0, 255, 255, 255), #  yellow

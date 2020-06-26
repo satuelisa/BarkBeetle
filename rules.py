@@ -5,7 +5,7 @@ import numpy as np
 
 
 datasets = ['jun60', 'jul90', 'jul100', 'aug90', 'aug100']
-classes = ['green', 'yellow', 'red', 'leafless']
+classes = ['green', 'yellow', 'red', 'leafless', 'ground']
 q = float(argv[1])
 assert q > 0 and q < 1
 
@@ -38,11 +38,10 @@ for c in classes:
      dBR = B - R
      grayscale = (R + B + G) / 3
      comb = np.concatenate([np.abs(dRG), np.abs(dBR), np.abs(dRG)])
-     monotone = np.max(comb.reshape(3, n), axis = 0) 
-     assert len(monotone) == n
+     if c != 'ground':
+          td.append(np.quantile(grayscale, 1 - q)) # darkness
      if c != 'leafless': # green yellow red
           tb.append(np.quantile(B, q)) # those below are NOT leafless
-          td.append(np.quantile(grayscale, 1 - q)) # the darkest
      if c == 'green':
           tg.append(np.quantile(dRG, q)) # those below are green
      elif c == 'yellow':

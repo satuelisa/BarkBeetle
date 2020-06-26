@@ -22,7 +22,7 @@ m['q'] = m['q'].astype('category')
 m['k'] = m['k'].astype('category')
 
 q = (m.q).cat
-kinds = ['green', 'yellow', 'red', 'leafless']
+kinds = ['green', 'yellow', 'red', 'leafless', 'ground']
 nk = len(kinds)
 
 obj = dict()

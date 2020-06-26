@@ -1,7 +1,7 @@
 from sys import argv
 from collections import defaultdict
 
-cc = {'black': 'gray', 'leafless': 'blue', 'orange': 'orange', 'dry': 'gray', 'infested': 'lime'}
+cc = {'black': 'gray', 'leafless': 'blue', 'orange': 'orange', 'dry': 'gray', 'infested': 'lime', 'ground': 'brown'}
       
 def cell(color):
     if color is None or color == '' or color == 'blank':

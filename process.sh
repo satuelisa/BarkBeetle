@@ -11,7 +11,7 @@ else
     slowReplicas=1
 fi
 width=1000 
-declare -a classes=( "green" "yellow" "red" "leafless" )
+declare -a classes=( "green" "yellow" "red" "leafless" "ground")
 declare -A rgb=( ["dry"]="0x999999" ["green"]="0x00ff00" ["infested"]="0xa5ff00" ["leafless"]="0x0000ff" ["orange"]="0xffa500" ["yellow"]="0xffff00" ["red"]="0xff0000" )
 req=($(echo $@ | tr ' ' '\n'))
 all=$(grep "\$arg" process.sh | grep -v "process" | grep -v "all" | grep '=' | cut -c 20-30 | awk -F '"' '{print $1}')
@@ -194,6 +194,7 @@ do
 		convert -background none individual/original/${dataset}_*.png +append composite/original/${dataset}.png	
 		for kind in "${classes[@]}"
 		do
+		    echo 'Postprocessing class' $kind 'for' $file
 		    convert -background none individual/original/*_${kind}_*.png +append composite/original/${kind}.png
 		    convert -background none individual/enhanced/*_${kind}_*.png +append composite/enhanced/${kind}.png
 		    convert -background none individual/original/${dataset}_${kind}_*.png +append composite/original/${dataset}_${kind}.png

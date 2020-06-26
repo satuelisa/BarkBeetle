@@ -79,7 +79,7 @@ def threshold(thresholds, source, target = None):
     else:
         return counts
 
-kinds = ['green', 'yellow', 'red', 'leafless']
+kinds = ['green', 'yellow', 'red', 'leafless', 'ground']
 if __name__ == '__main__':
     from sys import argv
     data = argv[1]

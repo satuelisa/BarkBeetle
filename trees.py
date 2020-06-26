@@ -1,4 +1,4 @@
-relabel = {'red': 'red',
+relabel = {'red': 'red', 'ground': 'ground',
            'dry': 'leafless', 'leafless': 'leafless',
            'green': 'green', 'infested': 'green',
            'yellow': 'yellow', 'orange': 'yellow'}

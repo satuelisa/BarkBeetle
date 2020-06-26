@@ -37,30 +37,36 @@ def scatter(title, groups, xl, yl, output, show = False):
 
 def analyze(pixels):
     # classes
+    ground = pixels['ground']    
     leafless = pixels['leafless']
     red = pixels['red']
     yellow = pixels['yellow']
     green = pixels['green']
     
     # others
-    nonLeafless = np.concatenate([pixels['green'], pixels['yellow'], pixels['red']])
-    nonGreen = np.concatenate([pixels['leafless'], pixels['yellow'], pixels['red']])
-    nonYellow = np.concatenate([pixels['green'], pixels['leafless'], pixels['red']])
-    nonRed = np.concatenate([pixels['green'], pixels['yellow'], pixels['leafless']])
+    nonGround = np.concatenate([pixels['green'], pixels['yellow'], pixels['red'], pixels['leafless']])
+    nonLeafless = np.concatenate([pixels['green'], pixels['yellow'], pixels['red'], pixels['ground']])
+    nonGreen = np.concatenate([pixels['leafless'], pixels['yellow'], pixels['red'], pixels['ground']])
+    nonYellow = np.concatenate([pixels['green'], pixels['leafless'], pixels['red'], pixels['ground']])
+    nonRed = np.concatenate([pixels['green'], pixels['yellow'], pixels['leafless'], pixels['ground']])
     
     # channel minimum
+    mingro = np.min(ground, axis = 1)    
     minl = np.min(leafless, axis = 1)
     ming = np.min(green, axis = 1)
     miny = np.min(yellow, axis = 1)
     minr = np.min(red, axis = 1)
     minnl = np.min(nonLeafless, axis = 1)
+    minng = np.min(nonGround, axis = 1)
 
     # channel maximum
+    maxgro = np.max(ground, axis = 1)
     maxl = np.max(leafless, axis = 1)
     maxg = np.max(green, axis = 1)
     maxy = np.max(yellow, axis = 1)
     maxr = np.max(red, axis = 1)
-    maxnl = np.max(nonLeafless, axis = 1)    
+    maxnl = np.max(nonLeafless, axis = 1)
+    maxng = np.max(nonGround, axis = 1)    
     
     # red channel
     gr = green[:, 0]
@@ -124,6 +130,11 @@ def analyze(pixels):
     yn = (yr + yr + yb) / 3
     ln = (lr + lr + lb) / 3
     nln = (nlr + nlr + nlb) / 3    
+
+    scatter('Ground versus others',
+            [(minng, maxng, '#000000'),
+             (mingro, maxgro, '#0000ff')],
+            'Minimum channel value', 'Maximum channel value', 'ground_vs_non.png')
     
     scatter('Leafless versus others',
             [(minnl, maxnl, '#000000'),

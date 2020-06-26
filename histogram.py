@@ -77,7 +77,7 @@ def histo(filename, ax, ylim, bw = 5, tw = 2, dark = 1, bright = 254, seglen = 2
     return True
 
 dataset = argv[1]
-classes = ['green', 'yellow', 'red', 'leafless']
+classes = ['green', 'yellow', 'red', 'leafless', 'ground']
 channels = ['red channel', 'green channel', 'blue channel', 'grayscale', 'minimum', 'maximum']
 
 fig, ax = plt.subplots(nrows = len(classes) + 1, ncols = len(channels),

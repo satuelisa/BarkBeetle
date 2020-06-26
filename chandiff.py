@@ -9,7 +9,7 @@ import numpy as np
 from threshold import values
 th = values()
 
-colors = ['#999900', '#990099', '#009999', '#0000ff', '#666666']
+colors = ['#999900', '#990099', '#009999', '#0000ff', '#666666', '#999999']
 tics = [x for x in range(-200, 201, 100)]
 
 def diffHisto(first, second):
@@ -60,7 +60,7 @@ def diff(filename, ax, h, tw = 2, bw = 5):
             for (l, c) in line[j]:
                 ax[j].axvline(l, lw = tw, color = c) # illustrate thresholds
 
-classes = ['enhanced', 'green', 'yellow', 'red', 'leafless']
+classes = ['enhanced', 'green', 'yellow', 'red', 'leafless', 'ground']
 differences = ['R - G', 'B - R', 'B - G'] 
 dataset = argv[1]
 fig, ax = plt.subplots(nrows = len(classes), ncols = len(differences),
