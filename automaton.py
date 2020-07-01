@@ -35,7 +35,7 @@ def colfreq(dataset):
     trees = None # we do not need this here
     factor = ow / w
     rad = int(floor(sqrt(radius(dataset, factor))))
-    threshold = int((w * h) / 10000)
+    threshold = int((w * h) / 8000)
     tmp = img.copy() # copy so that the same pixels are blank
     pix = img.load()
     update = tmp.load()
