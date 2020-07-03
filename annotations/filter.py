@@ -39,7 +39,7 @@ for kind in classes:
             fields = line.split()
             filename = fields.pop(0)
             data = filename.split('_')
-            flight = data[0]
+            flight = data[0].split('/')[-1]
             label = data[1]
             treeID = int(data[2][:-4]) # remove .png
             if treeID not in original[flight][label]:

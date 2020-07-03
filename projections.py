@@ -192,7 +192,7 @@ def analyze(pixels):
             'Green channel', 'Blue channel', 'leafless_vs_yellow.png')
 
 pixels = dict()
-for kind in ['green', 'yellow', 'red', 'leafless']:
+for kind in ['green', 'yellow', 'red', 'leafless', 'ground']:
     a = np.array(Image.open(f'composite/enhanced/{kind}.png'))
     a = a[a[:,:,3] > 0] # take the non-transparent ones
     pixels[kind] = a[:, :3] # drop the alpha channel        

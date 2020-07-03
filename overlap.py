@@ -4,7 +4,7 @@ from sys import argv
 from gsd import radius
 
 dataset = argv[1]
-threshold = 2 * radius(dataset) # no overlap allowed
+threshold = radius(dataset) # only partial overlap allowed
 pos = set()
 target =  open('annotations/{:s}.map'.format(dataset), 'w')
 with open('annotations/{:s}.annot'.format(dataset)) as data:

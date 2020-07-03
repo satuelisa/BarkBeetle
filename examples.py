@@ -3,7 +3,7 @@ from sys import argv
 from random import randint, choice
 from PIL import Image, ImageDraw
 
-maxattempts = 1000
+maxattempts = 5000
 margin = 15
 size = 200
 rows = int(argv[1])
@@ -16,7 +16,7 @@ datasets = ['jun60', 'jul90', 'jul100', 'aug90', 'aug100']
 variants = ['squares', 'original', 'enhanced', 'thresholded', 'automaton']
 
 start = 1 if ground else 31
-end = 30 if ground else 1000 
+end = 30 if ground else 5000 
 for kind in ['green', 'yellow', 'red', 'leafless', 'ground']:
     images = { v : Image.new('RGBA', (h, w)) for v in variants } 
     chosen = set()

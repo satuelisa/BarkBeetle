@@ -20,7 +20,7 @@ bigvgaps="-background transparent -splice 0x${biggap}+0+0 -append -chop 0x${bigg
 
 
 # example sample areas (square)
-convert examples/squares/green.png examples/squares/yellow.png examples/squares/red.png examples/squares/leafless.png $(echo $vgaps) fig3.png
+convert examples/squares/green.png examples/squares/yellow.png examples/squares/red.png examples/squares/leafless.png examples/squares/ground.png $(echo $vgaps) fig3.png
 convert -transparent black fig3.png ${location}/fig3.png 
 
 # unmodified colors
@@ -76,14 +76,17 @@ convert -resize x$h -rotate 90 collages/original/green.png fig10a1.png
 convert -resize x$h -rotate 90 collages/original/yellow.png fig10a2.png
 convert -resize x$h -rotate 90 collages/original/red.png fig10a3.png 
 convert -resize x$h -rotate 90 collages/original/leafless.png fig10a4.png
+convert -resize x$h -rotate 90 collages/original/ground.png fig10a5.png
 convert -resize x$h -rotate 90 collages/enhanced/green.png fig10b1.png 
 convert -resize x$h -rotate 90 collages/enhanced/yellow.png fig10b2.png
 convert -resize x$h -rotate 90 collages/enhanced/red.png fig10b3.png
 convert -resize x$h -rotate 90 collages/enhanced/leafless.png fig10b4.png
+convert -resize x$h -rotate 90 collages/enhanced/ground.png fig10b5.png
 convert -resize x$h -rotate 90 collages/thresholded/green.png fig10c1.png 
 convert -resize x$h -rotate 90 collages/thresholded/yellow.png fig10c2.png
 convert -resize x$h -rotate 90 collages/thresholded/red.png fig10c3.png 
-convert -resize x$h -rotate 90 collages/thresholded/leafless.png fig10c4.png   
+convert -resize x$h -rotate 90 collages/thresholded/leafless.png fig10c4.png
+convert -resize x$h -rotate 90 collages/thresholded/ground.png fig10c5.png   
 convert fig10a?.png $(echo $bighgaps) fig10a.png
 convert fig10b?.png $(echo $bighgaps) fig10b.png
 convert fig10c?.png $(echo $bighgaps) fig10c.png
@@ -112,10 +115,10 @@ convert fig11c?.png $(echo $gaps) fig11c.png
 convert fig11?.png $(echo $vgaps) fig11.png
 convert -transparent black fig11.png ${location}/fig11.png
 
-convert examples/original/green.png examples/original/yellow.png examples/original/red.png examples/original/leafless.png $(echo $gaps) fig12a.png
-convert examples/enhanced/green.png examples/enhanced/yellow.png examples/enhanced/red.png examples/enhanced/leafless.png $(echo $gaps) fig12b.png
-convert examples/thresholded/green.png examples/thresholded/yellow.png examples/thresholded/red.png examples/thresholded/leafless.png $(echo $gaps) fig12c.png
-convert examples/automaton/green.png examples/automaton/yellow.png examples/automaton/red.png examples/automaton/leafless.png $(echo $gaps) fig12d.png
+convert examples/original/green.png examples/original/yellow.png examples/original/red.png examples/original/leafless.png examples/original/ground.png $(echo $gaps) fig12a.png
+convert examples/enhanced/green.png examples/enhanced/yellow.png examples/enhanced/red.png examples/enhanced/leafless.png examples/enhanced/ground.png $(echo $gaps) fig12b.png
+convert examples/thresholded/green.png examples/thresholded/yellow.png examples/thresholded/red.png examples/thresholded/leafless.png examples/thresholded/ground.png $(echo $gaps) fig12c.png
+convert examples/automaton/green.png examples/automaton/yellow.png examples/automaton/red.png examples/automaton/leafless.png examples/automaton/ground.png $(echo $gaps) fig12d.png
 convert fig12?.png $(echo $vgaps) fig12.png
 convert -transparent black fig12.png ${location}/fig12.png
 

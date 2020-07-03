@@ -77,7 +77,7 @@ with open('trees.tex', 'w') as target:
         label = row.kind
         print(f'{treeID} & {label} & {lon:.14f} & {lat:.14f} & {row.diam:.2f} & {row.height:.1f} & {row.NSspan:.2f} & {row.EWspan:.2f} \\\\', file = target)
         for f in offsets:
-            o =  offsets[f]
+            o = offsets[f]
             x = lon2x(lon, o)
             y = lat2y(lat, o)
             if x >= 0 and y >= 0 and x <= o['width'] and y <= o['height']:
