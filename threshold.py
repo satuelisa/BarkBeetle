@@ -43,36 +43,35 @@ def threshold(thresholds, source, target = None):
                 g = p[1] # green
                 b = p[2] # blue
                 rg = r - g
-                tone = (r + g + b) / 3
+                mm = max(r, g, b) - min(r, g, b)
                 diff = max(fabs(rg), fabs(r - b), fabs(g - b))
-                if accept(tone, thresholds['td']): # not too dark
-                    if accept(b, thresholds['tb']): # not leafless (accept lower)               
-                        if accept(rg, thresholds['tg']): # accept lower
-                            if target is not None:
-                                pix[x, y] = (0, 255, 0, 255) # green (do this before yellow)
-                            else:
-                                counts['green'] += 1
-                        elif accept(rg, thresholds['ty']): # accept lower
-                            if target is not None:
-                                pix[x, y] = (255, 255, 0, 255) # yellow (do this after green)
-                            else:
-                                counts['yellow'] += 1
+                if accept(b, thresholds['tb']): # not leafless (accept lower)               
+                    if accept(rg, thresholds['tg']): # accept lower
+                        if target is not None:
+                            pix[x, y] = (0, 255, 0, 255) # green (do this before yellow)
                         else:
+                            counts['green'] += 1
+                    elif accept(rg, thresholds['ty']): # accept lower
+                        if target is not None:
+                            pix[x, y] = (255, 255, 0, 255) # yellow (do this after green)
+                        else:
+                            counts['yellow'] += 1
+                    else:
+                        if accept(mm, thresholds['tm']): # accept lower
+                            if target is not None: # no strong pixel differences
+                                pix[x, y] = (0, 0, 0, 0) # ground
+                            else:
+                                counts['bg'] += 1
+                        else: # red is clearly higher then green
                             if target is not None:
                                 pix[x, y] = (255, 0, 0, 255) # red
                             else:
-                                counts['red'] += 1                            
-                    else: # leafless
-                        if target is not None:
-                            pix[x, y] = (0, 0, 255, 255) # blue (leafless)
-                        else:
-                            counts['leafless'] += 1
-                else: # not likely to be a sample pixel
+                                counts['red'] += 1
+                else: # leafless
                     if target is not None:
-                        pix[x, y] = (0, 0, 0, 0) # background
+                        pix[x, y] = (0, 0, 255, 255) # blue (leafless)
                     else:
-                        counts['bg'] += 1
-
+                        counts['leafless'] += 1
     if target is not None:
         img.save(target)
         return

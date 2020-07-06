@@ -2,6 +2,15 @@ import os
 import os.path
 from os import path
 
+offsets = dict()
+with open('../offsets.txt') as od:
+    for line in od:
+        fields = line.split()
+        f = fields[2]
+        offsets[f] = dict()
+        offsets[f]['x'] = int(fields[3])
+        offsets[f]['y'] = int(fields[4])
+
 flights = ['jun60', 'jul90', 'jul100', 'aug90', 'aug100']
 classes = ['green', 'yellow', 'red', 'leafless', 'ground']
 variants = ['automaton', 'enhanced', 'original', 'squares', 'thresholded']
@@ -33,6 +42,8 @@ for flight in flights:
                     original[flight][label][treeID] = (x, y)
                 
 for kind in classes:
+    if not path.exists(f'{kind}.txt'):
+        continue
     with open(f'{kind}.txt') as corrections:
         for line in corrections:
             line = line.strip()
@@ -83,7 +94,22 @@ for flight in original: # anything that was not mentioned in the corrections
             (x, y) = original[flight][kind][treeID]
             output[flight].append(f'{treeID} {kind} {x} {y}')
 
+        
 for flight in output: # overwrite the annotation files
+    assert flight in offsets
     with open(f'{flight}.annot', 'w') as target:
         for line in output[flight]:
             print(line, file = target)
+    with open(f'{flight}.raw', 'w') as target:
+        for line in output[flight]:
+            if '#' in line:
+                continue
+            line = line.strip()
+            fields = line.split()
+            if len(fields) == 4: # an image-based annotation
+                fields.pop(0) # the raw file does not include the tree IDs
+                label = fields.pop(0)
+                x = int(fields.pop(0)) + offsets[flight]['x'] 
+                y = int(fields.pop(0)) + offsets[flight]['y'] 
+                print(f'{flight} {label} {x} {y}', file = target)
+

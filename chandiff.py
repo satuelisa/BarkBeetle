@@ -40,8 +40,10 @@ def diff(filename, ax, h, tw = 2, bw = 5):
     R = np.take(RGBA[:,:,0].flatten().astype(int), keep)[0]
     G = np.take(RGBA[:,:,1].flatten().astype(int), keep)[0]
     B = np.take(RGBA[:,:,2].flatten().astype(int), keep)[0]
-    vs = [diffHisto(R, G), diffHisto(R, B), diffHisto(G, B)]
-    line = [[(th['ty'], 'b'), (th['tg'], 'b')], [], []] 
+    low = np.minimum(np.minimum(R, G), B)
+    high = np.maximum(np.minimum(R, G), B)
+    vs = [diffHisto(R, G), diffHisto(R, B), diffHisto(G, B), diffHisto(high, low)]
+    line = [[(th['ty'], 'b'), (th['tg'], 'b')], [], [], [(th['tm'], 'b')]]
     assert len(line) == len(vs) and len(ax) == len(line)
     for j in range(len(vs)):
         n = sum(vs[j].values()) # total frequency
@@ -61,7 +63,7 @@ def diff(filename, ax, h, tw = 2, bw = 5):
                 ax[j].axvline(l, lw = tw, color = c) # illustrate thresholds
 
 classes = ['enhanced', 'green', 'yellow', 'red', 'leafless', 'ground']
-differences = ['R - G', 'B - R', 'B - G'] 
+differences = ['R - G', 'B - R', 'B - G', 'Max - Min'] 
 dataset = argv[1]
 fig, ax = plt.subplots(nrows = len(classes), ncols = len(differences),
                        figsize=(len(differences) * 4, (len(classes) + 1) * 2))
@@ -72,7 +74,7 @@ for kind in classes:
     if kind != 'enhanced': # not the whole image
         filename = filename.replace('.png', f'_{kind}.png')
     if exists(filename): # skip empty classes, if any
-        diff(filename, ax[row, :], 3 if '_' in filename else 5)
+        diff(filename, ax[row, :], 5)
     row += 1
 
 for a, c in zip(ax[0], differences): 

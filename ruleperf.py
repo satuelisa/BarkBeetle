@@ -64,9 +64,9 @@ for q in sorted(chosen):
             r += 1
             
 plt.rcParams.update({'font.size': 11})
-plt.figure(figsize = (round(nk * 2.2), nq * 2))
+plt.figure(figsize = (round(nk * 2.2), round(nq * 2.2)))
 gs = gridspec.GridSpec(nq, nk)
-gs.update(wspace = 0.03, hspace = 0.55, top=0.98) 
+gs.update(wspace = 0.03, hspace = 0.55, top=0.97) 
 incl = m.q.isin(chosen)
 m = m[incl]
 m.reset_index(inplace = True, drop = True)

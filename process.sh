@@ -1,4 +1,5 @@
 #!/bin/zsh
+setopt +o nomatch
 timestamps=false
 if [ "$timestamps" = true ]
 then
