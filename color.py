@@ -52,10 +52,7 @@ def match(colstr): # openCV pixels output at strings
             return 'red'
     if green:
         return 'green'
-    else:
-        if B > 0:
-            return 'ground'
-        return 'black'
+    return 'ground'
 
 def majority(x, y, r, w, h, img):
     freq = defaultdict(int)
@@ -76,6 +73,8 @@ def majority(x, y, r, w, h, img):
                 most = freq[c]
             elif freq[c] == most:
                 chosen.add(match(c))
+    if len(chosen) == 0:
+        return {'ground'} # everything was transparent
     return chosen
 
 if __name__ == '__main__':

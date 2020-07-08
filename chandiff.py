@@ -43,7 +43,7 @@ def diff(filename, ax, h, tw = 2, bw = 5):
     low = np.minimum(np.minimum(R, G), B)
     high = np.maximum(np.minimum(R, G), B)
     vs = [diffHisto(R, G), diffHisto(R, B), diffHisto(G, B), diffHisto(high, low)]
-    line = [[(th['ty'], 'b'), (th['tg'], 'b')], [], [], [(th['tm'], 'b')]]
+    line = [[(th['ty'], 'r'), (th['tg'], 'r')], [], [], [(th['tm'], 'r')]]
     assert len(line) == len(vs) and len(ax) == len(line)
     for j in range(len(vs)):
         n = sum(vs[j].values()) # total frequency

@@ -97,21 +97,37 @@ x=150
 y=150
 w=300
 h=300
+
 convert -crop ${w}x${h}+${x}+${y} scaled/original/jun60.png fig11a1.png 
 convert -crop ${w}x${h}+${x}+${y} scaled/enhanced/jun60.png fig11a2.png 
 convert -crop ${w}x${h}+${x}+${y} thresholded/jun60.png fig11a3.png 
 convert -crop ${w}x${h}+${x}+${y} automaton/jun60.png fig11a4.png 
+
 convert -crop ${w}x${h}+${x}+${y} scaled/original/jul90.png fig11b1.png
 convert -crop ${w}x${h}+${x}+${y} scaled/enhanced/jul90.png fig11b2.png
 convert -crop ${w}x${h}+${x}+${y} thresholded/jul90.png fig11b3.png
 convert -crop ${w}x${h}+${x}+${y} automaton/jul90.png fig11b4.png
-convert -crop ${w}x${h}+${x}+${y} scaled/original/aug100.png fig11c1.png
-convert -crop ${w}x${h}+${x}+${y} scaled/enhanced/aug100.png fig11c2.png
-convert -crop ${w}x${h}+${x}+${y} thresholded/aug100.png fig11c3.png
-convert -crop ${w}x${h}+${x}+${y} automaton/aug100.png fig11c4.png
+
+convert -crop ${w}x${h}+${x}+${y} scaled/original/jul100.png fig11c1.png
+convert -crop ${w}x${h}+${x}+${y} scaled/enhanced/jul100.png fig11c2.png
+convert -crop ${w}x${h}+${x}+${y} thresholded/jul100.png fig11c3.png
+convert -crop ${w}x${h}+${x}+${y} automaton/jul100.png fig11c4.png
+
+convert -crop ${w}x${h}+${x}+${y} scaled/original/aug90.png fig11d1.png
+convert -crop ${w}x${h}+${x}+${y} scaled/enhanced/aug90.png fig11d2.png
+convert -crop ${w}x${h}+${x}+${y} thresholded/aug90.png fig11d3.png
+convert -crop ${w}x${h}+${x}+${y} automaton/aug90.png fig11d4.png
+
+convert -crop ${w}x${h}+${x}+${y} scaled/original/aug100.png fig11e1.png
+convert -crop ${w}x${h}+${x}+${y} scaled/enhanced/aug100.png fig11e2.png
+convert -crop ${w}x${h}+${x}+${y} thresholded/aug100.png fig11e3.png
+convert -crop ${w}x${h}+${x}+${y} automaton/aug100.png fig11e4.png
+
 convert fig11a?.png $(echo $gaps) fig11a.png
 convert fig11b?.png $(echo $gaps) fig11b.png
 convert fig11c?.png $(echo $gaps) fig11c.png
+convert fig11d?.png $(echo $gaps) fig11d.png
+convert fig11e?.png $(echo $gaps) fig11e.png
 convert fig11?.png $(echo $vgaps) fig11.png
 convert -transparent black fig11.png ${location}/fig11.png
 

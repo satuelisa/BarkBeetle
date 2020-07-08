@@ -40,7 +40,11 @@ from sys import argv
 latex = 'tex' in argv
 with open(argv[1]) as data:
     for line in data:
+        line = line.strip()
         fields = line.split()
+        if len(fields) != 5:
+            print('INVALID INPUT:', line) # invalid
+            quit()
         dataset = fields.pop(0)
         tree = fields.pop(0)
         match = bool(fields.pop(0))
