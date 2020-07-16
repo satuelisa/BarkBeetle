@@ -7,7 +7,7 @@ import warnings
 warnings.simplefilter('ignore', Image.DecompressionBombWarning)
 
 def values(q = None, plain = True):
-    source = 'thresholds' if q is None else f'thresholds/thr_{q}'
+    source = 'thresholds' if q is None or q == 'single' else f'thresholds/thr_{q}'
     th = dict()
     with open(f'{source}.txt') as data:
         for line in data:
@@ -22,10 +22,7 @@ def values(q = None, plain = True):
 
 def accept(value, criterion):
     (limit, invert) = criterion
-    if invert:
-        return limit < value
-    else:
-        return value < limit
+    return limit < value if invert else value < limit
 
 def threshold(thresholds, source, target = None):
     filename = f'scaled/enhanced/{source}.png' if target is not None else f'composite/enhanced/{source}.png'
@@ -42,36 +39,36 @@ def threshold(thresholds, source, target = None):
                 r = p[0] # red
                 g = p[1] # green
                 b = p[2] # blue
-                rg = r - g
-                mm = max(r, g, b) - min(r, g, b)
-                diff = max(fabs(rg), fabs(r - b), fabs(g - b))
-                if accept(b, thresholds['tb']): # not leafless (accept lower)               
-                    if accept(rg, thresholds['tg']): # accept lower
-                        if target is not None:
-                            pix[x, y] = (0, 255, 0, 255) # green (do this before yellow)
-                        else:
-                            counts['green'] += 1
-                    elif accept(rg, thresholds['ty']): # accept lower
-                        if target is not None:
-                            pix[x, y] = (255, 255, 0, 255) # yellow (do this after green)
-                        else:
-                            counts['yellow'] += 1
-                    else:
-                        if accept(mm, thresholds['tm']): # accept lower
-                            if target is not None: # no strong pixel differences
-                                pix[x, y] = (0, 0, 0, 0) # ground
+                rg = r - g # difference between red and green
+                mm = max(r, g, b) - min(r, g, b) # difference between high and low
+                if not accept(mm, thresholds['ts']): # lower means ground (soil)
+                    if not accept(b, thresholds['tb']): # higher means leafless
+                        if accept(rg, thresholds['tg']): # lower means green
+                            if target is not None:
+                                pix[x, y] = (0, 255, 0, 255) 
                             else:
-                                counts['bg'] += 1
-                        else: # red is clearly higher then green
+                                counts['green'] += 1
+                        elif accept(rg, thresholds['tr']): # higher means red
                             if target is not None:
                                 pix[x, y] = (255, 0, 0, 255) # red
                             else:
                                 counts['red'] += 1
-                else: # leafless
-                    if target is not None:
-                        pix[x, y] = (0, 0, 255, 255) # blue (leafless)
+                        else:
+                            if target is not None:
+                                pix[x, y] = (255, 255, 0, 255) 
+                            else:
+                                counts['yellow'] += 1
+                    else: # leafless
+                        if target is not None:
+                            pix[x, y] = (0, 0, 255, 255) # blue 
+                        else:
+                            counts['leafless'] += 1
+                else:                         
+                    if target is not None: # ground
+                        pix[x, y] = (0, 0, 0, 0) # transparent black
                     else:
-                        counts['leafless'] += 1
+                        counts['ground'] += 1
+                            
     if target is not None:
         img.save(target)
         return
@@ -84,12 +81,13 @@ if __name__ == '__main__':
     data = argv[1]
     if len(argv) > 2:
         q = argv[2]
+        label = None if q == 'single' else '0.' + q
         v = values(q, plain = False)
         if data in kinds:
             counts = threshold(v, source = data)
             total = sum(counts.values()) 
             for (k, v) in counts.items():
-                print(data, '0.' + q, k, 100 * v / total)
+                print(data, label, k, 100 * v / total)
     else:
         threshold(values(q = None, plain = False), source = data, target = f'thresholded/{data}.png')
 

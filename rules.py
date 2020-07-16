@@ -3,17 +3,31 @@ from math import ceil
 from sys import argv
 import numpy as np
 
+def error(value, current, match, below):
+     if match:
+          if below:
+               if value <= current:
+                    return 0
+               else:
+                    return value - current
+          else:
+               if value >= current:
+                    return current
+               else:
+                    return current - value
+     return 0
 
-datasets = ['jun60', 'jul90', 'jul100', 'aug90', 'aug100']
-classes = ['green', 'yellow', 'red', 'leafless', 'ground']
-q = float(argv[1])
-assert q > 0 and q < 1
-
-tb = [] # others/leafless threshold
-tg = [] # green/yellow threshold
-tr = [] # red/yellow threshold
-tm = [] # monotone threshold for background
-for c in classes:
+# initial guesses from visual inspection of histograms
+leafless = 180
+green = 0
+red = 110
+ground = 20
+el = 0
+eg = 0
+es = 0
+er = 0
+count = 0
+for c in ['green', 'yellow', 'red', 'leafless', 'ground']:
      filename = f'composite/enhanced/{c}.png'
      image = Image.open(filename)
      RGBA = np.array(image)
@@ -35,20 +49,19 @@ for c in classes:
      high = np.maximum(np.minimum(R, G), B)
      n = len(R)
      assert n == len(G) and n == len(B)
-     dRG = R - G
-     dBR = B - G
-     dBR = B - R
-     dMM = high - low
-     if c != 'ground': 
-          tm.append(np.quantile(dMM, 1 - q)) # those below are ground
-     if c != 'leafless': 
-          tb.append(np.quantile(B, q)) # those below are NOT leafless
-     if c == 'green':
-          tg.append(np.quantile(dRG, q)) # those below are green
-     elif c == 'yellow':
-          tr.append(np.quantile(dRG, q)) # those below are yellow
-print('tb', int(ceil(sum(tb) / len(tb))), '0 #  B < tb are not leafless') # special case: noisy histograms
-print('tg', int(ceil(sum(tg) / len(tg))), '0 #  R - G < tg green')
-print('ty', int(ceil(sum(tr) / len(tr))), '0 #  R - G < ty yellow')
-print('tm', int(ceil(sum(tm) / len(tm))), '0 #  max - min < tm non-transparent')
+     for value in B: # blue channel
+          el += error(value, leafless, c == 'leafless', False) # train the leafless neuron 
+     for value in R - G: # channel difference red vs green
+          eg += error(value, green, c == 'green', True) # train the green neuron 
+          er += error(value, red, c == 'red', True) # train the red neuron 
+     for value in high - low: # max channel versus min channel
+          es += error(value, ground, c == 'ground', False) # train the ground neuron
+     count += n
+
+print(f'tb {leafless - int(round(el / count))} 1 # B > tb -> leafless') 
+print(f'tg {green + int(round(eg / count))} 0 #  R - G < tg -> green') 
+print(f'tr {red + int(round(er / count))} 1 # R - G > tr -> red') 
+print(f'ts {ground - int(round(es / count))} 0 # dMM < ts -> ground (soil)')
+
+
 

@@ -43,7 +43,7 @@ def diff(filename, ax, h, tw = 2, bw = 5):
     low = np.minimum(np.minimum(R, G), B)
     high = np.maximum(np.minimum(R, G), B)
     vs = [diffHisto(R, G), diffHisto(R, B), diffHisto(G, B), diffHisto(high, low)]
-    line = [[(th['ty'], 'r'), (th['tg'], 'r')], [], [], [(th['tm'], 'r')]]
+    line = [[(th['tg'], 'r')], [(th['tr'], 'r')], [], []]
     assert len(line) == len(vs) and len(ax) == len(line)
     for j in range(len(vs)):
         n = sum(vs[j].values()) # total frequency
@@ -74,7 +74,7 @@ for kind in classes:
     if kind != 'enhanced': # not the whole image
         filename = filename.replace('.png', f'_{kind}.png')
     if exists(filename): # skip empty classes, if any
-        diff(filename, ax[row, :], 5)
+        diff(filename, ax[row, :], 8)
     row += 1
 
 for a, c in zip(ax[0], differences): 

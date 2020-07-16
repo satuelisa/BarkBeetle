@@ -2,7 +2,7 @@ from math import sqrt
 from collections import defaultdict
 
 # matplotlib pie chart colors
-pltcol = {'green': '#00ff00', 'red': '#ff0000', 'yellow': '#ffff00', 'leafless': '#0000ff',
+pltcol = {'green': '#00ff00', 'red': '#ff0000', 'yellow': '#ffff00', 'leafless': '#6666ff',
           'background': 'k', 'black': 'k', 'bg': 'k', 'infested': '#a5ff00',
           'orange': '#ffa500', 'dry': '#999999', 'ground': '#f5deb3'}
 

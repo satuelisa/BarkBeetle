@@ -214,12 +214,12 @@ for arg in $req
 do
     if [ "$arg" = "char" ]
     then
-	start=70
-	end=99
-	step=1
-	listing=`python -c "print(' '.join([str(x) for x in range($start, $end + 1, $step)]))"`
-	echo Using quantiles $listing
-	quantiles=($(echo $listing | tr ' ' '\n')) 
+#	start=50
+#	end=99
+#	step=5
+#	listing=`python -c "print(' '.join([str(x) for x in range($start, $end + 1, $step)]))"`
+#	echo Using quantiles $listing
+#	quantiles=($(echo $listing | tr ' ' '\n')) 
 	mkdir -p thresholds
 	rm -f thresholds/*.txt
 	if [ "$timestamps" = true ]
@@ -230,25 +230,30 @@ do
 	for n in $(seq $slowReplicas)
 	do
 	    echo Characterizing, replica $n out of $slowReplicas
+	    python3 rules.py > thresholds.txt
 	    rm -f ruleperf.txt # reset
-	    for q in "${quantiles[@]}"
+	    for kind in "${classes[@]}"
 	    do
-		python3 rules.py 0.$q > thresholds/thr_$q.txt
-		for kind in "${classes[@]}"
-		do
-		    python3 threshold.py $kind $q >> ruleperf.txt
-		done
+		python3 threshold.py $kind single >> ruleperf.txt
 	    done
-	    python3 ruleperf.py > best.txt
+#	    for q in "${quantiles[@]}"
+#	    do
+#		python3 rules.py 0.$q > thresholds/thr_$q.txt
+#		for kind in "${classes[@]}"
+#		do
+#		    python3 threshold.py $kind $q >> ruleperf.txt
+#		done
+#	    done
+	    python3 ruleperf.py # > best.txt
 	done
 	if [ "$timestamps" = true ]
 	then
 	    { date & echo $slowReplicas; } >> timestamps/characterization_end_time.txt
 	fi
-	best=`head -n 1 best.txt | awk '{print $1}'` # just use the first if there are many
-	cp thresholds/thr_$best.txt thresholds.txt
-	echo Examined quantiles were $quantiles
-	echo The BEST quantile was $best
+#	best=`head -n 1 best.txt | awk '{print $1}'` # just use the first if there are many
+#	cp thresholds/thr_$best.txt thresholds.txt
+#	echo Examined quantiles were $quantiles
+#	echo The BEST quantile was $best
 	break
     fi
 done

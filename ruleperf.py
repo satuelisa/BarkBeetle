@@ -7,6 +7,8 @@ import numpy as np
 bound = 40 # at least 40% right
 from color import pltcol
 
+kinds = ['green', 'yellow', 'red', 'leafless', 'ground']
+
 def dominatedBy(target, challenger):
     if np.any(np.greater(target, challenger)):
         return False
@@ -22,26 +24,25 @@ m['q'] = m['q'].astype('category')
 m['k'] = m['k'].astype('category')
 
 q = (m.q).cat
-kinds = ['green', 'yellow', 'red', 'leafless', 'ground']
 nk = len(kinds)
 
 obj = dict()
 count = 5
-highest = [(None, None)] * count
+presel = []
+
 for level, data in m.groupby('q'):
-    evaluation = dict()
+    ev = dict()
     for cl, subset in data.groupby('k'):
         match = subset.loc[subset.pixels == cl]
-        evaluation[cl] = next(iter(match.perc), 0)
-    obj[level] = [evaluation[cl] for cl in kinds]
-    total = sum(obj[level])
-    for pos in range(count):
-        (score, lvl) = highest[pos]
-        if score is None or score < total:
-            highest[pos] = (total, level)
-            break
+        ev[cl] = next(iter(match.perc), 0)
+    obj[level] = [ev[l] for l in kinds]
+    total = np.prod(obj[level])
+    presel.append((total, level))
+    presel = sorted(presel, key = lambda x: x[0])
+    if len(presel) > count:
+        presel.pop(0)
 
-chosen = set([h[1] for h in highest])
+chosen = set([h[1] for h in presel])
 for q1 in obj:
     nonDom = True
     for q2 in obj:
@@ -64,7 +65,7 @@ for q in sorted(chosen):
             r += 1
             
 plt.rcParams.update({'font.size': 11})
-plt.figure(figsize = (round(nk * 2.2), round(nq * 2.2)))
+plt.figure(figsize = (round(nk * 2.2), round(nq * 3)))
 gs = gridspec.GridSpec(nq, nk)
 gs.update(wspace = 0.03, hspace = 0.55, top=0.97) 
 incl = m.q.isin(chosen)
@@ -85,8 +86,12 @@ for label, group in m.groupby(['q', 'k']):
         pos = match.index[0]
         highlight = [0] * len(values)
         highlight[pos] += 0.05
-    quantile = '{:.2f}'.format(q)
-    target.set_title(f'{k} ({quantile})')
+    try:
+        quantile = '{:.2f}'.format(q)
+        target.set_title(f'{k} ({quantile})')
+    except:
+        target.set_title(f'{k.capitalize()} samples')        
+        pass
     slices, texts, at = target.pie(g.perc, labels = g.pixels, autopct = text, shadow = False,
                                explode = highlight)
     for s in slices:
@@ -99,8 +104,7 @@ for label, group in m.groupby(['q', 'k']):
             m = match.reset_index()
             if m.perc[0] < 25:
                 t.set_text('') # erase
-a = 0.1 / nq
-plt.subplots_adjust(left = 0.05, right = 1, top = 1 - a, bottom = 0)
+plt.subplots_adjust(left = 0.05, right = 1, top = 0.9, bottom = 0)
 plt.savefig('ruleperf.png', dpi = 150)
 low = None
 pick = set()
@@ -112,5 +116,9 @@ for q in chosen:
         pick.add(q)
         low = penalty
 
-for q in pick:
-    print(('{:.2f}'.format(q)).split('.')[1], low)
+try:
+    for q in pick:
+        print(('{:.2f}'.format(q)).split('.')[1], low)
+except:
+    print('Figure updated')
+    pass

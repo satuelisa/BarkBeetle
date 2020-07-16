@@ -50,7 +50,8 @@ def histo(filename, ax, ylim, bw = 5, tw = 2, dark = 1, bright = 254, seglen = 2
     for i in range(dark, bright):
         if l[i] > 0:
             g[i] += l[i]
-            ax[0].bar(i, l[i], width = bw, color = getRed(i), edgecolor = getRed(i))
+            ax[0].bar(i, l[i], width = bw, color = getRed(i), edgecolor = getRed(i)) 
+    ax[0].axvline(thresholds['ty'], lw = tw, color = 'g') # the yellow threshold used in threshold.py           
     l = histogram[seglen:(2 * seglen)] # green channel
     for i in range(dark, bright):
         if l[i] > 0:
@@ -61,7 +62,7 @@ def histo(filename, ax, ylim, bw = 5, tw = 2, dark = 1, bright = 254, seglen = 2
         if l[i] > 0:
             g[i] += l[i]        
             ax[2].bar(i, l[i], width = bw, color = getBlue(i), edgecolor = getBlue(i))
-    ax[2].axvline(thresholds['tb'], lw = tw, color = 'r') # the blue threshold used in threshold.py
+    ax[2].axvline(thresholds['tb'], lw = tw, color = 'g') # the blue threshold used in threshold.py
     for i in range(dark, bright):
         if g[i] > 0: # average over the three channels
             ax[3].bar(i, g[i] / 3, width = bw, color = getGray(i), edgecolor = getGray(i))
