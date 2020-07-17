@@ -15,19 +15,20 @@ red = (255, 0, 0, 255)
 green = (0, 255, 0, 255)
 blue = (0, 0, 255, 255)
 yellow = (255, 255, 0, 255)
+transparent = (0, 0, 0, 0)
 
-options = [yellow, red, green, blue]
+options = [transparent, yellow, red, green, blue]
 debug = False
 gif = 'gif' in argv
 
-def pick(colors, margin = 1):
+def pick(colors, margin = 0):
     high = max(colors.values()) # max freq
     for o in options:
         if o in colors.keys() and colors[o] >= high - margin:
             return o
     return None # keep the old one
 
-def colfreq(dataset):
+def colfreq(dataset, cutoff = 10):
     filename = 'thresholded/' + dataset + '.png'    
     img = Image.open(filename)
     (w, h) = img.size
@@ -35,13 +36,15 @@ def colfreq(dataset):
     trees = None # we do not need this here
     factor = ow / w
     rad = int(floor(sqrt(radius(dataset, factor))))
-    threshold = int((w * h) / 8000)
+    threshold = int((w * h) / 500)
     tmp = img.copy() # copy so that the same pixels are blank
     pix = img.load()
     update = tmp.load()
     n = [(dx, dy) for dx in range(-rad, rad + 1) for dy in range(-rad, rad + 1)] # Moore neighborhood
     stable = set()
     iteration = 0
+    stall = 0
+    low = None
     if not gif:
         print(f'# iterating with {rad} radius until less than', threshold, 'pixels change')
     while True:
@@ -50,7 +53,7 @@ def colfreq(dataset):
             for y in range(h):
                 if (x, y) not in stable:
                     p = pix[x, y]
-                    if p[3] < 255: # transparent
+                    if p[3] < 255: # transparent pixels do not initiate change
                         continue
                     c = defaultdict(int)
                     nn = set()
@@ -58,8 +61,8 @@ def colfreq(dataset):
                         nx, ny = x + dx, y + dy
                         if nx >= 0 and nx < w and ny >= 0 and ny < h:
                             pn = pix[nx, ny]
-                            if pn[3] == 255: # opaque
-                                c[pn] += 1
+                            c[pn] += 1
+                            if p[3] == 255: # transparent pixels do not initiate change
                                 nn.add((nx, ny))
                     repl = pick(c)
                     if repl is not None and p != repl:
@@ -69,6 +72,13 @@ def colfreq(dataset):
                     else:
                         stable.add((x, y)) # no change
                         update[x, y] = p
+        if low is None:
+            changes = low
+        elif changes < low:
+            low = changes
+            stall = 0
+        elif stall >= cutoff:
+            changes = 0 # force a cut
         if changes < threshold:
             img.save(f'automaton/{dataset}.png') # final stage is always savec
             if gif: # build an animated GIF with ImageMagick

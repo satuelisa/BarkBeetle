@@ -61,11 +61,13 @@ def threshold(thresholds, source, target = None):
                         pix[x, y] = (255, 255, 0, 255) 
                     else:
                         counts['yellow'] += 1
-                else:                         
+                else:
                     if target is not None: # ground
                         pix[x, y] = (0, 0, 0, 0) # transparent black
                     else:
                         counts['ground'] += 1
+            else:
+                pix[x, y] = (0, 0, 0, 0) # transparent black
     if target is not None:
         img.save(target)
         return
