@@ -3,30 +3,53 @@ from math import ceil
 from sys import argv
 import numpy as np
 
-def error(value, current, match, below):
-     if match:
-          if below:
-               if value <= current:
-                    return 0
-               else:
-                    return value - current
+def accuracy(values, labels, threshold, invert, skiplist = None, wp = 1, wn = 1):
+     n = len(values)
+     fp = 0
+     tp = 0
+     fn = 0
+     tn = 0
+     for i in range(n):
+          v = values[i]
+          l = labels[i]
+          if skiplist is not None and skiplist[i]:
+               continue
+          if (invert and v > threshold) or (not invert and v < threshold):
+               tp += l
+               fp += not l
           else:
-               if value >= current:
-                    return current
-               else:
-                    return current - value
-     return 0
+               fn += l
+               tn += not l
+     totP = tp + fn
+     totN = tn + fp
+     ta = tp / totP
+     fa = tn / totN
+     return (wp * ta + wn * fa) / (wp + wn) # weighted balanced accuracy
 
-# initial guesses from visual inspection of histograms
-leafless = 180
-green = 0
-red = 110
-ground = 20
-el = 0
-eg = 0
-es = 0
-er = 0
-count = 0
+def test(values, labels, low = 1, high = 256, step = 1, invert = False, skiplist = None):
+     chosen = None
+     performance = 0
+     for threshold in range(low, high, step):
+          current = accuracy(values, labels, threshold, invert, skiplist)
+          if current > performance:
+               chosen = threshold
+               performance = current
+     return chosen
+
+def best(values, labels, invert = False, neg = False, skiplist = None, step = 15):
+     thr = test(values, labels, low = 1 if not neg else -254, step = step, invert = invert, skiplist = skiplist)
+     return test(values, labels,
+                 low = max(1 if not neg else -254, thr - step),
+                 high = min(thr + step, 255),
+                 invert = invert, skiplist = skiplist)
+     
+vBlue = []
+vRG = []
+vMM = []
+lBlue = []
+lGreen = []
+lRed = []
+lYellow = []
 for c in ['green', 'yellow', 'red', 'leafless', 'ground']:
      filename = f'composite/enhanced/{c}.png'
      image = Image.open(filename)
@@ -39,7 +62,7 @@ for c in ['green', 'yellow', 'red', 'leafless', 'ground']:
      A = RGBA[:,:,3].flatten() / 255
      A[A < 1] = 0 # either opaque or transparent
      count = int(np.sum(A))
-     assert np.count_nonzero(A) ==  count
+     assert np.count_nonzero(A) == count
      keep = A.nonzero()
      # ignore all transparent pixels
      R = np.take(RGBA[:,:,0].flatten().astype(int), keep)[0]
@@ -49,19 +72,22 @@ for c in ['green', 'yellow', 'red', 'leafless', 'ground']:
      high = np.maximum(np.minimum(R, G), B)
      n = len(R)
      assert n == len(G) and n == len(B)
-     for value in B: # blue channel
-          el += error(value, leafless, c == 'leafless', False) # train the leafless neuron 
-     for value in R - G: # channel difference red vs green
-          eg += error(value, green, c == 'green', True) # train the green neuron 
-          er += error(value, red, c == 'red', True) # train the red neuron 
-     for value in high - low: # max channel versus min channel
-          es += error(value, ground, c == 'ground', False) # train the ground neuron
-     count += n
+     vBlue += B.tolist()
+     lBlue += [c == 'leafless'] * n
+     if c != 'leafless': # leafless is filtered out first
+          vRG += (R - G).tolist()
+          lGreen += [c == 'green'] * n
+          lRed += [c == 'red'] * n
+          if c != 'green' and c != 'red': # green and red are filtered out second and third
+               vMM += (high - low).tolist()
+               lYellow += [c == 'yellow'] * n
 
-print(f'tb {leafless - int(round(el / count))} 1 # B > tb -> leafless') 
-print(f'tg {green + int(round(eg / count))} 0 #  R - G < tg -> green') 
-print(f'tr {red + int(round(er / count))} 1 # R - G > tr -> red') 
-print(f'ts {ground - int(round(es / count))} 0 # dMM < ts -> ground (soil)')
+inv = False # <
+print(f'tg {best(vRG, lGreen, neg = True)} {1 * inv}')
+inv = True # >
+print(f'tb {best(vBlue, lBlue, invert = inv)} {1 * inv}') 
+print(f'tr {best(vRG, lRed, invert = inv, neg = True, skiplist = lGreen)} {1 * inv}') 
+print(f'ty {best(vMM, lYellow, invert = inv)} {1 * inv}')
 
 
 

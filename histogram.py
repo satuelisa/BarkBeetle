@@ -51,7 +51,6 @@ def histo(filename, ax, ylim, bw = 5, tw = 2, dark = 1, bright = 254, seglen = 2
         if l[i] > 0:
             g[i] += l[i]
             ax[0].bar(i, l[i], width = bw, color = getRed(i), edgecolor = getRed(i)) 
-    ax[0].axvline(thresholds['ty'], lw = tw, color = 'g') # the yellow threshold used in threshold.py           
     l = histogram[seglen:(2 * seglen)] # green channel
     for i in range(dark, bright):
         if l[i] > 0:
