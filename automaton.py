@@ -17,18 +17,18 @@ blue = (0, 0, 255, 255)
 yellow = (255, 255, 0, 255)
 transparent = (0, 0, 0, 0)
 
-options = [transparent, yellow, red, green, blue]
+options = [(transparent, 2), (yellow, 1), (red, 0), (green, 0), (blue, 0)]
 debug = False
 gif = 'gif' in argv
 
-def pick(colors, margin = 0):
+def pick(colors):
     high = max(colors.values()) # max freq
-    for o in options:
-        if o in colors.keys() and colors[o] >= high - margin:
+    for (o, m) in options:
+        if o in colors.keys() and colors[o] >= high - m:
             return o
     return None # keep the old one
 
-def colfreq(dataset, cutoff = 10):
+def colfreq(dataset, cutoff = 5):
     filename = 'thresholded/' + dataset + '.png'    
     img = Image.open(filename)
     (w, h) = img.size
@@ -36,7 +36,7 @@ def colfreq(dataset, cutoff = 10):
     trees = None # we do not need this here
     factor = ow / w
     rad = int(floor(sqrt(radius(dataset, factor))))
-    threshold = int((w * h) / 500)
+    threshold = int((w * h) / 100)
     tmp = img.copy() # copy so that the same pixels are blank
     pix = img.load()
     update = tmp.load()
@@ -72,13 +72,13 @@ def colfreq(dataset, cutoff = 10):
                     else:
                         stable.add((x, y)) # no change
                         update[x, y] = p
-        if low is None:
-            changes = low
-        elif changes < low:
+        if low is None or changes < low:
             low = changes
             stall = 0
-        elif stall >= cutoff:
-            changes = 0 # force a cut
+        else:
+            stall += 1
+            if stall >= cutoff:
+                changes = 0 # force a cut
         if changes < threshold:
             img.save(f'automaton/{dataset}.png') # final stage is always savec
             if gif: # build an animated GIF with ImageMagick

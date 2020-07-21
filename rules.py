@@ -59,10 +59,10 @@ for c in ['green', 'yellow', 'red', 'leafless', 'ground']:
           image = image.convert('RGBA')
           image.save(filename)
           RGBA = np.array(image)
-     A = RGBA[:,:,3].flatten() / 255
-     A[A < 1] = 0 # either opaque or transparent
-     count = int(np.sum(A))
-     assert np.count_nonzero(A) == count
+     A = RGBA[:,:,3].flatten()
+     A[A < 255] = 0 # either fully opaque or fully transparent
+     count = int(np.sum(A)) // 255
+     assert np.count_nonzero(A) == count 
      keep = A.nonzero()
      # ignore all transparent pixels
      R = np.take(RGBA[:,:,0].flatten().astype(int), keep)[0]

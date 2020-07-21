@@ -64,10 +64,10 @@ for q in sorted(chosen):
             c = 0
             r += 1
             
-plt.rcParams.update({'font.size': 11})
-plt.figure(figsize = (round(nk * 2.2), round(nq * 3)))
+plt.rcParams.update({'font.size': 10})
+plt.figure(figsize = (round(nk * 3), round(nq * 3)))
 gs = gridspec.GridSpec(nq, nk)
-gs.update(wspace = 0.03, hspace = 0.55, top=0.97) 
+gs.update(wspace = 0.05, hspace = 0.55, top=0.9) 
 incl = m.q.isin(chosen)
 m = m[incl]
 m.reset_index(inplace = True, drop = True)
@@ -85,7 +85,7 @@ for label, group in m.groupby(['q', 'k']):
     if not match.empty:
         pos = match.index[0]
         highlight = [0] * len(values)
-        highlight[pos] += 0.05
+        highlight[pos] += 0.075
     try:
         quantile = '{:.2f}'.format(q)
         target.set_title(f'{k} ({quantile})')
@@ -102,9 +102,9 @@ for label, group in m.groupby(['q', 'k']):
         match = g.loc[g.pixels == current]
         if not match.empty: # present
             m = match.reset_index()
-            if m.perc[0] < 25:
+            if m.perc[0] < 20:
                 t.set_text('') # erase
-plt.subplots_adjust(left = 0.05, right = 1, top = 0.9, bottom = 0)
+plt.subplots_adjust(left = 0.01, right = 0.95, top = 0.9, bottom = 0)
 plt.savefig('ruleperf.png', dpi = 150)
 low = None
 pick = set()

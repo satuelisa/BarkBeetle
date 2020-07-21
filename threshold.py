@@ -66,8 +66,8 @@ def threshold(thresholds, source, target = None):
                         pix[x, y] = (0, 0, 0, 0) # transparent black
                     else:
                         counts['ground'] += 1
-            else:
-                pix[x, y] = (0, 0, 0, 0) # transparent black
+            else: # force a transparent black to intermediate-opacity pixels
+                pix[x, y] = (0, 0, 0, 0) 
     if target is not None:
         img.save(target)
         return
