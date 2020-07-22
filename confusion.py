@@ -42,7 +42,7 @@ with open(argv[1]) as data:
     for line in data:
         line = line.strip()
         fields = line.split()
-        if len(fields) != 5:
+        if len(fields) < 5:
             print('INVALID INPUT:', line) # invalid
             quit()
         dataset = fields.pop(0)

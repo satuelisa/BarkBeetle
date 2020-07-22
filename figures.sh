@@ -10,11 +10,11 @@ cp validation/aug100_both.png fig2_raw.png
 convert -transparent black -resize $width fig2_raw.png fig2_small.png
 convert -transparent black -crop 800x600+100+100 fig2_small.png ${location}/fig2b.png
 
-gap=30
+gap=25
 gaps="-background transparent -splice ${gap}x0+0+0 +append -chop ${gap}x0+0+0"
 vgaps="-background transparent -splice 0x${gap}+0+0 -append -chop 0x${gap}+0+0"
 
-biggap=80 
+biggap=100 
 bighgaps="-background transparent -splice ${biggap}x0+0+0 +append -chop ${biggap}x0+0+0"
 bigvgaps="-background transparent -splice 0x${biggap}+0+0 -append -chop 0x${biggap}+0+0"
 

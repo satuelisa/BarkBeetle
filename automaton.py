@@ -15,9 +15,9 @@ red = (255, 0, 0, 255)
 green = (0, 255, 0, 255)
 blue = (0, 0, 255, 255)
 yellow = (255, 255, 0, 255)
-transparent = (0, 0, 0, 0)
+ground = (0, 0, 0, 255)
 
-options = [(transparent, 2), (yellow, 1), (red, 0), (green, 0), (blue, 0)]
+options = [(ground, 3), (yellow, 3), (red, 2), (green, 1), (blue, 0)]
 debug = False
 gif = 'gif' in argv
 
@@ -28,7 +28,7 @@ def pick(colors):
             return o
     return None # keep the old one
 
-def colfreq(dataset, cutoff = 5):
+def colfreq(dataset, cutoff = 3):
     filename = 'thresholded/' + dataset + '.png'    
     img = Image.open(filename)
     (w, h) = img.size
@@ -61,8 +61,8 @@ def colfreq(dataset, cutoff = 5):
                         nx, ny = x + dx, y + dy
                         if nx >= 0 and nx < w and ny >= 0 and ny < h:
                             pn = pix[nx, ny]
-                            c[pn] += 1
-                            if p[3] == 255: # transparent pixels do not initiate change
+                            if pn[3] == 255: 
+                                c[pn] += 1
                                 nn.add((nx, ny))
                     repl = pick(c)
                     if repl is not None and p != repl:

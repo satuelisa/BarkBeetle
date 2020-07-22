@@ -63,7 +63,7 @@ def threshold(thresholds, source, target = None):
                         counts['yellow'] += 1
                 else:
                     if target is not None: # ground
-                        pix[x, y] = (0, 0, 0, 0) # transparent black
+                        pix[x, y] = (0, 0, 0, 255) # opaque black
                     else:
                         counts['ground'] += 1
             else: # force a transparent black to intermediate-opacity pixels
