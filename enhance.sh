@@ -6,6 +6,6 @@ for file in `ls -1 cropped/*.png`; do
     convert -equalize enhanced/normalized/$dataset.png enhanced/equalized/$dataset.png
     # the script redist is from http://www.fmwconcepts.com/imagemagick/redist/n
     redist -s uniform enhanced/equalized/$dataset.png enhanced/uniform/$dataset.png
-    convert enhanced/uniform/$dataset.png -modulate 100,255 enhanced/modulated/$dataset.png 
+    convert enhanced/uniform/$dataset.png -modulate 100,220 enhanced/modulated/$dataset.png 
     convert -transparent black enhanced/modulated/$dataset.png enhanced/$dataset.png
 done

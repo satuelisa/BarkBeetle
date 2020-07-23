@@ -54,7 +54,7 @@ def match(colstr): # openCV pixels output at strings
         return 'green'
     return 'ground'
 
-def majority(x, y, r, w, h, img):
+def majority(x, y, r, w, h, img, threshold = 0.3):
     freq = defaultdict(int)
     for nx in range(max(0, x - r), min(x + r + 1, w)):
         dx = (x - nx)**2
@@ -62,7 +62,7 @@ def majority(x, y, r, w, h, img):
             dy = (y - ny)**2
             if sqrt(dx + dy) <= r: # within
                 pixel = img[ny, nx]
-                if pixel[3] == 255: # opaque
+                if pixel[3] == 255 and sum(pixel[:3]) > 0: # opaque and not black
                     freq[str(pixel)] += 1
     most = 0
     chosen = set()
@@ -73,8 +73,8 @@ def majority(x, y, r, w, h, img):
                 most = freq[c]
             elif freq[c] == most:
                 chosen.add(match(c))
-    if len(chosen) == 0:
-        return {'ground'} # everything was transparent
+    if len(chosen) == 0 or most < threshold * sum(freq.values()): 
+        return {'ground'} # transparent for the mixed and the absent
     return chosen
 
 if __name__ == '__main__':

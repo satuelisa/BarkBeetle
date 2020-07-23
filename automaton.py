@@ -17,7 +17,7 @@ blue = (0, 0, 255, 255)
 yellow = (255, 255, 0, 255)
 ground = (0, 0, 0, 255)
 
-options = [(ground, 3), (yellow, 3), (red, 2), (green, 1), (blue, 0)]
+options = [(ground, 4), (yellow, 4), (red, 3), (green, 1), (blue, 0)]
 debug = False
 gif = 'gif' in argv
 

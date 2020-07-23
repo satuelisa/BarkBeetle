@@ -131,10 +131,10 @@ convert fig11e?.png $(echo $gaps) fig11e.png
 convert fig11?.png $(echo $vgaps) fig11.png
 convert -transparent black fig11.png ${location}/fig11.png
 
-convert examples/original/green.png examples/original/yellow.png examples/original/red.png examples/original/leafless.png examples/original/ground.png $(echo $vgaps) fig12a.png
-convert examples/enhanced/green.png examples/enhanced/yellow.png examples/enhanced/red.png examples/enhanced/leafless.png examples/enhanced/ground.png $(echo $vgaps) fig12b.png
-convert examples/thresholded/green.png examples/thresholded/yellow.png examples/thresholded/red.png examples/thresholded/leafless.png examples/thresholded/ground.png $(echo $vgaps) fig12c.png
-convert examples/automaton/green.png examples/automaton/yellow.png examples/automaton/red.png examples/automaton/leafless.png examples/automaton/ground.png $(echo $vgaps) fig12d.png
+convert examples/original/green.png examples/original/yellow.png examples/original/red.png examples/original/leafless.png $(echo $vgaps) fig12a.png
+convert examples/enhanced/green.png examples/enhanced/yellow.png examples/enhanced/red.png examples/enhanced/leafless.png $(echo $vgaps) fig12b.png
+convert examples/thresholded/green.png examples/thresholded/yellow.png examples/thresholded/red.png examples/thresholded/leafless.png $(echo $vgaps) fig12c.png
+convert examples/automaton/green.png examples/automaton/yellow.png examples/automaton/red.png examples/automaton/leafless.png $(echo $vgaps) fig12d.png
 convert fig12?.png $(echo $bighgaps) fig12.png
 convert -transparent black fig12.png ${location}/fig12.png
 

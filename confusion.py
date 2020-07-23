@@ -58,7 +58,7 @@ with open(argv[1]) as data:
             specific[dataset] = defaultdict(int)
         specific[dataset][(expected, predicted)] += 1
 
-order = ['green', 'yellow', 'red', 'leafless', 'ground']
+order = ['green', 'yellow', 'red', 'leafless']
 for (case, matrix) in [('global', overall)] + list(specific.items()):
     correct = sum([matrix.get((c, c), 0) for c in classes])
     total = sum(matrix.values())
@@ -76,7 +76,7 @@ for (case, matrix) in [('global', overall)] + list(specific.items()):
             case = repl[case]
     print(f'{case}{sep}{e}{sep}{fe}{sep}{a}{sep}{fa} \\\\ % STATS')
     for c in classes:
-        if c != 'black': 
+        if c != 'ground': 
             tp = matrix.get((c, c), 0) # predicted == expected
             cs = sum([matrix.get((c, o), 0) for o in classes]) # where the class is expected
             rs = sum([matrix.get((o, c), 0) for o in classes]) # where the class is predicted

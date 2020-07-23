@@ -39,6 +39,8 @@ for tID in trees:
     if not ground and tID <= 30:
         continue
     (x, y), label = trees[tID]
+    if label == 'ground': # these are not for classification
+        continue
     x =  int(round(x / factor))
     y =  int(round(y / factor))
     intended = color.BGR[label]
