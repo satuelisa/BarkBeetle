@@ -159,7 +159,7 @@ do
 	for n in $(seq $slowReplicas)
 	do
 	    echo Extracting, replica $n out of $slowReplicas
-	    rm -rf individual/*/*.png
+	    rm -rf individual/*
 	    for file in `ls -1 orthomosaics/*.tif`
 	    do
 		dataset=`basename $file .tif`
@@ -200,6 +200,10 @@ do
 		    convert -background none individual/enhanced/*_${kind}_*.png +append composite/enhanced/${kind}.png
 		    convert -background none individual/original/${dataset}_${kind}_*.png +append composite/original/${dataset}_${kind}.png
 		    convert -background none individual/enhanced/${dataset}_${kind}_*.png +append composite/enhanced/${dataset}_${kind}.png
+		    mkdir individual/original/$kind
+		    mv individual/original/*_${kind}_*.png individual/original/$kind
+		    mkdir individual/enhanced/$kind
+		    mv individual/enhanced/*_${kind}_*.png individual/enhanced/$kind
 		done
 	    done
 	done
@@ -413,7 +417,7 @@ do
 	for kind in "${classes[@]}" # count the samples 
 	do
 	    echo $kind
-	    ls -lh individual/enhanced/*_${kind}_*.png | wc -l
+	    ls -lh individual/enhanced/$kind/*.png | wc -l
 	done
 	mkdir -p individual/thresholded
 	mkdir -p individual/automaton

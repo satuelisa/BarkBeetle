@@ -1,5 +1,5 @@
 from collections import defaultdict
-from math import floor, sqrt
+from math import ceil, floor, sqrt
 from PIL import Image
 from os import popen # for the GIF
 from sys import argv
@@ -17,14 +17,15 @@ blue = (0, 0, 255, 255)
 yellow = (255, 255, 0, 255)
 ground = (0, 0, 0, 255)
 
-options = [(ground, 4), (yellow, 4), (red, 3), (green, 1), (blue, 0)]
+# 12000 is insufficient for yellow
+options = [(ground, 2), (yellow, 3), (red, 1), (green, 0), (blue, 0)]
 debug = False
 gif = 'gif' in argv
 
-def pick(colors):
+def pick(colors, d):
     high = max(colors.values()) # max freq
     for (o, m) in options:
-        if o in colors.keys() and colors[o] >= high - m:
+        if o in colors.keys() and colors[o] >= high:
             return o
     return None # keep the old one
 
@@ -35,8 +36,9 @@ def colfreq(dataset, cutoff = 3):
     trees, ow = parse(dataset)
     trees = None # we do not need this here
     factor = ow / w
-    rad = int(floor(sqrt(radius(dataset, factor))))
-    threshold = int((w * h) / 100)
+    rad = 1
+    maxrad = int(floor(sqrt(radius(dataset, factor))))
+    threshold = int((w * h) / 1000)
     tmp = img.copy() # copy so that the same pixels are blank
     pix = img.load()
     update = tmp.load()
@@ -45,8 +47,6 @@ def colfreq(dataset, cutoff = 3):
     iteration = 0
     stall = 0
     low = None
-    if not gif:
-        print(f'# iterating with {rad} radius until less than', threshold, 'pixels change')
     while True:
         changes = 0
         for x in range(w):
@@ -64,7 +64,7 @@ def colfreq(dataset, cutoff = 3):
                             if pn[3] == 255: 
                                 c[pn] += 1
                                 nn.add((nx, ny))
-                    repl = pick(c)
+                    repl = pick(c, rad)
                     if repl is not None and p != repl:
                         update[x, y] = repl
                         changes += 1
@@ -80,14 +80,22 @@ def colfreq(dataset, cutoff = 3):
             if stall >= cutoff:
                 changes = 0 # force a cut
         if changes < threshold:
-            img.save(f'automaton/{dataset}.png') # final stage is always savec
-            if gif: # build an animated GIF with ImageMagick
-                popen(f'convert -delay 50 automaton/frames/{dataset}_*.png -loop 0 automaton/{dataset}.gif') 
-            return
+            if rad < maxrad:
+                rad += 1
+                threshold *= 2
+                n = [(dx, dy) for dx in range(-rad, rad + 1) for dy in range(-rad, rad + 1)] # Moore neighborhood
+                stable = set()
+                stall = 0
+                low = None
+            else:
+                img.save(f'automaton/{dataset}.png') # final stage is always savec
+                if gif: # build an animated GIF with ImageMagick
+                    popen(f'convert -delay 50 automaton/frames/{dataset}_*.png -loop 0 automaton/{dataset}.gif') 
+                return
+        elif not gif:
+            print(changes, 'changes', rad, 'radius')        
         pix, update = update, pix # swap
         img, tmp = tmp, img
-        if not gif:
-            print(changes, 'changes')        
         if debug:
             img.show()
             input('Press enter to continue')
