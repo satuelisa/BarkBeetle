@@ -148,9 +148,16 @@ for arg in $req
 do
     if [ "$arg" = "ext" ] 
     then
+	rm -rf individual/*
 	mkdir -p individual/squares
 	mkdir -p individual/original
 	mkdir -p individual/enhanced
+	for kind in "${classes[@]}"
+	do
+	    mkdir -p individual/squares/$kind
+	    mkdir -p individual/original/$kind
+	    mkdir -p individual/enhanced/$kind
+	done
 	if [ "$timestamps" = true ]
 	then	
 	    rm -f timestamps/extract*
@@ -159,7 +166,6 @@ do
 	for n in $(seq $slowReplicas)
 	do
 	    echo Extracting, replica $n out of $slowReplicas
-	    rm -rf individual/*
 	    for file in `ls -1 orthomosaics/*.tif`
 	    do
 		dataset=`basename $file .tif`
@@ -191,19 +197,15 @@ do
 	    for file in `ls -1 orthomosaics/*.tif`
 	    do
 		dataset=`basename $file .tif`
-		convert -background none individual/enhanced/${dataset}_*.png +append composite/enhanced/${dataset}.png
-		convert -background none individual/original/${dataset}_*.png +append composite/original/${dataset}.png	
+		convert -background none individual/enhanced/*/${dataset}_*.png +append composite/enhanced/${dataset}.png
+		convert -background none individual/original/*/${dataset}_*.png +append composite/original/${dataset}.png	
 		for kind in "${classes[@]}"
 		do
 		    echo 'Postprocessing class' $kind 'for' $file
-		    convert -background none individual/original/*_${kind}_*.png +append composite/original/${kind}.png
-		    convert -background none individual/enhanced/*_${kind}_*.png +append composite/enhanced/${kind}.png
-		    convert -background none individual/original/${dataset}_${kind}_*.png +append composite/original/${dataset}_${kind}.png
-		    convert -background none individual/enhanced/${dataset}_${kind}_*.png +append composite/enhanced/${dataset}_${kind}.png
-		    mkdir individual/original/$kind
-		    mv individual/original/*_${kind}_*.png individual/original/$kind
-		    mkdir individual/enhanced/$kind
-		    mv individual/enhanced/*_${kind}_*.png individual/enhanced/$kind
+		    convert -background none individual/original/$kind/*_${kind}_*.png +append composite/original/${kind}.png
+		    convert -background none individual/enhanced/$kind/*_${kind}_*.png +append composite/enhanced/${kind}.png
+		    convert -background none individual/original/$kind/${dataset}_${kind}_*.png +append composite/original/${dataset}_${kind}.png
+		    convert -background none individual/enhanced/$kind/${dataset}_${kind}_*.png +append composite/enhanced/${dataset}_${kind}.png
 		done
 	    done
 	done
@@ -406,6 +408,7 @@ for arg in $req
 do
     if [ "$arg" = "update" ] # update the manuscript
     then
+	bash png2gif.sh 
 	ec=`awk '{print $2}' trees.txt | sort | uniq | grep -v kind`
         eclasses=($(echo $ec)) 
 	for expc in "${eclasses[@]}"
@@ -426,6 +429,11 @@ do
 	mkdir -p ground/individual/squares
 	mkdir -p ground/individual/original
 	mkdir -p ground/individual/enhanced
+	for kind in "${classes[@]}"
+	do
+	    mkdir -p individual/thresholded/$kind
+	    mkdir -p individual/automaton/$kind
+	done
 	for file in `ls -1 orthomosaics/*.tif`
 	do 
 	    dataset=`basename $file .tif`
@@ -440,13 +448,13 @@ do
 	mkdir -p composite/automaton
 	for kind in "${classes[@]}"
 	do
-	    convert -background none -transparent black individual/thresholded/*_${kind}_*.png +append composite/thresholded/${kind}.png
-	    convert -background none -transparent black individual/automaton/*_${kind}_*.png +append composite/automaton/${kind}.png
+	    convert -background none -transparent black individual/thresholded/$kind/*_${kind}_*.png +append composite/thresholded/${kind}.png
+	    convert -background none -transparent black individual/automaton/$kind/*_${kind}_*.png +append composite/automaton/${kind}.png
 	    for file in `ls -1 orthomosaics/*.tif`
 	    do
 		dataset=`basename $file .tif`
-		convert -background none -transparent black individual/thresholded/${dataset}_${kind}_*.png +append composite/thresholded/${dataset}_${kind}.png
-		convert -background none -transparent black individual/automaton/${dataset}_${kind}_*.png +append composite/automaton/${dataset}_${kind}.png
+		convert -background none -transparent black individual/thresholded/$kind/${dataset}_${kind}_*.png +append composite/thresholded/${dataset}_${kind}.png
+		convert -background none -transparent black individual/automaton/$kind/${dataset}_${kind}_*.png +append composite/automaton/${dataset}_${kind}.png
 	    done
 	done
 	mkdir -p histograms

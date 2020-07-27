@@ -65,16 +65,16 @@ for treeID in trees:
     zone = (x - r, y - r, x + r, y + r)
     square = original.crop(zone)
     if ground or goal == np.array(square).any(axis=-1).sum(): # ignore partial image-based samples
-        square.save(f'{prefix}individual/squares/{dataset}_{label}_{treeID}.png')
+        square.save(f'{prefix}individual/squares/{label}/{dataset}_{label}_{treeID}.png')
         w, h = square.size
         assert w == d
-        cut(square, d, center, mask, f'{prefix}individual/original/{dataset}_{label}_{treeID}.png')
-        cut(enhanced.crop(zone), d, center, mask, f'{prefix}individual/enhanced/{dataset}_{label}_{treeID}.png')
+        cut(square, d, center, mask, f'{prefix}individual/original/{label}/{dataset}_{label}_{treeID}.png')
+        cut(enhanced.crop(zone), d, center, mask, f'{prefix}individual/enhanced/{label}/{dataset}_{label}_{treeID}.png')
         if postprocess:
             sx = int(round(x / factor))
             sy = int(round(y / factor))
             sz = (sx - sr, sy - sr, sx + sr, sy + sr)            
             cut(thresholded.crop(sz), sd, sc, smask,
-                f'{prefix}individual/thresholded/{dataset}_{label}_{treeID}.png')                    
+                f'{prefix}individual/thresholded/{label}/{dataset}_{label}_{treeID}.png')                    
             cut(automaton.crop(sz), sd, sc, smask,
-                f'{prefix}individual/automaton/{dataset}_{label}_{treeID}.png')
+                f'{prefix}individual/automaton/{label}/{dataset}_{label}_{treeID}.png')
