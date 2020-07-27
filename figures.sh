@@ -165,10 +165,10 @@ fgrep '& 0 ' table6.tex | awk '{print $1}' > mismatched.txt
 python3 mismatches.py
 cp mismatches.png ${location}/fig16.png
 
-convert examples/ground/original/green.png examples/ground/enhanced/green.png examples/ground/thresholded/green.png examples/ground/automaton/green.png $(echo $vgaps) fig15a.png
-convert examples/ground/original/yellow.png examples/ground/enhanced/yellow.png examples/ground/thresholded/yellow.png examples/ground/automaton/yellow.png $(echo $vgaps) fig15b.png
-convert examples/ground/original/red.png examples/ground/enhanced/red.png examples/ground/thresholded/red.png examples/ground/automaton/red.png $(echo $vgaps) fig15c.png
-convert examples/ground/original/leafless.png examples/ground/enhanced/leafless.png examples/ground/thresholded/leafless.png examples/ground/automaton/leafless.png $(echo $vgaps) fig15d.png
+convert examples/walk/original/green.png examples/walk/enhanced/green.png examples/walk/thresholded/green.png examples/walk/automaton/green.png $(echo $vgaps) fig15a.png
+convert examples/walk/original/yellow.png examples/walk/enhanced/yellow.png examples/walk/thresholded/yellow.png examples/walk/automaton/yellow.png $(echo $vgaps) fig15b.png
+convert examples/walk/original/red.png examples/walk/enhanced/red.png examples/walk/thresholded/red.png examples/walk/automaton/red.png $(echo $vgaps) fig15c.png
+convert examples/walk/original/leafless.png examples/walk/enhanced/leafless.png examples/walk/thresholded/leafless.png examples/walk/automaton/leafless.png $(echo $vgaps) fig15d.png
 
 convert fig15?.png $(echo $bigvgaps) fig15.png
 convert -transparent black fig15.png ${location}/fig15.png

@@ -1,5 +1,6 @@
 import cv2
 import color
+import os.path
 from sys import argv
 
 from trees import parse
@@ -41,6 +42,8 @@ for tID in trees:
     (x, y), label = trees[tID]
     if label == 'ground': # these are not for classification
         continue
+    if not os.path.exists(f'individual/squares/{label}/{dataset}_{label}_{tID}.png'):
+        continue # skip the partial samples
     x =  int(round(x / factor))
     y =  int(round(y / factor))
     intended = color.BGR[label]
@@ -65,5 +68,3 @@ for tID in trees:
 if annotate and not ground:
     for (name, image) in targets.items():
         cv2.imwrite(f'output/{target}/{name}/{dataset}.png', image)
-
-

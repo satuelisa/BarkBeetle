@@ -17,7 +17,7 @@ debug = True # mask files are saved in debug mode (to see how round they are)
 postprocess = 'post' in argv # whether this is pre- or post-processing
 dataset = argv[1]
 ground = 'ground' in argv
-prefix = 'ground/' if ground else ''
+prefix = 'walk/' if ground else ''
 trees, ow = parse(dataset, ground)
 r = radius(dataset) // 2 # the cut-out will measure 2 * r per side
 d = 2 * r
@@ -59,7 +59,7 @@ if postprocess:
     sdraw.ellipse((0, 0, sd, sd), fill = 255)
     if debug:
         mask.save(f'mask_{sr}.png', quality=100)
-for treeID in trees: 
+for treeID in trees:
     pos, label = trees[treeID]
     x, y = pos
     zone = (x - r, y - r, x + r, y + r)

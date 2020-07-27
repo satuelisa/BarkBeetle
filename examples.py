@@ -9,7 +9,7 @@ size = 200
 rows = int(argv[1])
 cols = int(argv[2])
 ground = 'ground' in argv
-prefix = '' if not ground else 'ground/' 
+prefix = '' if not ground else 'walk/' 
 w = rows * size + (rows + 1) * margin
 h = cols * size + (cols + 1) * margin
 datasets = ['jun60', 'jul90', 'jul100', 'aug90', 'aug100']
@@ -17,7 +17,7 @@ variants = ['squares', 'original', 'enhanced', 'thresholded', 'automaton']
 
 start = 1 if ground else 31
 end = 30 if ground else 5000 
-for kind in ['green', 'yellow', 'red', 'leafless', 'ground']:
+for kind in ['green', 'yellow', 'red', 'leafless']:
     images = { v : Image.new('RGBA', (h, w)) for v in variants } 
     chosen = set()
     x = margin
@@ -30,7 +30,8 @@ for kind in ['green', 'yellow', 'red', 'leafless', 'ground']:
         suffix = f'{d}_{kind}_{tID}.png'
         add = False
         for v in variants:
-            filename = f'{prefix}individual/{v}/{suffix}'
+            filename = f'individual/{v}/{kind}/{suffix}'
+            print(filename)
             if not os.path.exists(filename): 
                 assert not add
                 break # cannot use a non-existant sample

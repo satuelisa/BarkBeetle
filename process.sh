@@ -378,10 +378,10 @@ for arg in $req
 do
     if [ "$arg" = "forecast" ] 
     then
-	mkdir -p output/ground/original
-	mkdir -p output/ground/automaton
-	mkdir -p output/ground/enhanced
-	mkdir -p output/ground/thresholded
+	mkdir -p output/walk/original
+	mkdir -p output/walk/automaton
+	mkdir -p output/walk/enhanced
+	mkdir -p output/walk/thresholded
 	if [ "$timestamps" = true ]
 	then	
 	    rm -f timestamps/forecast*
@@ -424,11 +424,11 @@ do
 	done
 	mkdir -p individual/thresholded
 	mkdir -p individual/automaton
-	mkdir -p ground/individual/thresholded
-	mkdir -p ground/individual/automaton	
-	mkdir -p ground/individual/squares
-	mkdir -p ground/individual/original
-	mkdir -p ground/individual/enhanced
+	mkdir -p walk/individual/thresholded
+	mkdir -p walk/individual/automaton	
+	mkdir -p walk/individual/squares
+	mkdir -p walk/individual/original
+	mkdir -p walk/individual/enhanced
 	for kind in "${classes[@]}"
 	do
 	    mkdir -p individual/thresholded/$kind
@@ -470,11 +470,11 @@ do
 	mkdir -p examples/thresholded
 	mkdir -p examples/automaton
 	python3 examples.py 1 8
-	mkdir -p examples/ground/squares
-	mkdir -p examples/ground/enhanced
-	mkdir -p examples/ground/original
-	mkdir -p examples/ground/thresholded
-	mkdir -p examples/ground/automaton	
+	mkdir -p examples/walk/squares
+	mkdir -p examples/walk/enhanced
+	mkdir -p examples/walk/original
+	mkdir -p examples/walk/thresholded
+	mkdir -p examples/walk/automaton	
 	python3 examples.py 1 5 ground 
 	python3 confusion.py results.txt tex > results.tex # format the results in LaTeX
 	fgrep "% CM" results.tex | tail -n +2 > conf.tex
