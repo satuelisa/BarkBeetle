@@ -31,7 +31,6 @@ for kind in ['green', 'yellow', 'red', 'leafless']:
         add = False
         for v in variants:
             filename = f'individual/{v}/{kind}/{suffix}'
-            print(filename)
             if not os.path.exists(filename): 
                 assert not add
                 break # cannot use a non-existant sample
