@@ -50,8 +50,6 @@ for label in targets:
                 features.append(global_feature)
                 counts[label] += 1
 
-le = LabelEncoder() # codificador
-target = le.fit_transform(labels) # codificar
 scaler = MinMaxScaler(feature_range = (0, 1)) # normalizador
 rescaled_features = scaler.fit_transform(features) # normalizar caracteristicas
 
