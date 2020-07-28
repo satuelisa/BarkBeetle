@@ -1,9 +1,14 @@
 # basado en https://gogul09.github.io/software/image-classification-python
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import MinMaxScaler
+
+from sklearn.model_selection import train_test_split
+
+from sklearn.ensemble import RandomForestClassifier
+
+from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
+
 from collections import defaultdict
 from random import random, shuffle
 import numpy as np
@@ -72,5 +77,5 @@ for (data, label) in zip(testData, testLabels):
     if label == assigned:
         correct += 1
 print('#', 100 * correct / len(testLabels), '% correct')
-                         
 print(confusion_matrix(testLabels, predict))
+print(classification_report(testLabels, predict))
