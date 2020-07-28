@@ -4,7 +4,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import MinMaxScaler
 from collections import defaultdict
-from random import random
+from random import random, shuffle
 import numpy as np
 import mahotas
 import cv2
@@ -36,7 +36,9 @@ targets = ['green', 'yellow', 'red', 'leafless']
 counts = defaultdict(int)
 
 for label in targets:
-    for entry in os.scandir(f'individual/original/{label}'):
+    listing = list(os.scandir(f'individual/original/{label}'))
+    shuffle(listing)
+    for entry in listing:
         if entry.path.endswith('.png') and entry.is_file():
             if counts[label] < count:
                 filename = entry.path
