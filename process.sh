@@ -433,12 +433,19 @@ do
 	do
 	    mkdir -p individual/thresholded/$kind
 	    mkdir -p individual/automaton/$kind
+	    mkdir -p walk/individual/thresholded/$kind
+	    mkdir -p walk/individual/automaton/$kind
+	    mkdir -p walk/individual/squares/$kind
+	    mkdir -p walk/individual/original/$kind
+	    mkdir -p walk/individual/enhanced/$kind
 	done
 	for file in `ls -1 orthomosaics/*.tif`
 	do 
 	    dataset=`basename $file .tif`
 	    python3 grayscale.py $dataset
 	    python3 extract.py ${dataset} post
+	    python3 extract.py ${dataset} ground	    	    
+	    python3 extract.py ${dataset} ground post	    
 	    python3 validate.py $dataset
 	    python3 histogram.py ${dataset} 
 	    python3 chandiff.py ${dataset} 
@@ -469,7 +476,7 @@ do
 	mkdir -p examples/original
 	mkdir -p examples/thresholded
 	mkdir -p examples/automaton
-	python3 examples.py 1 8
+	python3 examples.py 1 10
 	mkdir -p examples/walk/squares
 	mkdir -p examples/walk/enhanced
 	mkdir -p examples/walk/original

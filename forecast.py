@@ -47,6 +47,7 @@ for t in range(1, 31):
         c = cell(a)
         matches += 1 * m
         assignments += ' & ' + c + m * '{\\bf ' + a + m * '}'
+        print(t)
         cobs = cell(observed[t])
         corig = cell(orig[t])
     print(t, assignments, '&', cobs, '{\\em '+ observed[t], '} &', corig, '{\em ', orig[t], '} &', matches, '\\\\')

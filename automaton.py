@@ -18,7 +18,9 @@ yellow = (255, 255, 0, 255)
 ground = (0, 0, 0, 255)
 
 # 12000 is insufficient for yellow
-options = [(ground, 2), (yellow, 3), (red, 1), (green, 0), (blue, 0)]
+# 23100 as well – some yellows become red or blue, 81 global
+# 24100 77 with 50,230
+options = [(ground, 1), (yellow, 3), (red, 0), (green, 0), (blue, 0)]
 debug = False
 gif = 'gif' in argv
 

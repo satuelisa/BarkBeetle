@@ -34,6 +34,7 @@ r = radius(dataset, factor)
 offsetL = r + 4 * step        
 margin = r + offsetL + 50
 target = 'ground' if ground else 'air'
+source = 'walk/' if ground else ''
 for tID in trees:
     if ground and tID > 30:
         continue
@@ -42,7 +43,7 @@ for tID in trees:
     (x, y), label = trees[tID]
     if label == 'ground': # these are not for classification
         continue
-    if not os.path.exists(f'individual/squares/{label}/{dataset}_{label}_{tID}.png'):
+    if not os.path.exists(f'{source}individual/squares/{label}/{dataset}_{label}_{tID}.png'):
         continue # skip the partial samples
     x =  int(round(x / factor))
     y =  int(round(y / factor))

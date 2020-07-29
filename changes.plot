@@ -3,7 +3,7 @@ set output 'changes.eps'
 set ylabel 'Number of changes'
 set xlabel 'Iteration'
 set logscale y
-set yrange [10:1000000]
+set yrange [500:100000]
 set xrange [-5:cmax+5]
 set xtics 0, 20
 set pointsize 1.5

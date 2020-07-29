@@ -30,14 +30,13 @@ for kind in ['green', 'yellow', 'red', 'leafless']:
         suffix = f'{d}_{kind}_{tID}.png'
         add = False
         for v in variants:
-            filename = f'individual/{v}/{kind}/{suffix}'
+            filename = f'{prefix}individual/{v}/{kind}/{suffix}'
             if not os.path.exists(filename): 
                 assert not add
                 break # cannot use a non-existant sample
             if suffix not in chosen:
                 chosen.add(suffix) # mark as used
                 add = True
-                print(suffix)
             sample = Image.open(filename).resize((size, size)).convert('RGBA')
             images[v].paste(sample, (x, y), sample)
         if add:
