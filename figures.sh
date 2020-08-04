@@ -170,7 +170,7 @@ convert examples/walk/original/yellow.png examples/walk/enhanced/yellow.png exam
 convert examples/walk/original/red.png examples/walk/enhanced/red.png examples/walk/thresholded/red.png examples/walk/automaton/red.png $(echo $vgaps) fig15c.png
 convert examples/walk/original/leafless.png examples/walk/enhanced/leafless.png examples/walk/thresholded/leafless.png examples/walk/automaton/leafless.png $(echo $vgaps) fig15d.png
 
-convert fig15?.png $(echo $bigvgaps) fig15.png
+convert fig15?.png $(echo $bighgaps) fig15.png
 convert -transparent black fig15.png ${location}/fig15.png
 
 

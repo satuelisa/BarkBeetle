@@ -19,13 +19,14 @@ dataset = argv[1]
 ground = 'ground' in argv
 prefix = 'walk/' if ground else ''
 trees, ow = parse(dataset, ground)
-r = radius(dataset) // 2 # the cut-out will measure 2 * r per side
+r = radius(dataset) // 2 # the cut-out size
 d = 2 * r
 goal = d**2 # pixel count
 center = (0, 0, d, d)
+dc = d // 10 # margin for the center
 mask = Image.new("L", (d, d), 0)
 draw = ImageDraw.Draw(mask)
-draw.ellipse((0, 0, d, d), fill = 255)
+draw.ellipse((dc, dc, d - dc, d - dc), fill = 255)
 if debug:
     mask.save(f'mask_{r}.png', quality=100)
 original = Image.open('cropped/{:s}.png'.format(dataset))

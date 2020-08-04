@@ -41,33 +41,32 @@ def threshold(thresholds, source, target = None):
                 b = p[2] # blue
                 rg = r - g # difference between red and green
                 mm = max(r, g, b) - min(r, g, b) # difference between high and low
-                if not accept(b, thresholds['tb']): # not leafless
-                    if accept(rg, thresholds['tg']): 
-                        if target is not None:
-                            pix[x, y] = (0, 255, 0, 255) 
-                        else:
-                            counts['green'] += 1
-                    elif accept(rg, thresholds['tr']): 
-                        if target is not None:
-                            pix[x, y] = (255, 0, 0, 255) # red
-                        else:
-                            counts['red'] += 1
-                    elif accept(mm, thresholds['ty']): 
-                        if target is not None:
-                            pix[x, y] = (255, 255, 0, 255) 
-                        else:
-                            counts['yellow'] += 1
-                    else:
-                        if target is not None: # ground
-                            pix[x, y] = (0, 0, 0, 255) # opaque black
-                        else:
-                            counts['ground'] += 1
-                else:
+                if accept(b, thresholds['tb']): # leafless
                     if target is not None:
                         pix[x, y] = (0, 0, 255, 255) # blue
                     else:
                         counts['leafless'] += 1
-            else: # force a transparent black to intermediate-opacity pixels
+                elif accept(rg, thresholds['tg']): 
+                    if target is not None:
+                        pix[x, y] = (0, 255, 0, 255) 
+                    else:
+                        counts['green'] += 1
+                elif accept(rg, thresholds['tr']): 
+                    if target is not None:
+                        pix[x, y] = (255, 0, 0, 255) # red
+                    else:
+                        counts['red'] += 1
+                elif accept(mm, thresholds['ty']): 
+                    if target is not None:
+                        pix[x, y] = (255, 255, 0, 255) 
+                    else:
+                        counts['yellow'] += 1
+                else:
+                    if target is not None: # ground
+                        pix[x, y] = (0, 0, 0, 255) # opaque black
+                    else:
+                        counts['ground'] += 1
+            else: # force a transparent black on any intermediate-opacity pixels
                 pix[x, y] = (0, 0, 0, 0) 
     if target is not None:
         img.save(target)

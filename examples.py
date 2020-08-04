@@ -51,6 +51,7 @@ for kind in ['green', 'yellow', 'red', 'leafless']:
         else:
             attempts += 1
             if attempts > maxattempts:
+                print(f'Broke off with {kind}')
                 break
     for v in variants:
         target = f'examples/{prefix}{v}/{kind}.png'

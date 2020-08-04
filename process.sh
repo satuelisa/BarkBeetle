@@ -476,7 +476,7 @@ do
 	mkdir -p examples/original
 	mkdir -p examples/thresholded
 	mkdir -p examples/automaton
-	python3 examples.py 1 10
+	python3 examples.py 1 12
 	mkdir -p examples/walk/squares
 	mkdir -p examples/walk/enhanced
 	mkdir -p examples/walk/original

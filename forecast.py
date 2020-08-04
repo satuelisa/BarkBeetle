@@ -27,7 +27,7 @@ with open(argv[1]) as data:
             if len(assigned.strip()) == 0:
                 assigned = 'blank'
             trees[treeID][flight] = (assigned, match)
-print('ID & Jun 60 m & Jul 90 m & Jul 100 m & Aug 90 m & Aug 100 m & Expert & Original & \\# \\\\')
+print('ID & Jun 60 m & Jul 90 m & Jul 100 m & Aug 90 m & Aug 100 m & Expert & Ungrouped & \\# \\\\')
 print('\\toprule')
 orig = dict()
 with open('trees.txt') as data:
@@ -47,7 +47,6 @@ for t in range(1, 31):
         c = cell(a)
         matches += 1 * m
         assignments += ' & ' + c + m * '{\\bf ' + a + m * '}'
-        print(t)
         cobs = cell(observed[t])
         corig = cell(orig[t])
     print(t, assignments, '&', cobs, '{\\em '+ observed[t], '} &', corig, '{\em ', orig[t], '} &', matches, '\\\\')
