@@ -48,7 +48,7 @@ for tID in trees:
     x =  int(round(x / factor))
     y =  int(round(y / factor))
     intended = color.BGR[label]
-    present = color.majority(x, y, r, w, h, sources['automaton'])
+    present = color.majority(x, y, r, w, h, sources['automaton']) # a simple majority-rule method
     match = label in present
     print(dataset, tID, label in present, label, ' '.join(present))
     if ground or not annotate:

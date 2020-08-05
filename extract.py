@@ -1,15 +1,11 @@
 import numpy as np
 from sys import argv
 from PIL import Image, ImageDraw
+from cut import circle, cut
 import warnings
 
 # metadata causes this
 warnings.simplefilter('ignore', Image.DecompressionBombWarning)
-
-def cut(square, d, center, mask, target):
-    circle = Image.new('RGBA', (d, d))
-    circle.paste(square.crop((center)), (0, 0), mask)
-    circle.save(target)
 
 from trees import parse
 from gsd import radius
@@ -22,13 +18,7 @@ trees, ow = parse(dataset, ground)
 r = radius(dataset) // 2 # the cut-out size
 d = 2 * r
 goal = d**2 # pixel count
-center = (0, 0, d, d)
-dc = d // 10 # margin for the center
-mask = Image.new("L", (d, d), 0)
-draw = ImageDraw.Draw(mask)
-draw.ellipse((dc, dc, d - dc, d - dc), fill = 255)
-if debug:
-    mask.save(f'mask_{r}.png', quality=100)
+mask = circle(d, d // 10)
 original = Image.open('cropped/{:s}.png'.format(dataset))
 enhanced = Image.open('enhanced/{:s}.png'.format(dataset))
 if 'test' in argv:
@@ -43,8 +33,8 @@ if 'test' in argv:
     y = int(input('Y: ')) - y0
     zone = (x - r, y - r, x + r, y + r)
     print(f'Extracting a {2 * r} square at {x}, {y}')
-    square = original.crop(zone)    
-    square.save(f'test.png')
+    square = original.crop(zone)
+    cut(square, d, circle(d, d // 10, opacity = 200), 'test.png')    
     quit()
 if postprocess:
     print('Post-processing for manuscript figures', dataset)
@@ -54,12 +44,7 @@ if postprocess:
     factor = ow / w
     sr = radius(dataset, factor) // 2
     sd = 2 * sr
-    sc = (0, 0, sd, sd)
-    smask = Image.new("L", (sd, sd), 0)
-    sdraw = ImageDraw.Draw(smask)
-    sdraw.ellipse((0, 0, sd, sd), fill = 255)
-    if debug:
-        mask.save(f'mask_{sr}.png', quality=100)
+    smask = circle(sd)
 for treeID in trees:
     pos, label = trees[treeID]
     x, y = pos
@@ -69,13 +54,14 @@ for treeID in trees:
         square.save(f'{prefix}individual/squares/{label}/{dataset}_{label}_{treeID}.png')
         w, h = square.size
         assert w == d
-        cut(square, d, center, mask, f'{prefix}individual/original/{label}/{dataset}_{label}_{treeID}.png')
-        cut(enhanced.crop(zone), d, center, mask, f'{prefix}individual/enhanced/{label}/{dataset}_{label}_{treeID}.png')
+        cut(square, d, circle(d, d // 10, opacity = 150), f'{prefix}individual/highlight/{label}/{dataset}_{label}_{treeID}.png')
+        cut(square, d, mask, f'{prefix}individual/original/{label}/{dataset}_{label}_{treeID}.png')
+        cut(enhanced.crop(zone), d, mask, f'{prefix}individual/enhanced/{label}/{dataset}_{label}_{treeID}.png')
         if postprocess:
             sx = int(round(x / factor))
             sy = int(round(y / factor))
             sz = (sx - sr, sy - sr, sx + sr, sy + sr)            
-            cut(thresholded.crop(sz), sd, sc, smask,
+            cut(thresholded.crop(sz), sd, smask,
                 f'{prefix}individual/thresholded/{label}/{dataset}_{label}_{treeID}.png')                    
-            cut(automaton.crop(sz), sd, sc, smask,
+            cut(automaton.crop(sz), sd, smask,
                 f'{prefix}individual/automaton/{label}/{dataset}_{label}_{treeID}.png')

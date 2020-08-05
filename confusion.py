@@ -38,25 +38,23 @@ def display(l, m, o, latex = False):
 from sys import argv
 
 latex = 'tex' in argv
+parsing = False
 with open(argv[1]) as data:
     for line in data:
-        line = line.strip()
-        fields = line.split()
-        if len(fields) < 5:
-            print('INVALID INPUT:', line) # invalid
-            quit()
-        dataset = fields.pop(0)
-        tree = fields.pop(0)
-        match = bool(fields.pop(0))
-        predicted = fields.pop(0)
-        expected = fields.pop(0)
-        if len(fields) > 0:
-            print(f'WARNING: Multiple matches for {tree} in {dataset}')
-        classes.update({predicted, expected})
-        overall[(expected, predicted)] += 1
-        if dataset not in specific:
-            specific[dataset] = defaultdict(int)
-        specific[dataset][(expected, predicted)] += 1
+        if 'output' in line and 'Random Forest' in line and 'enhanced' in line:
+            line = line.strip()
+            fields = line.split()
+            if len(fields) < 6:
+                print('INVALID INPUT:', line) # invalid
+                quit()
+            dataset = fields[3]
+            expected = fields[1]
+            predicted = fields[2]
+            classes.update({predicted, expected})
+            overall[(expected, predicted)] += 1
+            if dataset not in specific:
+                specific[dataset] = defaultdict(int)
+            specific[dataset][(expected, predicted)] += 1
 
 order = ['green', 'yellow', 'red', 'leafless']
 for (case, matrix) in [('global', overall)] + list(specific.items()):
@@ -67,15 +65,15 @@ for (case, matrix) in [('global', overall)] + list(specific.items()):
     sep = ' & ' if latex else '\t'
     e = 'Error' if not latex else '$\\epsilon$'
     a = 'Accuracy' if not latex else '$\\alpha$'
-    fe = '{\\bf ' + f'{error:.2f}' + '}' if latex else f'{error:.2f}'
-    fa = '{\\bf ' + f'{accuracy:.2f}' + '}' if latex else f'{accuracy:.2f}'
+    fe = '{\\bf ' + f'{error:.3f}' + '}' if latex else f'{error:.3f}'
+    fa = '{\\bf ' + f'{accuracy:.3f}' + '}' if latex else f'{accuracy:.3f}'
     if case == 'global' and latex:
         case = '{\\bf ' + case + '}'
     if latex:
         if case in repl:
             case = repl[case]
     print(f'{case}{sep}{e}{sep}{fe}{sep}{a}{sep}{fa} \\\\ % STATS')
-    for c in classes:
+    for c in order:
         if c != 'ground': 
             tp = matrix.get((c, c), 0) # predicted == expected
             cs = sum([matrix.get((c, o), 0) for o in classes]) # where the class is expected
@@ -91,7 +89,7 @@ for (case, matrix) in [('global', overall)] + list(specific.items()):
             if tn + fp > 0: # success rate in recognizing when the sample does not belong in the class
                 specificity = tn / (tn + fp)
             sp = 'Specificity' if not latex else '$S_p$'
-            print(f'{c:s}{sep}{se}{sep}{sensitivity:.2f}{sep}{sp}{sep}{specificity:.2f} \\\\ % STATS')
+            print(f'{c:s}{sep}{se}{sep}{sensitivity:.3f}{sep}{sp}{sep}{specificity:.3f} \\\\ % STATS')
     if latex:
         print('\\midrule % STATS')
     

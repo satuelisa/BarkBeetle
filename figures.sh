@@ -18,9 +18,8 @@ biggap=100
 bighgaps="-background transparent -splice ${biggap}x0+0+0 +append -chop ${biggap}x0+0+0"
 bigvgaps="-background transparent -splice 0x${biggap}+0+0 -append -chop 0x${biggap}+0+0"
 
-
 # example sample areas (square)
-convert examples/squares/green.png examples/squares/yellow.png examples/squares/red.png examples/squares/leafless.png examples/squares/ground.png $(echo $vgaps) fig3.png
+convert examples/highlight/green.png examples/highlight/yellow.png examples/highlight/red.png examples/highlight/leafless.png examples/squares/ground.png $(echo $vgaps) fig3.png
 convert -transparent black fig3.png ${location}/fig3.png 
 
 # unmodified colors
@@ -138,18 +137,7 @@ convert examples/automaton/green.png examples/automaton/yellow.png examples/auto
 convert fig12?.png $(echo $bighgaps) fig12.png
 convert -transparent black fig12.png ${location}/fig12.png
 
-w=900
-h=900
-x=50
-y=50
-convert -crop ${w}x${h}+${x}+${y} output/air/original/aug100.png fig13a1.png 
-convert -crop ${w}x${h}+${x}+${y} output/air/enhanced/aug100.png fig13a2.png
-convert -crop ${w}x${h}+${x}+${y} output/air/thresholded/aug100.png fig13b1.png
-convert -crop ${w}x${h}+${x}+${y} output/air/automaton/aug100.png fig13b2.png 
-convert fig13a?.png $(echo $gaps) fig13a.png
-convert fig13b?.png $(echo $gaps) fig13b.png
-convert fig13?.png $(echo $vgaps) fig13.png
-convert -transparent black fig13.png ${location}/fig13.png
+cp ml.png ${location}/fig13.png
 
 convert -density 300 coverage.eps ${location}/fig14.png
 

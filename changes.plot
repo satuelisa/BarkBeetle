@@ -1,4 +1,5 @@
 set term postscript eps color 18
+set size 2, 1
 set output 'changes.eps'
 set ylabel 'Number of changes'
 set xlabel 'Iteration'

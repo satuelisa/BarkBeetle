@@ -150,11 +150,13 @@ do
     then
 	rm -rf individual/*
 	mkdir -p individual/squares
+	mkdir -p individual/highlight
 	mkdir -p individual/original
 	mkdir -p individual/enhanced
 	for kind in "${classes[@]}"
 	do
 	    mkdir -p individual/squares/$kind
+	    mkdir -p individual/highlight/$kind
 	    mkdir -p individual/original/$kind
 	    mkdir -p individual/enhanced/$kind
 	done
@@ -310,16 +312,16 @@ do
 	if [ "$timestamps" = true ]
 	then
 	    { date & echo $slowReplicas; } >> timestamps/automata_end_time.txt
+	else
+	    echo Creating GIFs
+	    rm -rf automaton/frames # force clear so as not to affect the GIF
+	    mkdir -p automaton/frames
+	    for file in `ls -1 orthomosaics/*.tif`
+	    do
+		dataset=`basename $file .tif`
+		python3 automaton.py $dataset GIF # make the GIFs (the method is deterministic) 
+	    done
 	fi
-	echo Creating GIFs
-	rm -rf automaton/frames # force clear so as not to affect the GIF
-	mkdir -p automaton/frames
-	for file in `ls -1 orthomosaics/*.tif`
-	do
-	    dataset=`basename $file .tif`
-	    python3 automaton.py $dataset GIF # make the GIFs (the method is deterministic) 
-	done
-	break
     fi
 done
 for arg in $req
@@ -330,24 +332,33 @@ do
 	mkdir -p output/air/automaton
 	mkdir -p output/air/enhanced
 	mkdir -p output/air/thresholded
-	if [ "$timestamps" = true ]
-	then
-	    rm -f timestamps/eval*
-	    { date & echo $fastReplicas; } >> timestamps/evaluation_start_time.txt
-	fi
-	for n in $(seq $fastReplicas)
+	for n in $(seq $slowReplicas)
 	do
-	    echo Evaluating, replica $n out of $fastReplicas	
-	    rm results.txt # redo the result file
+	    if [ "$timestamps" = true ]
+	    then
+		rm -f timestamps/eval*
+		{ date & echo $slowReplicas; } >> timestamps/evaluation_start_time.txt
+	    fi
+	    rm results.txt # redo the result file for the ML models
+	    touch results.txt
+	    rm detmet.txt # redo the result file for the deterministic method
+	    touch detmet.txt
 	    for file in `ls -1 orthomosaics/*.tif`
-	    do
+            do
 		dataset=`basename $file .tif`
-		python3 test.py $dataset >> results.txt 
-	    done
+		python3 train.py $dataset >> results.txt
+		python3 test.py $dataset >> detmet.txt
+            done
+	    total=`wc -l detmet.txt | awk '{print $1}'`
+	    correct=`grep True detmet.txt | wc -l | awk '{print $1}'`
+	    detmet=`python3 -c 'print('""$correct""'/'""$total""')'`
+	    echo $detmet ' deterministic accuracy'
+	    echo Evaluating, replica $n out of $slowReplicas
+	    python3 train.py all $detmet > avg.txt # global
 	done
 	if [ "$timestamps" = true ]
 	then
-	    { date & echo $fastReplicas; } >> timestamps/evaluation_end_time.txt
+	    { date & echo $slowReplicas; } >> timestamps/evaluation_end_time.txt
 	fi
 	break
     fi
@@ -427,6 +438,7 @@ do
 	mkdir -p walk/individual/thresholded
 	mkdir -p walk/individual/automaton	
 	mkdir -p walk/individual/squares
+	mkdir -p walk/individual/highlight
 	mkdir -p walk/individual/original
 	mkdir -p walk/individual/enhanced
 	for kind in "${classes[@]}"
@@ -436,6 +448,7 @@ do
 	    mkdir -p walk/individual/thresholded/$kind
 	    mkdir -p walk/individual/automaton/$kind
 	    mkdir -p walk/individual/squares/$kind
+	    mkdir -p walk/individual/highlight/$kind
 	    mkdir -p walk/individual/original/$kind
 	    mkdir -p walk/individual/enhanced/$kind
 	done
@@ -472,12 +485,14 @@ do
 	mkdir -p collages/thresholded
 	python3 collages.py # the pixel collages for the manuscript
 	mkdir -p examples/squares
+	mkdir -p examples/highlight
 	mkdir -p examples/enhanced
 	mkdir -p examples/original
 	mkdir -p examples/thresholded
 	mkdir -p examples/automaton
-	python3 examples.py 1 12
+	python3 examples.py 1 8
 	mkdir -p examples/walk/squares
+	mkdir -p examples/walk/highlight
 	mkdir -p examples/walk/enhanced
 	mkdir -p examples/walk/original
 	mkdir -p examples/walk/thresholded

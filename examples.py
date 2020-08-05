@@ -13,7 +13,7 @@ prefix = '' if not ground else 'walk/'
 w = rows * size + (rows + 1) * margin
 h = cols * size + (cols + 1) * margin
 datasets = ['jun60', 'jul90', 'jul100', 'aug90', 'aug100']
-variants = ['squares', 'original', 'enhanced', 'thresholded', 'automaton']
+variants = ['squares', 'highlight', 'original', 'enhanced', 'thresholded', 'automaton']
 
 start = 1 if ground else 31
 end = 30 if ground else 5000 

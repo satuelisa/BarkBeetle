@@ -64,7 +64,7 @@ for kind in classes:
                 correction = fields.pop(0)
                 if correction in ['discard', 'overexposed']:
                     for variant in variants: # in case extracted files exist
-                        former  = f'../individual/{variant}/{filename}'
+                        former  = f'../individual/{variant}/{kind}/{filename}'
                         if path.exists(former):
                             os.system(f'rm {former}') # delete it
                         else:
