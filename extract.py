@@ -54,7 +54,7 @@ for treeID in trees:
         square.save(f'{prefix}individual/squares/{label}/{dataset}_{label}_{treeID}.png')
         w, h = square.size
         assert w == d
-        cut(square, d, circle(d, d // 10, opacity = 150), f'{prefix}individual/highlight/{label}/{dataset}_{label}_{treeID}.png')
+        cut(square, d, circle(d, d // 10, opacity = 200), f'{prefix}individual/highlight/{label}/{dataset}_{label}_{treeID}.png')
         cut(square, d, mask, f'{prefix}individual/original/{label}/{dataset}_{label}_{treeID}.png')
         cut(enhanced.crop(zone), d, mask, f'{prefix}individual/enhanced/{label}/{dataset}_{label}_{treeID}.png')
         if postprocess:
