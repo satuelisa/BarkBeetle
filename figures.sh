@@ -66,31 +66,31 @@ cp histograms/aug100_diff.png ${location}/fig7c.png # example difference histogr
 
 convert -trim -fuzz 2% ruleperf.png ${location}/fig8.png
 
+h=500
+convert -resize x$h -rotate 90 collages/original/green.png fig9a1.png 
+convert -resize x$h -rotate 90 collages/original/yellow.png fig9a2.png
+convert -resize x$h -rotate 90 collages/original/red.png fig9a3.png 
+convert -resize x$h -rotate 90 collages/original/leafless.png fig9a4.png
+convert -resize x$h -rotate 90 collages/original/ground.png fig9a5.png
+convert -resize x$h -rotate 90 collages/enhanced/green.png fig9b1.png 
+convert -resize x$h -rotate 90 collages/enhanced/yellow.png fig9b2.png
+convert -resize x$h -rotate 90 collages/enhanced/red.png fig9b3.png
+convert -resize x$h -rotate 90 collages/enhanced/leafless.png fig9b4.png
+convert -resize x$h -rotate 90 collages/enhanced/ground.png fig9b5.png
+convert -resize x$h -rotate 90 collages/thresholded/green.png fig9c1.png 
+convert -resize x$h -rotate 90 collages/thresholded/yellow.png fig9c2.png
+convert -resize x$h -rotate 90 collages/thresholded/red.png fig9c3.png 
+convert -resize x$h -rotate 90 collages/thresholded/leafless.png fig9c4.png
+convert -resize x$h -rotate 90 collages/thresholded/ground.png fig9c5.png   
+convert fig9a?.png $(echo $bighgaps) fig9a.png
+convert fig9b?.png $(echo $bighgaps) fig9b.png
+convert fig9c?.png $(echo $bighgaps) fig9c.png
+convert fig9?.png $(echo $bigvgaps) fig9.png
+convert -transparent black fig9.png ${location}/fig9.png
+
 cmax=`wc -l automaton/*.log | grep automaton | awk '{print $1}' | sort -g | tail -n 1`
 gnuplot -e "cmax=$cmax" changes.plot # update the convergence figure for the manuscript
-convert -density 300 changes.eps ${location}/fig9.png
-
-h=500
-convert -resize x$h -rotate 90 collages/original/green.png fig10a1.png 
-convert -resize x$h -rotate 90 collages/original/yellow.png fig10a2.png
-convert -resize x$h -rotate 90 collages/original/red.png fig10a3.png 
-convert -resize x$h -rotate 90 collages/original/leafless.png fig10a4.png
-convert -resize x$h -rotate 90 collages/original/ground.png fig10a5.png
-convert -resize x$h -rotate 90 collages/enhanced/green.png fig10b1.png 
-convert -resize x$h -rotate 90 collages/enhanced/yellow.png fig10b2.png
-convert -resize x$h -rotate 90 collages/enhanced/red.png fig10b3.png
-convert -resize x$h -rotate 90 collages/enhanced/leafless.png fig10b4.png
-convert -resize x$h -rotate 90 collages/enhanced/ground.png fig10b5.png
-convert -resize x$h -rotate 90 collages/thresholded/green.png fig10c1.png 
-convert -resize x$h -rotate 90 collages/thresholded/yellow.png fig10c2.png
-convert -resize x$h -rotate 90 collages/thresholded/red.png fig10c3.png 
-convert -resize x$h -rotate 90 collages/thresholded/leafless.png fig10c4.png
-convert -resize x$h -rotate 90 collages/thresholded/ground.png fig10c5.png   
-convert fig10a?.png $(echo $bighgaps) fig10a.png
-convert fig10b?.png $(echo $bighgaps) fig10b.png
-convert fig10c?.png $(echo $bighgaps) fig10c.png
-convert fig10?.png $(echo $bigvgaps) fig10.png
-convert -transparent black fig10.png ${location}/fig10.png
+convert -density 300 changes.eps ${location}/fig10.png
 
 x=150
 y=150
