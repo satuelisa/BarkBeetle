@@ -26,7 +26,7 @@ import os
 
 from sys import argv
 
-fixed_size = tuple((76, 76)) # sample dimension
+fixed_size = tuple((62, 62)) # sample dimension
 
 def metrics(model, testData, testLabels): # debug method
     correct = 0

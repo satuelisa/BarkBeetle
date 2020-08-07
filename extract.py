@@ -18,7 +18,8 @@ trees, ow = parse(dataset, ground)
 r = radius(dataset) // 2 # the cut-out size
 d = 2 * r
 goal = d**2 # pixel count
-mask = circle(d, d // 10)
+margin = d // 10 # margin
+mask = circle(d, margin)
 original = Image.open('cropped/{:s}.png'.format(dataset))
 enhanced = Image.open('enhanced/{:s}.png'.format(dataset))
 if 'test' in argv:
@@ -34,7 +35,7 @@ if 'test' in argv:
     zone = (x - r, y - r, x + r, y + r)
     print(f'Extracting a {2 * r} square at {x}, {y}')
     square = original.crop(zone)
-    cut(square, d, circle(d, d // 10, opacity = 200), 'test.png')    
+    cut(square, d, circle(d, margin, opacity = 200), 'test.png')    
     quit()
 if postprocess:
     print('Post-processing for manuscript figures', dataset)
@@ -54,9 +55,11 @@ for treeID in trees:
         square.save(f'{prefix}individual/squares/{label}/{dataset}_{label}_{treeID}.png')
         w, h = square.size
         assert w == d
-        cut(square, d, circle(d, d // 10, opacity = 200), f'{prefix}individual/highlight/{label}/{dataset}_{label}_{treeID}.png')
-        cut(square, d, mask, f'{prefix}individual/original/{label}/{dataset}_{label}_{treeID}.png')
-        cut(enhanced.crop(zone), d, mask, f'{prefix}individual/enhanced/{label}/{dataset}_{label}_{treeID}.png')
+        cut(square, d, circle(d, margin, opacity = 200), f'{prefix}individual/highlight/{label}/{dataset}_{label}_{treeID}.png')
+        cut(square, d, mask, f'{prefix}individual/original/{label}/{dataset}_{label}_{treeID}.png',
+            start = margin, end = d - margin)
+        cut(enhanced.crop(zone), d, mask, f'{prefix}individual/enhanced/{label}/{dataset}_{label}_{treeID}.png',
+            start = margin, end = d - margin)
         if postprocess:
             sx = int(round(x / factor))
             sy = int(round(y / factor))
