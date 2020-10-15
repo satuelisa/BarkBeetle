@@ -24,8 +24,8 @@ def parse(line):
     return coords
 
 flights = ['jun60', 'jul90', 'jul100', 'aug90', 'aug100']
-if exclude: # no june
-    flights.pop(0)
+if exclude: # only the 100m flights
+    flights = [x for x in flights if '100' in x]
 corners = ['Upper Left', 'Lower Left', 'Upper Right', 'Lower Right']
 fc = defaultdict(dict)
 sizes = dict()
