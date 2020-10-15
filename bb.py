@@ -9,6 +9,7 @@ warnings.simplefilter('ignore', Image.DecompressionBombWarning)
 LAT = 1
 LON = 0
 from latlon import latitude, longitude
+exclude = 'exclude' in argv
 
 def parse(line):
     start = line.rfind('(') + 1 
@@ -23,6 +24,8 @@ def parse(line):
     return coords
 
 flights = ['jun60', 'jul90', 'jul100', 'aug90', 'aug100']
+if exclude: # no june
+    flights.pop(0)
 corners = ['Upper Left', 'Lower Left', 'Upper Right', 'Lower Right']
 fc = defaultdict(dict)
 sizes = dict()
@@ -71,6 +74,9 @@ endLat = min(highLat)
 delta = 0.0003
 assert startLat <= endLat
 assert startLon <= endLon
+if exclude:
+    print(f'(({startLon}, {endLon}), ({startLat}, {endLat}))')
+    quit()
 crop = 'crop' in argv
 if not crop: # gnuplot requested
     print('set term postscript eps color 25')
